@@ -1,0 +1,15 @@
+package com.monstrous.dungeongame;
+
+import com.badlogic.gdx.utils.Array;
+
+public class MessageBox {
+    public static Array<String> lines;
+
+    public MessageBox() {
+        lines = new Array<>();
+    }
+
+    public static void addLine(String message){
+        lines.add(message);
+    }
+}

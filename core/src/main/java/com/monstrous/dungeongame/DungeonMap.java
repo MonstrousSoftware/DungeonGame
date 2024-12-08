@@ -82,6 +82,8 @@ public class DungeonMap implements Disposable {
         distributeGold();
 
         placeRogue();
+
+
     }
 
     // derive seed for a specific level of a map

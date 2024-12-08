@@ -95,6 +95,9 @@ public class GameScreen extends ScreenAdapter {
         im.addProcessor(keyController);
         im.addProcessor(gui.stage);
         Gdx.input.setInputProcessor(im);
+
+        MessageBox mb = new MessageBox();
+        MessageBox.addLine("Welcome traveller!");
     }
 
 

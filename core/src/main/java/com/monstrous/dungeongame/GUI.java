@@ -13,6 +13,7 @@ public class GUI implements Disposable {
     public Stage stage;
     private Skin skin;
     private Label gold;
+    private Label message;
     private StringBuffer sb;
     private GameObject rogue;
 
@@ -32,9 +33,12 @@ public class GUI implements Disposable {
         Table screenTable = new Table();
         screenTable.setFillParent(true);
 
-        screenTable.add(new Label("GOLD:", skin)).pad(10).top().left();
-        gold = new Label("0", skin);
-        screenTable.add(gold).pad(10).left().top().expand();
+        //screenTable.add(new Label("GOLD:", skin)).pad(10).top().left();
+        gold = new Label("GOLD: 0", skin);
+        screenTable.add(gold).pad(10).left().top().expandX();
+        screenTable.row();
+        message = new Label("..", skin);
+        screenTable.add(message).pad(10).top().left().expand();
         screenTable.pack();
         stage.addActor(screenTable);
     }
@@ -42,8 +46,11 @@ public class GUI implements Disposable {
 
     private void update(){
         sb.setLength(0);
+        sb.append("GOLD: ");
         sb.append(rogue.gold);
         gold.setText(sb.toString());
+        if(MessageBox.lines.size > 0)
+            message.setText(MessageBox.lines.get(MessageBox.lines.size-1));
     }
 
 
