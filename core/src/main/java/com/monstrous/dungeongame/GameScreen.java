@@ -19,6 +19,10 @@ import net.mgsx.gltf.scene3d.utils.IBLBuilder;
 
 
 public class GameScreen extends ScreenAdapter {
+    public final static int MAP_WIDTH = 50;
+    public final static int MAP_HEIGHT = 50;
+
+
     private SceneManager sceneManager;
     private OrthographicCamera camera;
     private Cubemap diffuseCubemap;
@@ -71,9 +75,10 @@ public class GameScreen extends ScreenAdapter {
         sceneManager.environment.set(PBRCubemapAttribute.createSpecularEnv(specularCubemap));
         sceneManager.environment.set(PBRCubemapAttribute.createDiffuseEnv(diffuseCubemap));
 
-        map = new DungeonMap(1234, 0, 80, 60);
+        map = new DungeonMap(1234, 0, MAP_WIDTH, MAP_HEIGHT);
         dungeonScenes = new DungeonScenes();
         dungeonScenes.buildMap(sceneManager, map);
+        dungeonScenes.populateMap(sceneManager, map);
     }
 
 

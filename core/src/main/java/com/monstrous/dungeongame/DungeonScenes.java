@@ -19,12 +19,14 @@ public class DungeonScenes implements Disposable {
     SceneAsset sceneAssetWall;
     SceneAsset sceneAssetDoorWay;
     SceneAsset sceneAssetCorner;
+    SceneAsset sceneAssetGold;
 
     public DungeonScenes() {
         sceneAssetFloor = new GLTFLoader().load(Gdx.files.internal("models/floor_tile_large.gltf"));
         sceneAssetWall = new GLTFLoader().load(Gdx.files.internal("models/wall.gltf"));
         sceneAssetDoorWay = new GLTFLoader().load(Gdx.files.internal("models/wall_open_scaffold.gltf"));
         sceneAssetCorner = new GLTFLoader().load(Gdx.files.internal("models/wall_corner.gltf"));
+        sceneAssetGold = new GLTFLoader().load(Gdx.files.internal("models/coin_stack_small.gltf"));
     }
 
     public void buildMap(SceneManager sceneManager, DungeonMap map){
@@ -60,11 +62,27 @@ public class DungeonScenes implements Disposable {
 
     }
 
+    public void populateMap(SceneManager sceneManager, DungeonMap map){
+
+        for(int x = 0; x < map.mapWidth; x++){
+            for(int y = 0; y < map.mapHeight; y++){
+                Scene item;
+                if(map.occupance[y][x] == GOLD){
+                    item = new Scene(sceneAssetGold.scene);
+                    item.modelInstance.transform.setTranslation(4*x, 0, 4*y);
+                    sceneManager.addScene(item);
+                }
+            }
+        }
+    }
+
+
     @Override
     public void dispose() {
         sceneAssetFloor.dispose();
         sceneAssetWall.dispose();
         sceneAssetDoorWay.dispose();
         sceneAssetCorner.dispose();
+        sceneAssetGold.dispose();
     }
 }

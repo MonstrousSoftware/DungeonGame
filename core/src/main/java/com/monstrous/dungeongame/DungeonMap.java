@@ -22,7 +22,7 @@ import static jogamp.graph.font.typecast.ot.Mnemonic.FLOOR;
 
 
 public class DungeonMap implements Disposable {
-    public static final int MIN_SIZE = 2;           // min size of room
+    public static final int MIN_SIZE = 3;           // min size of room
     public static final int MAX_SIZE = 10;          // max size of room
     public static final float LOOP_FACTOR = 0.125f; // probability factor [0..1] to add some extra non-MST edge to paths
 
@@ -85,7 +85,7 @@ public class DungeonMap implements Disposable {
 
         makeCorridors();
 
-        addCorridorWalls();
+        //addCorridorWalls();
 
         distributeGold();
     }
@@ -455,6 +455,7 @@ public class DungeonMap implements Disposable {
     private final int[] ddx = { -1 , 0, 1, -1, 1, -1, 0, 1 };
     private final int[] ddy = { -1, -1, -1, 0, 0, 1, 1, 1 };
 
+
     // put walls around corridors where necessary, i.e. where next to an empty cell, including diagonals
     private void addCorridorWalls(){
         for(int x = 0; x < mapWidth; x++){
@@ -462,9 +463,16 @@ public class DungeonMap implements Disposable {
                 if(grid[y][x] == CORRIDOR){
                     for(int dir = 0; dir < 8; dir++){
                         if(grid[y+ddy[dir]][x+ddx[dir]] == EMPTY) {
-                            grid[y + ddy[dir]][x + ddx[dir]] = WALL;
-                            if(dir == 3 || dir == 4)
-                                orientation[y + ddy[dir]][x + ddx[dir]] = 1;
+                            if(dir == 1 || dir == 3 || dir == 4 || dir == 6){
+                                grid[y + ddy[dir]][x + ddx[dir]] = WALL;
+                                if(dir == 3 || dir ==4)
+                                    orientation[y + ddy[dir]][x + ddx[dir]] = 1;
+                            }
+//                            else {
+//                                grid[y + ddy[dir]][x + ddx[dir]] = CORNER;
+//                            }
+//                            if(dir == 0 || dir == 3 || dir == 4 || dir == 5)
+//                                orientation[y + ddy[dir]][x + ddx[dir]] = 1;
 
                         }
                     }
