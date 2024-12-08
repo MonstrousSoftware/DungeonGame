@@ -45,6 +45,9 @@ public class KeyController extends InputAdapter {
                     Gdx.app.log("Pickup", occupant.type.name);
                     gameObjects.clearOccupant(x, y);
                     scenes.remove(occupant.scene);
+                    if(occupant.type == GameObjectTypes.gold){
+                        scenes.getRogue().gold++;
+                    }
                     // todo add to inventory
                 }
             }

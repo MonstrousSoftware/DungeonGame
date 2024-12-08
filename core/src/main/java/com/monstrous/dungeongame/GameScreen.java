@@ -19,6 +19,7 @@ public class GameScreen extends ScreenAdapter {
     public final static int MAP_HEIGHT = 50;
 
 
+    private GUI gui;
     private SceneManager sceneManager;
     private OrthographicCamera camera;
     private Cubemap diffuseCubemap;
@@ -87,9 +88,12 @@ public class GameScreen extends ScreenAdapter {
         camController = new OrthoCamController(camera, dungeonScenes.getRogue().scene.modelInstance);
         keyController = new KeyController(map, dungeonScenes, gameObjects);
 
+        gui = new GUI( dungeonScenes.getRogue() );
+
         InputMultiplexer im = new InputMultiplexer();
         im.addProcessor(camController);
         im.addProcessor(keyController);
+        im.addProcessor(gui.stage);
         Gdx.input.setInputProcessor(im);
     }
 
@@ -100,18 +104,19 @@ public class GameScreen extends ScreenAdapter {
 
         camController.update(deltaTime);
 
-
-
-
         // render
         ScreenUtils.clear(Color.LIGHT_GRAY, true);
         sceneManager.update(deltaTime);
         sceneManager.render();
+
+        gui.render(deltaTime);
     }
 
     @Override
     public void resize(int width, int height) {
+
         sceneManager.updateViewport(width, height);
+        gui.resize(width, height);
     }
 
     @Override
@@ -127,5 +132,6 @@ public class GameScreen extends ScreenAdapter {
         diffuseCubemap.dispose();
         specularCubemap.dispose();
         brdfLUT.dispose();
+        gui.dispose();
     }
 }

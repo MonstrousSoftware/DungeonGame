@@ -9,11 +9,13 @@ public class GameObject {
     public Direction direction;
     public Scene scene;
     public int equipped;
+    public int gold;
 
     public GameObject(GameObjectType type, int x, int y, Direction direction) {
         this.type = type;
         this.x = x;
         this.y = y;
         this.direction = direction;
+        this.gold = 0;
     }
 }
