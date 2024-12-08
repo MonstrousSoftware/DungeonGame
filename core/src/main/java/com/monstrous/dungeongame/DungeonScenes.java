@@ -15,9 +15,12 @@ import net.mgsx.gltf.scene3d.scene.SceneManager;
 import static com.monstrous.dungeongame.DungeonMap.*;
 
 public class DungeonScenes implements Disposable {
+    private final static float SCALE = 4f;
 
     private Scene Rogue;
-    private int rogueX, rogueY;
+    public int rogueX, rogueY;
+
+    private SceneManager sceneManager;
 
     private SceneAsset sceneAssetFloor;
     private SceneAsset sceneAssetWall;
@@ -26,7 +29,9 @@ public class DungeonScenes implements Disposable {
     private SceneAsset sceneAssetGold;
     private SceneAsset sceneAssetRogue;
 
-    public DungeonScenes() {
+    public DungeonScenes(SceneManager sceneManager) {
+        this.sceneManager = sceneManager;
+
         sceneAssetFloor = new GLTFLoader().load(Gdx.files.internal("models/floor_tile_large.gltf"));
         sceneAssetWall = new GLTFLoader().load(Gdx.files.internal("models/wall.gltf"));
         sceneAssetDoorWay = new GLTFLoader().load(Gdx.files.internal("models/wall_open_scaffold.gltf"));
@@ -36,32 +41,33 @@ public class DungeonScenes implements Disposable {
         sceneAssetRogue = new GLBLoader().load(Gdx.files.internal("characters/Rogue.glb"));
     }
 
-    public void buildMap(SceneManager sceneManager, DungeonMap map){
+    public void buildMap(DungeonMap map){
 
         for(int x = 0; x < map.mapWidth; x++){
             for(int y = 0; y < map.mapHeight; y++){
                 Scene tile;
-                if(map.grid[y][x] != 0){
+                int cell = map.getGrid(x,y);
+                if(cell != 0){
                     tile = new Scene(sceneAssetFloor.scene);
-                    tile.modelInstance.transform.setTranslation(4*x, 0, 4*y);
+                    tile.modelInstance.transform.setTranslation(SCALE*x, 0, SCALE*y);
                     sceneManager.addScene(tile);
                 }
                 tile = null;
-                if(map.grid[y][x] == WALL){
+                if(cell == WALL){
                     tile = new Scene(sceneAssetWall.scene);
 
                 }
-                else if(map.grid[y][x] == DOORWAY){
+                else if(cell == DOORWAY){
                     tile = new Scene(sceneAssetDoorWay.scene);
                 }
-                else if(map.grid[y][x] == CORNER){
+                else if(cell == CORNER){
                     tile = new Scene(sceneAssetCorner.scene);
                 }
 
                 if(tile != null) {
-                    tile.modelInstance.transform.setTranslation(4 * x, 0, 4 * y);
-                    if(map.orientation[y][x] != 0)
-                        tile.modelInstance.transform.rotate(Vector3.Y, map.orientation[y][x] * 90);
+                    tile.modelInstance.transform.setTranslation(SCALE * x, 0, SCALE * y);
+                    if(map.orientation[y][x] != Direction.NORTH)
+                        tile.modelInstance.transform.rotate(Vector3.Y, map.orientation[y][x].ordinal() * 90);
                     sceneManager.addScene(tile);
                 }
             }
@@ -69,29 +75,30 @@ public class DungeonScenes implements Disposable {
 
     }
 
-    public void populateMap(SceneManager sceneManager, DungeonMap map){
+    public void populateMap(DungeonMap map){
 
         for(int x = 0; x < map.mapWidth; x++){
             for(int y = 0; y < map.mapHeight; y++){
                 Scene item;
                 if(map.occupance[y][x] == GOLD){
                     item = new Scene(sceneAssetGold.scene);
-                    item.modelInstance.transform.setTranslation(4*x, 0, 4*y);
+                    item.modelInstance.transform.setTranslation(SCALE*x, 0, SCALE*y);
                     sceneManager.addScene(item);
                 }
             }
         }
     }
 
-    public void placeRogue(SceneManager sceneManager, DungeonMap map){
+    public void placeRogue(DungeonMap map){
 
         for(int x = 0; x < map.mapWidth; x++){
             for(int y = 0; y < map.mapHeight; y++){
                 if(map.occupance[y][x] == ROGUE){
+                    rogueX = x;
+                    rogueY = y;
                     Rogue = new Scene(sceneAssetRogue.scene);
-                    Rogue.modelInstance.transform.setTranslation(4*x, 0, 4*y);
-                    if(map.orientation[y][x] != 0)
-                        Rogue.modelInstance.transform.rotate(Vector3.Y, map.orientation[y][x] * 90);
+                    Rogue.modelInstance.transform.setTranslation(SCALE*x, 0, SCALE*y);
+                    Rogue.modelInstance.transform.rotate(Vector3.Y, map.orientation[y][x].ordinal() * 90);
                     sceneManager.addScene(Rogue);
                     return;
                 }
@@ -99,8 +106,18 @@ public class DungeonScenes implements Disposable {
         }
     }
 
-    public void moveRogue(SceneManager sceneManager, DungeonMap map){
+    public void turnRogue(DungeonMap map, Direction dir, int x, int y ){
+        map.orientation[y][x] = dir;
+        Rogue.modelInstance.transform.setToRotation(Vector3.Y, map.orientation[y][x].ordinal() * 90);
+        Rogue.modelInstance.transform.setTranslation(SCALE*x, 0, SCALE*y);
+    }
 
+    public void moveRogue(DungeonMap map, int x, int y){
+        map.occupance[rogueY][rogueX] = EMPTY;
+        map.occupance[y][x] = ROGUE;
+        rogueX = x;
+        rogueY = y;
+        Rogue.modelInstance.transform.setTranslation(SCALE*x, 0, SCALE*y);
     }
 
     public Scene getRogue(){

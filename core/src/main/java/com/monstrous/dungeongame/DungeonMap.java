@@ -6,7 +6,6 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.ShortArray;
 
-import static jogamp.graph.font.typecast.ot.Mnemonic.FLOOR;
 
 
 // This implements an algorithm described by Vazgriz (only for the 2D case) to generate dungeons
@@ -44,9 +43,9 @@ public class DungeonMap implements Disposable {
     public int roomId;                      // to give each room a unique id
     public float[] vertices;                // array of x,y per room centre
     public ShortArray indices;              // index list from triangulation
-    public short[][] grid;                  // map grid, 0 is empty, 1 is room, 2 is corridor.
+    private short[][] grid;                  // map grid, 0 is empty, 1 is room, 2 is corridor.
     public int[][] occupance;               // item in grid cell, 0 for none.
-    public short[][] orientation;
+    public Direction [][] orientation;
 
 
     // levelNr : 0 for top level, increasing as we go down
@@ -96,6 +95,10 @@ public class DungeonMap implements Disposable {
     // derive seed for a specific level of a map
     private int getLevelSeed(int mapSeed, int level){
         return 100* mapSeed + level;
+    }
+
+    public int getGrid(int x, int y){
+        return grid[y][x];
     }
 
     // generate non-overlapping rooms of random size and position until the map is pretty full
@@ -300,7 +303,12 @@ public class DungeonMap implements Disposable {
 
     private void fillGrid(){
         grid = new short[mapHeight][mapWidth];
-        orientation = new short[mapHeight][mapWidth];
+        orientation = new Direction[mapHeight][mapWidth];
+        for(int x = 0; x < mapWidth; x++) {
+            for (int y = 0; y < mapHeight; y++) {
+                orientation[y][x] = Direction.NORTH;
+            }
+        }
 
         for(Room room : rooms ){
             addRoom(room.x, room.y, room.width, room.height);
@@ -318,7 +326,7 @@ public class DungeonMap implements Disposable {
 
         for(int x = 0; x < rw; x++){
             for(int y = 0; y < rh; y++){
-                grid[ry+y][rx+x] = FLOOR;
+                grid[ry+y][rx+x] = ROOM;
             }
         }
 
@@ -327,16 +335,16 @@ public class DungeonMap implements Disposable {
             grid[ry+rh][rx+x] = WALL;
         }
         for(int y = 0; y < rh; y++){
-            grid[ry+y][rx] = WALL; orientation[ry+y][rx] = 1;
-            grid[ry+y][rx+rw] = WALL; orientation[ry+y][rx+rw] = 1;
+            grid[ry+y][rx] = WALL; orientation[ry+y][rx] = Direction.EAST;
+            grid[ry+y][rx+rw] = WALL; orientation[ry+y][rx+rw] = Direction.EAST;
         }
-        grid[ry][rx] = CORNER; orientation[ry][rx] = 1;
-        grid[ry+rh][rx] = CORNER; orientation[ry+rh][rx] = 2;
-        grid[ry][rx+rw] = CORNER; orientation[ry][rx+rw] = 0;
-        grid[ry+rh][rx+rw] = CORNER; orientation[ry+rh][rx+rw] = 3;
+        grid[ry][rx] = CORNER; orientation[ry][rx] = Direction.EAST;
+        grid[ry+rh][rx] = CORNER; orientation[ry+rh][rx] = Direction.SOUTH;
+        grid[ry][rx+rw] = CORNER; orientation[ry][rx+rw] = Direction.NORTH;
+        grid[ry+rh][rx+rw] = CORNER; orientation[ry+rh][rx+rw] = Direction.WEST;
     }
 
-    private void addDoor(int x, int y, short direction){
+    private void addDoor(int x, int y, Direction direction){
         grid[y][x] = DOORWAY; orientation[y][x] = direction;
     }
 
@@ -469,7 +477,7 @@ public class DungeonMap implements Disposable {
                             if(dir == 1 || dir == 3 || dir == 4 || dir == 6){
                                 grid[y + ddy[dir]][x + ddx[dir]] = WALL;
                                 if(dir == 3 || dir ==4)
-                                    orientation[y + ddy[dir]][x + ddx[dir]] = 1;
+                                    orientation[y + ddy[dir]][x + ddx[dir]] = Direction.EAST;
                             }
 //                            else {
 //                                grid[y + ddy[dir]][x + ddx[dir]] = CORNER;
@@ -517,7 +525,7 @@ public class DungeonMap implements Disposable {
                 continue;
 
             occupance[room.centre.y][room.centre.x] = ROGUE;
-            orientation[room.centre.y][room.centre.x] = 2;
+            orientation[room.centre.y][room.centre.x] = Direction.SOUTH;
 
             return;
         }

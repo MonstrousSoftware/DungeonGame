@@ -77,11 +77,11 @@ public class GameScreen extends ScreenAdapter {
         sceneManager.environment.set(PBRCubemapAttribute.createDiffuseEnv(diffuseCubemap));
 
         map = new DungeonMap(1234, 0, MAP_WIDTH, MAP_HEIGHT);
-        dungeonScenes = new DungeonScenes();
-        dungeonScenes.buildMap(sceneManager, map);
-        dungeonScenes.populateMap(sceneManager, map);
+        dungeonScenes = new DungeonScenes(sceneManager);
+        dungeonScenes.buildMap( map);
+        dungeonScenes.populateMap( map);
 
-        dungeonScenes.placeRogue(sceneManager, map);
+        dungeonScenes.placeRogue( map);
 
 
         camController = new OrthoCamController(camera, dungeonScenes.getRogue().modelInstance);
