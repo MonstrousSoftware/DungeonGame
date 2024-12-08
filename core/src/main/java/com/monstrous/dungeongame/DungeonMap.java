@@ -26,14 +26,6 @@ public class DungeonMap implements Disposable {
     public static final float LOOP_FACTOR = 0.125f; // probability factor [0..1] to add some extra non-MST edge to paths
 
     public static final short EMPTY = 0;
-    public static final short ROOM = 1;
-    public static final short CORRIDOR = 2;
-    public static final short WALL = 3;
-    public static final short DOORWAY = 4;
-    public static final short STAIRS_DOWN = 5;
-    public static final short STAIRS_UP = 6;
-    public static final short CORNER = 7;
-
     public static final short ROGUE = 10;
     public static final short GOLD = 11;
 
@@ -43,9 +35,9 @@ public class DungeonMap implements Disposable {
     public int roomId;                      // to give each room a unique id
     public float[] vertices;                // array of x,y per room centre
     public ShortArray indices;              // index list from triangulation
-    private short[][] grid;                  // map grid, 0 is empty, 1 is room, 2 is corridor.
+    private TileType [][] grid;             // map grid for fixed architecture, walls, etc.
     public int[][] occupance;               // item in grid cell, 0 for none.
-    public Direction [][] orientation;
+    public Direction [][] tileOrientation;      // orientation of tile
 
 
     // levelNr : 0 for top level, increasing as we go down
@@ -63,13 +55,13 @@ public class DungeonMap implements Disposable {
         if(levelNr > 0) {    // is there a floor above?
             // use the higher level's seed to generate the stairs from above
             MathUtils.random.setSeed(getLevelSeed(mapSeed, levelNr-1));
-            generateStairWells(STAIRS_UP);  // stairs coming down
+            generateStairWells(TileType.STAIRS_UP);  // stairs coming down
         }
 
         MathUtils.random.setSeed(getLevelSeed(mapSeed, levelNr));
 
         // generate stairs to the level below
-        generateStairWells(STAIRS_DOWN);    // stairs going down
+        generateStairWells(TileType.STAIRS_DOWN);    // stairs going down
 
         generateRooms(rooms);
 
@@ -97,7 +89,7 @@ public class DungeonMap implements Disposable {
         return 100* mapSeed + level;
     }
 
-    public int getGrid(int x, int y){
+    public TileType getGrid(int x, int y){
         return grid[y][x];
     }
 
@@ -126,7 +118,7 @@ public class DungeonMap implements Disposable {
     }
 
     // place some stair wells going down
-    private void generateStairWells(int stairType){
+    private void generateStairWells(TileType stairType){
         int count = MathUtils.random(1, 2); // how many stair wells to generate?
         for(int i = 0; i < count; i++){
             Room stairWell = generateStairWell(roomId++, stairType);
@@ -136,13 +128,13 @@ public class DungeonMap implements Disposable {
     }
 
     // a stair well is a special type of room of fixed size with stair tiles inside.
-    private Room generateStairWell(int id, int stairType){
+    private Room generateStairWell(int id, TileType stairType){
         int direction = MathUtils.random(0, 3); // random direction NESW
         // place horizontal or vertical
         int w = (direction == 1 || direction == 3) ? 3 : 1;
         int h = (direction == 1 || direction == 3) ? 1 : 3;
         Room stairWell = placeRoom(id, w, h);
-        if(stairType == STAIRS_UP) {
+        if(stairType == TileType.STAIRS_UP) {
             direction = (direction + 2) % 4;    // reverse direction
             // offset stairwell one cell compared to the floor above
             switch(direction){
@@ -302,11 +294,12 @@ public class DungeonMap implements Disposable {
     }
 
     private void fillGrid(){
-        grid = new short[mapHeight][mapWidth];
-        orientation = new Direction[mapHeight][mapWidth];
+        grid = new TileType[mapHeight][mapWidth];
+        tileOrientation = new Direction[mapHeight][mapWidth];
         for(int x = 0; x < mapWidth; x++) {
             for (int y = 0; y < mapHeight; y++) {
-                orientation[y][x] = Direction.NORTH;
+                grid[y][x] = TileType.VOID;
+                tileOrientation[y][x] = Direction.NORTH;
             }
         }
 
@@ -326,26 +319,26 @@ public class DungeonMap implements Disposable {
 
         for(int x = 0; x < rw; x++){
             for(int y = 0; y < rh; y++){
-                grid[ry+y][rx+x] = ROOM;
+                grid[ry+y][rx+x] = TileType.ROOM;
             }
         }
 
         for(int x = 0; x < rw; x++){
-            grid[ry][rx+x] = WALL;
-            grid[ry+rh][rx+x] = WALL;
+            grid[ry][rx+x] = TileType.WALL;
+            grid[ry+rh][rx+x] = TileType.WALL;
         }
         for(int y = 0; y < rh; y++){
-            grid[ry+y][rx] = WALL; orientation[ry+y][rx] = Direction.EAST;
-            grid[ry+y][rx+rw] = WALL; orientation[ry+y][rx+rw] = Direction.EAST;
+            grid[ry+y][rx] = TileType.WALL; tileOrientation[ry+y][rx] = Direction.EAST;
+            grid[ry+y][rx+rw] = TileType.WALL; tileOrientation[ry+y][rx+rw] = Direction.EAST;
         }
-        grid[ry][rx] = CORNER; orientation[ry][rx] = Direction.EAST;
-        grid[ry+rh][rx] = CORNER; orientation[ry+rh][rx] = Direction.SOUTH;
-        grid[ry][rx+rw] = CORNER; orientation[ry][rx+rw] = Direction.NORTH;
-        grid[ry+rh][rx+rw] = CORNER; orientation[ry+rh][rx+rw] = Direction.WEST;
+        grid[ry][rx] = TileType.WALL_CORNER; tileOrientation[ry][rx] = Direction.EAST;
+        grid[ry+rh][rx] = TileType.WALL_CORNER; tileOrientation[ry+rh][rx] = Direction.SOUTH;
+        grid[ry][rx+rw] = TileType.WALL_CORNER; tileOrientation[ry][rx+rw] = Direction.NORTH;
+        grid[ry+rh][rx+rw] = TileType.WALL_CORNER; tileOrientation[ry+rh][rx+rw] = Direction.WEST;
     }
 
     private void addDoor(int x, int y, Direction direction){
-        grid[y][x] = DOORWAY; orientation[y][x] = direction;
+        grid[y][x] = TileType.DOORWAY; tileOrientation[y][x] = direction;
     }
 
     private void makeCorridors(){
@@ -401,11 +394,11 @@ public class DungeonMap implements Disposable {
             if(current.x == targetX && current.y == targetY) { // found target
                 // back trace the steps and update the grid
                 while(current != null) {
-                    if (grid[current.y][current.x] == EMPTY )
-                        grid[current.y][current.x] = CORRIDOR;
-                    if (grid[current.y][current.x] == WALL  )
-                        grid[current.y][current.x] = DOORWAY;
-                    int cell = grid[current.y][current.x];
+                    if (grid[current.y][current.x] == TileType.VOID)
+                        grid[current.y][current.x] = TileType.CORRIDOR;
+                    if (grid[current.y][current.x] == TileType.WALL  )
+                        grid[current.y][current.x] = TileType.DOORWAY;
+                    //TileType cell = grid[current.y][current.x];
                     current = current.parent;
                 }
                 return; // finished
@@ -436,7 +429,7 @@ public class DungeonMap implements Disposable {
                 // calculate cost to neighbour via current
                 int cost = current.cost;
                 switch(grid[ny][nx]){
-                    case EMPTY:     cost += 5; break;
+                    case VOID:     cost += 5; break;
                     case ROOM:      cost += 10; break;
                     case CORRIDOR:  cost += 1; break;
                     case WALL:      cost += 20; break;
@@ -471,13 +464,13 @@ public class DungeonMap implements Disposable {
     private void addCorridorWalls(){
         for(int x = 0; x < mapWidth; x++){
             for(int y = 0; y < mapHeight; y++){
-                if(grid[y][x] == CORRIDOR){
+                if(grid[y][x] == TileType.CORRIDOR){
                     for(int dir = 0; dir < 8; dir++){
-                        if(grid[y+ddy[dir]][x+ddx[dir]] == EMPTY) {
+                        if(grid[y+ddy[dir]][x+ddx[dir]] == TileType.VOID) {
                             if(dir == 1 || dir == 3 || dir == 4 || dir == 6){
-                                grid[y + ddy[dir]][x + ddx[dir]] = WALL;
+                                grid[y + ddy[dir]][x + ddx[dir]] = TileType.WALL;
                                 if(dir == 3 || dir ==4)
-                                    orientation[y + ddy[dir]][x + ddx[dir]] = Direction.EAST;
+                                    tileOrientation[y + ddy[dir]][x + ddx[dir]] = Direction.EAST;
                             }
 //                            else {
 //                                grid[y + ddy[dir]][x + ddx[dir]] = CORNER;
@@ -525,7 +518,7 @@ public class DungeonMap implements Disposable {
                 continue;
 
             occupance[room.centre.y][room.centre.x] = ROGUE;
-            orientation[room.centre.y][room.centre.x] = Direction.SOUTH;
+            tileOrientation[room.centre.y][room.centre.x] = Direction.SOUTH;
 
             return;
         }

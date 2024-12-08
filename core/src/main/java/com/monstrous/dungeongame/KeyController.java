@@ -21,6 +21,11 @@ public class KeyController extends InputAdapter {
             case 'a':   tryMoveRogue(1, 0, Direction.EAST); return true;
             case 's':   tryMoveRogue(0, -1, Direction.SOUTH); return true;
             case 'd':   tryMoveRogue(-1,0, Direction.WEST); return true;
+            case '0':   equip( Equipped.NONE ); return true;
+            case '1':   equip( Equipped.KNIFE ); return true;
+            case '2':   equip( Equipped.THROWABLE ); return true;
+            case '3':   equip( Equipped.CROSSBOW ); return true;
+
             default:    return false;
         }
     }
@@ -31,12 +36,18 @@ public class KeyController extends InputAdapter {
         scenes.turnRogue(map, dir, x, y);
         x += dx;
         y += dy;
-        int cell = map.getGrid(x, y);
+        TileType cell = map.getGrid(x, y);
         if(walkable(cell))
             scenes.moveRogue(map, x, y);
     }
 
-    private boolean walkable(int cell){
-        return (cell == ROOM || cell == CORRIDOR || cell == DOORWAY);
+    private boolean walkable(TileType cell){
+
+        return (cell == TileType.ROOM || cell == TileType.CORRIDOR || cell == TileType.DOORWAY);
+    }
+
+    private void equip( int equipped ){
+        // todo store the state for the game logic
+        scenes.adaptModel(scenes.getRogue(), equipped);
     }
 }

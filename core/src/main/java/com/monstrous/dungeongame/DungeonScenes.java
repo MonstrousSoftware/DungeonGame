@@ -3,8 +3,10 @@ package com.monstrous.dungeongame;
 // class to add Scenes to SceneManager to reflect the dungeon rooms
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.model.Node;
+import com.badlogic.gdx.graphics.g3d.model.NodePart;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import net.mgsx.gltf.loaders.glb.GLBLoader;
 import net.mgsx.gltf.loaders.gltf.GLTFLoader;
@@ -46,28 +48,28 @@ public class DungeonScenes implements Disposable {
         for(int x = 0; x < map.mapWidth; x++){
             for(int y = 0; y < map.mapHeight; y++){
                 Scene tile;
-                int cell = map.getGrid(x,y);
-                if(cell != 0){
+                TileType cell = map.getGrid(x,y);
+                if(cell != TileType.VOID){
                     tile = new Scene(sceneAssetFloor.scene);
                     tile.modelInstance.transform.setTranslation(SCALE*x, 0, SCALE*y);
                     sceneManager.addScene(tile);
                 }
                 tile = null;
-                if(cell == WALL){
+                if(cell == TileType.WALL){
                     tile = new Scene(sceneAssetWall.scene);
 
                 }
-                else if(cell == DOORWAY){
+                else if(cell == TileType.DOORWAY){
                     tile = new Scene(sceneAssetDoorWay.scene);
                 }
-                else if(cell == CORNER){
+                else if(cell == TileType.WALL_CORNER){
                     tile = new Scene(sceneAssetCorner.scene);
                 }
 
                 if(tile != null) {
                     tile.modelInstance.transform.setTranslation(SCALE * x, 0, SCALE * y);
-                    if(map.orientation[y][x] != Direction.NORTH)
-                        tile.modelInstance.transform.rotate(Vector3.Y, map.orientation[y][x].ordinal() * 90);
+                    if(map.tileOrientation[y][x] != Direction.NORTH)
+                        tile.modelInstance.transform.rotate(Vector3.Y, map.tileOrientation[y][x].ordinal() * 90);
                     sceneManager.addScene(tile);
                 }
             }
@@ -98,17 +100,46 @@ public class DungeonScenes implements Disposable {
                     rogueY = y;
                     Rogue = new Scene(sceneAssetRogue.scene);
                     Rogue.modelInstance.transform.setTranslation(SCALE*x, 0, SCALE*y);
-                    Rogue.modelInstance.transform.rotate(Vector3.Y, map.orientation[y][x].ordinal() * 90);
+                    Rogue.modelInstance.transform.rotate(Vector3.Y, map.tileOrientation[y][x].ordinal() * 90);
                     sceneManager.addScene(Rogue);
+
+                    adaptModel(Rogue, Equipped.NONE);
                     return;
                 }
             }
         }
     }
 
+    public void adaptModel(Scene rogue, int equipped){
+        ModelInstance instance = rogue.modelInstance;
+        for(Node node : instance.nodes){
+            checkNode(1, node, equipped);
+        }
+    }
+
+    // recursive method to enable/disable weapons
+    private void checkNode(int level, Node node, int equipped ){
+        //Gdx.app.log("Node", "level "+ level + " : "+node.id+ " nodeparts: "+node.parts.size);
+        if(node.id.contains("Knife"))
+            setNodeParts(node, (equipped & Equipped.KNIFE) != 0);
+        else if(node.id.contains("Crossbow"))
+            setNodeParts(node, (equipped & Equipped.CROSSBOW) != 0);
+        else if(node.id.contains("Throwable"))
+            setNodeParts(node, (equipped & Equipped.THROWABLE) != 0);
+
+        for(Node n : node.getChildren()){
+            checkNode(level+1, n, equipped);
+        }
+    }
+
+    private void setNodeParts(Node node, boolean enabled){
+        for(NodePart part : node.parts)
+            part.enabled = enabled;
+    }
+
     public void turnRogue(DungeonMap map, Direction dir, int x, int y ){
-        map.orientation[y][x] = dir;
-        Rogue.modelInstance.transform.setToRotation(Vector3.Y, map.orientation[y][x].ordinal() * 90);
+        map.tileOrientation[y][x] = dir;
+        Rogue.modelInstance.transform.setToRotation(Vector3.Y, map.tileOrientation[y][x].ordinal() * 90);
         Rogue.modelInstance.transform.setTranslation(SCALE*x, 0, SCALE*y);
     }
 

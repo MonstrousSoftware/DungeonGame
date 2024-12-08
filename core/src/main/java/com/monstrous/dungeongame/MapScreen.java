@@ -110,24 +110,24 @@ public class MapScreen implements Screen {
 
         for(int x = 0; x < MAP_WIDTH; x++){
             for(int y = 0; y < MAP_HEIGHT; y++) {
-                int cell = map.getGrid(x,y);
-                if(cell == CORRIDOR) {
+                TileType cell = map.getGrid(x,y);
+                if(cell == TileType.CORRIDOR) {
                     shapeRenderer.setColor(Color.BLUE);
                     shapeRenderer.rect(x + m, y + m, 1, 1);
                 }
-                if(cell == WALL) {
+                if(cell == TileType.WALL) {
                     shapeRenderer.setColor(Color.DARK_GRAY);
                     shapeRenderer.rect(x + m, y + m, 1, 1);
                 }
-                if(cell == DOORWAY) {
+                if(cell == TileType.DOORWAY) {
                     shapeRenderer.setColor(Color.PURPLE);
                     shapeRenderer.rect(x + m, y + m, 1, 1);
                 }
-                if(cell == STAIRS_DOWN) {
+                if(cell == TileType.STAIRS_DOWN) {
                     shapeRenderer.setColor(Color.RED);
                     shapeRenderer.rect(x + m, y + m, 1, 1);
                 }
-                if(cell == STAIRS_UP) {
+                if(cell == TileType.STAIRS_UP) {
                     shapeRenderer.setColor(Color.BROWN);
                     shapeRenderer.rect(x + m, y + m, 1, 1);
                 }

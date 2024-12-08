@@ -11,7 +11,7 @@ public class Room {
     public Array<Float> distances;  // distance per neighbour (temporary use)
     public Array<Room> closeNeighbours;     // connected rooms from minimum spanning tree plus some extra ones for fun
     public boolean isStairWell;
-    public int stairType;           // STAIRS_UP or STAIRS_DOWN (only valid if isStairWell)
+    public TileType stairType;           // STAIRS_UP or STAIRS_DOWN (only valid if isStairWell)
 
     public Room(int id, int x, int y, int w, int h) {
         this.id = id;
