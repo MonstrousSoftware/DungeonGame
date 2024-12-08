@@ -36,9 +36,9 @@ public class DungeonMap implements Disposable {
     public float[] vertices;                // array of x,y per room centre
     public ShortArray indices;              // index list from triangulation
     private TileType [][] grid;             // map grid for fixed architecture, walls, etc.
-    public int[][] initialOccupancy;               // item in grid cell, 0 for none.
+    //public int[][] initialOccupancy;               // item in grid cell, 0 for none.
     public Direction [][] tileOrientation;      // orientation of tile
-  //  public GameObjects gameObjects;
+    public GameObjects gameObjects;
 
 
     // levelNr : 0 for top level, increasing as we go down
@@ -489,7 +489,8 @@ public class DungeonMap implements Disposable {
     }
 
     private void distributeGold(){
-        initialOccupancy = new int[mapHeight][mapWidth];
+        //initialOccupancy = new int[mapHeight][mapWidth];
+        gameObjects = new GameObjects(mapWidth, mapHeight);
 
         int count = MathUtils.random(1, 15);        // nr of gold drops
         while(true){
@@ -499,10 +500,15 @@ public class DungeonMap implements Disposable {
                 continue;
             int rx = MathUtils.random(0, room.width-1);
             int ry = MathUtils.random(0, room.height-1);
-            if(initialOccupancy[room.y+ry][room.x+rx] != EMPTY)
+            GameObject occupant = gameObjects.getOccupant(room.x+rx, room.y+ry);
+            if(occupant != null)
                 continue;
-
-            initialOccupancy[room.y+ry][room.x+rx] = GOLD;
+//            if(initialOccupancy[room.y+ry][room.x+rx] != EMPTY)
+//                continue;
+            occupant = new GameObject(GameObjectTypes.gold, room.x+rx, room.y+ry, Direction.SOUTH);
+            gameObjects.setOccupant(room.x+rx, room.y+ry, occupant);
+            // seems redundan to provide x,y twice
+            //initialOccupancy[room.y+ry][room.x+rx] = GOLD;
 
             count--;
             if(count == 0)
@@ -516,12 +522,17 @@ public class DungeonMap implements Disposable {
             Room room = rooms.get(location);
             if(room.isStairWell)
                 continue;
-
-            if(initialOccupancy[room.centre.y][room.centre.x] != EMPTY)
+            GameObject occupant = gameObjects.getOccupant(room.centre.x, room.centre.y);
+            if(occupant != null)
                 continue;
+//            if(initialOccupancy[room.centre.y][room.centre.x] != EMPTY)
+//                continue;
+            occupant = new GameObject(GameObjectTypes.rogue, room.centre.x, room.centre.y, Direction.SOUTH);
+            gameObjects.setOccupant(room.centre.x, room.centre.y, occupant);
+            occupant.direction = Direction.SOUTH;
 
-            initialOccupancy[room.centre.y][room.centre.x] = ROGUE;
-            tileOrientation[room.centre.y][room.centre.x] = Direction.SOUTH;
+//            initialOccupancy[room.centre.y][room.centre.x] = ROGUE;
+//            tileOrientation[room.centre.y][room.centre.x] = Direction.SOUTH;
 
             return;
         }
