@@ -13,8 +13,6 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import com.monstrous.dungeongame.*;
-
 import static com.monstrous.dungeongame.DungeonMap.*;
 
 
@@ -140,7 +138,7 @@ public class MapScreen implements Screen {
         shapeRenderer.setColor(Color.GOLD);
         for(int x = 0; x < MAP_WIDTH; x++){
             for(int y = 0; y < MAP_HEIGHT; y++) {
-                if(map.occupance[y][x] == GOLD) {
+                if(map.initialOccupancy[y][x] == GOLD) {
                     shapeRenderer.circle(x + m+.5f, y + m+.5f, 0.5f);
                 }
 

@@ -36,7 +36,7 @@ public class DungeonMap implements Disposable {
     public float[] vertices;                // array of x,y per room centre
     public ShortArray indices;              // index list from triangulation
     private TileType [][] grid;             // map grid for fixed architecture, walls, etc.
-    public int[][] occupance;               // item in grid cell, 0 for none.
+    public int[][] initialOccupancy;               // item in grid cell, 0 for none.
     public Direction [][] tileOrientation;      // orientation of tile
 
 
@@ -486,7 +486,7 @@ public class DungeonMap implements Disposable {
     }
 
     private void distributeGold(){
-        occupance = new int[mapHeight][mapWidth];
+        initialOccupancy = new int[mapHeight][mapWidth];
 
         int count = MathUtils.random(1, 15);        // nr of gold drops
         while(true){
@@ -496,10 +496,10 @@ public class DungeonMap implements Disposable {
                 continue;
             int rx = MathUtils.random(0, room.width-1);
             int ry = MathUtils.random(0, room.height-1);
-            if(occupance[room.y+ry][room.x+rx] != EMPTY)
+            if(initialOccupancy[room.y+ry][room.x+rx] != EMPTY)
                 continue;
 
-            occupance[room.y+ry][room.x+rx] = GOLD;
+            initialOccupancy[room.y+ry][room.x+rx] = GOLD;
 
             count--;
             if(count == 0)
@@ -514,10 +514,10 @@ public class DungeonMap implements Disposable {
             if(room.isStairWell)
                 continue;
 
-            if(occupance[room.centre.y][room.centre.x] != EMPTY)
+            if(initialOccupancy[room.centre.y][room.centre.x] != EMPTY)
                 continue;
 
-            occupance[room.centre.y][room.centre.x] = ROGUE;
+            initialOccupancy[room.centre.y][room.centre.x] = ROGUE;
             tileOrientation[room.centre.y][room.centre.x] = Direction.SOUTH;
 
             return;

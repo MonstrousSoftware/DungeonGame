@@ -1,17 +1,18 @@
 package com.monstrous.dungeongame;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
-
-import static com.monstrous.dungeongame.DungeonMap.*;
 
 public class KeyController extends InputAdapter {
 
     private DungeonMap map;
     private DungeonScenes scenes;
+    private GameObjects gameObjects;
 
-    public KeyController(DungeonMap map, DungeonScenes scenes) {
+    public KeyController(DungeonMap map, DungeonScenes scenes, GameObjects gameObjects) {
         this.map = map;
         this.scenes = scenes;
+        this.gameObjects = gameObjects;
     }
 
     @Override
@@ -31,14 +32,24 @@ public class KeyController extends InputAdapter {
     }
 
     private void tryMoveRogue(int dx, int dy, Direction dir){
-        int x = scenes.rogueX;
-        int y = scenes.rogueY;
+        int x = scenes.rogue.x;
+        int y = scenes.rogue.y;
         scenes.turnRogue(map, dir, x, y);
         x += dx;
         y += dy;
         TileType cell = map.getGrid(x, y);
-        if(walkable(cell))
-            scenes.moveRogue(map, x, y);
+        if(walkable(cell)) {
+            GameObject occupant = gameObjects.getOccupant(x, y);
+            if(occupant != null){
+                if(occupant.type.pickup){
+                    Gdx.app.log("Pickup", occupant.type.name);
+                    gameObjects.clearOccupant(x, y);
+                    scenes.remove(occupant.scene);
+                    // todo add to inventory
+                }
+            }
+            scenes.moveRogue(map, gameObjects, x, y);
+        }
     }
 
     private boolean walkable(TileType cell){
@@ -47,7 +58,7 @@ public class KeyController extends InputAdapter {
     }
 
     private void equip( int equipped ){
-        // todo store the state for the game logic
-        scenes.adaptModel(scenes.getRogue(), equipped);
+        scenes.getRogue().equipped = equipped;
+        scenes.adaptModel(scenes.getRogue().scene, equipped);
     }
 }

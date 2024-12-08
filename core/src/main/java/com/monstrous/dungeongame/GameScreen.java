@@ -5,15 +5,10 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.ScreenUtils;
-import net.mgsx.gltf.loaders.gltf.GLTFLoader;
 import net.mgsx.gltf.scene3d.attributes.PBRCubemapAttribute;
 import net.mgsx.gltf.scene3d.attributes.PBRTextureAttribute;
 import net.mgsx.gltf.scene3d.lights.DirectionalLightEx;
-import net.mgsx.gltf.scene3d.scene.Scene;
-import net.mgsx.gltf.scene3d.scene.SceneAsset;
 import net.mgsx.gltf.scene3d.scene.SceneManager;
 
 import net.mgsx.gltf.scene3d.utils.IBLBuilder;
@@ -33,6 +28,8 @@ public class GameScreen extends ScreenAdapter {
     private DirectionalLightEx light;
     private DungeonScenes dungeonScenes;
     private DungeonMap map;
+    private GameObjectTypes gameObjectTypes;
+    private GameObjects gameObjects;
     private OrthoCamController camController;
     private KeyController keyController;
 
@@ -77,15 +74,18 @@ public class GameScreen extends ScreenAdapter {
         sceneManager.environment.set(PBRCubemapAttribute.createDiffuseEnv(diffuseCubemap));
 
         map = new DungeonMap(1234, 0, MAP_WIDTH, MAP_HEIGHT);
+        gameObjectTypes = new GameObjectTypes();
+        gameObjects = new GameObjects(MAP_WIDTH, MAP_HEIGHT);
+
         dungeonScenes = new DungeonScenes(sceneManager);
         dungeonScenes.buildMap( map);
-        dungeonScenes.populateMap( map);
+        dungeonScenes.populateMap( map, gameObjects );
 
-        dungeonScenes.placeRogue( map);
+        dungeonScenes.placeRogue( map, gameObjects );
 
 
-        camController = new OrthoCamController(camera, dungeonScenes.getRogue().modelInstance);
-        keyController = new KeyController(map, dungeonScenes);
+        camController = new OrthoCamController(camera, dungeonScenes.getRogue().scene.modelInstance);
+        keyController = new KeyController(map, dungeonScenes, gameObjects);
 
         InputMultiplexer im = new InputMultiplexer();
         im.addProcessor(camController);

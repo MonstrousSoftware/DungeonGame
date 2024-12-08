@@ -19,8 +19,8 @@ import static com.monstrous.dungeongame.DungeonMap.*;
 public class DungeonScenes implements Disposable {
     private final static float SCALE = 4f;
 
-    private Scene Rogue;
-    public int rogueX, rogueY;
+    public GameObject rogue;
+    //private Scene rogueScene;
 
     private SceneManager sceneManager;
 
@@ -77,33 +77,39 @@ public class DungeonScenes implements Disposable {
 
     }
 
-    public void populateMap(DungeonMap map){
+    public void populateMap(DungeonMap map, GameObjects gameObjects){
 
         for(int x = 0; x < map.mapWidth; x++){
             for(int y = 0; y < map.mapHeight; y++){
                 Scene item;
-                if(map.occupance[y][x] == GOLD){
+                if(map.initialOccupancy[y][x] == GOLD){
+                    GameObject gold = new GameObject(GameObjectTypes.gold, x, y, Direction.NORTH);
                     item = new Scene(sceneAssetGold.scene);
                     item.modelInstance.transform.setTranslation(SCALE*x, 0, SCALE*y);
                     sceneManager.addScene(item);
+                    gold.scene = item;
+                    gameObjects.add(gold);
+                    gameObjects.setOccupant(x, y, gold);
                 }
             }
         }
     }
 
-    public void placeRogue(DungeonMap map){
+    public void placeRogue(DungeonMap map, GameObjects gameObjects){
 
         for(int x = 0; x < map.mapWidth; x++){
             for(int y = 0; y < map.mapHeight; y++){
-                if(map.occupance[y][x] == ROGUE){
-                    rogueX = x;
-                    rogueY = y;
-                    Rogue = new Scene(sceneAssetRogue.scene);
-                    Rogue.modelInstance.transform.setTranslation(SCALE*x, 0, SCALE*y);
-                    Rogue.modelInstance.transform.rotate(Vector3.Y, map.tileOrientation[y][x].ordinal() * 90);
-                    sceneManager.addScene(Rogue);
+                if(map.initialOccupancy[y][x] == ROGUE){
+                    rogue = new GameObject(GameObjectTypes.rogue, x, y, Direction.SOUTH);
+                    Scene rogueScene = new Scene(sceneAssetRogue.scene);
+                    rogueScene.modelInstance.transform.setTranslation(SCALE*x, 0, SCALE*y);
+                    rogueScene.modelInstance.transform.rotate(Vector3.Y, Direction.SOUTH.ordinal() * 90);
+                    sceneManager.addScene(rogueScene);
+                    rogue.scene = rogueScene;
+                    gameObjects.add(rogue);
+                    gameObjects.setOccupant(rogue.x, rogue.y, rogue);
 
-                    adaptModel(Rogue, Equipped.NONE);
+                    adaptModel(rogueScene, Equipped.NONE);
                     return;
                 }
             }
@@ -138,21 +144,25 @@ public class DungeonScenes implements Disposable {
     }
 
     public void turnRogue(DungeonMap map, Direction dir, int x, int y ){
-        map.tileOrientation[y][x] = dir;
-        Rogue.modelInstance.transform.setToRotation(Vector3.Y, map.tileOrientation[y][x].ordinal() * 90);
-        Rogue.modelInstance.transform.setTranslation(SCALE*x, 0, SCALE*y);
+        rogue.direction = dir;
+        rogue.scene.modelInstance.transform.setToRotation(Vector3.Y, dir.ordinal() * 90);
+        rogue.scene.modelInstance.transform.setTranslation(SCALE*x, 0, SCALE*y);
     }
 
-    public void moveRogue(DungeonMap map, int x, int y){
-        map.occupance[rogueY][rogueX] = EMPTY;
-        map.occupance[y][x] = ROGUE;
-        rogueX = x;
-        rogueY = y;
-        Rogue.modelInstance.transform.setTranslation(SCALE*x, 0, SCALE*y);
+    public void moveRogue(DungeonMap map, GameObjects gameObjects, int x, int y){
+        gameObjects.clearOccupant(rogue.x, rogue.y);
+        rogue.x = x;
+        rogue.y = y;
+        gameObjects.setOccupant(rogue.x, rogue.y, rogue);
+        rogue.scene.modelInstance.transform.setTranslation(SCALE*x, 0, SCALE*y);
     }
 
-    public Scene getRogue(){
-        return Rogue;
+    public void remove(Scene scene){
+        sceneManager.removeScene(scene);
+    }
+
+    public GameObject getRogue(){
+        return rogue;
     }
 
 
