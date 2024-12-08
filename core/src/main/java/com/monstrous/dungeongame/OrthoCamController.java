@@ -27,7 +27,7 @@ public class OrthoCamController extends InputAdapter {
         this.trackedObject = trackedObject;
         position = new Vector3();
         prevPosition = new Vector3();
-//        trackedObject.transform.getTranslation(prevPosition);
+        //trackedObject.transform.getTranslation(prevPosition);
     }
 
     public void update( float deltaTime ) {
@@ -41,14 +41,14 @@ public class OrthoCamController extends InputAdapter {
             mustUpdate = true;
         }
 
-//        trackedObject.transform.getTranslation(position);
-//        position.y = 0;             // follow only on XZ plane, don't bounce the camera up and down to follow player Y position
-//        if( ! position.epsilonEquals(prevPosition )) {
-//            cam.position.add(position).sub(prevPosition);
-//            prevPosition.set(position);
-//            //Gdx.app.log("cam translate to",cam.position.toString());
-//            mustUpdate = true;
-//        }
+        trackedObject.transform.getTranslation(position);
+        position.y = 0;             // follow only on XZ plane, don't bounce the camera up and down to follow player Y position
+        if( ! position.epsilonEquals(prevPosition )) {
+            cam.position.add(position).sub(prevPosition);
+            prevPosition.set(position);
+            //Gdx.app.log("cam translate to",cam.position.toString());
+            mustUpdate = true;
+        }
 
         if(mustUpdate)
             cam.update();

@@ -1,6 +1,7 @@
 package com.monstrous.dungeongame;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.math.Vector3;
@@ -33,26 +34,26 @@ public class GameScreen extends ScreenAdapter {
     private DungeonScenes dungeonScenes;
     private DungeonMap map;
     private OrthoCamController camController;
+    private KeyController keyController;
 
 
     @Override
     public void show() {
 
-        sceneManager = new SceneManager();
+        sceneManager = new SceneManager(45);
 
         // setup camera
         camera = new OrthographicCamera();
         camera.near = -500f;
         camera.far = 500;
         camera.position.set(-10,10, -10);
-        camera.zoom = 0.04f;
+        camera.zoom = 0.03f;
         camera.up.set(Vector3.Y);
         camera.lookAt( new Vector3(5, 0, 5));
         camera.update();
         sceneManager.setCamera(camera);
 
-        camController = new OrthoCamController(camera, null);
-        Gdx.input.setInputProcessor(camController);
+
 
         // setup light
         light = new DirectionalLightEx();
@@ -79,6 +80,17 @@ public class GameScreen extends ScreenAdapter {
         dungeonScenes = new DungeonScenes();
         dungeonScenes.buildMap(sceneManager, map);
         dungeonScenes.populateMap(sceneManager, map);
+
+        dungeonScenes.placeRogue(sceneManager, map);
+
+
+        camController = new OrthoCamController(camera, dungeonScenes.getRogue().modelInstance);
+        keyController = new KeyController(map, dungeonScenes);
+
+        InputMultiplexer im = new InputMultiplexer();
+        im.addProcessor(camController);
+        im.addProcessor(keyController);
+        Gdx.input.setInputProcessor(im);
     }
 
 
@@ -87,6 +99,7 @@ public class GameScreen extends ScreenAdapter {
     public void render(float deltaTime) {
 
         camController.update(deltaTime);
+
 
 
 

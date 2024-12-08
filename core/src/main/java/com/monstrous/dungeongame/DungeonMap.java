@@ -35,7 +35,8 @@ public class DungeonMap implements Disposable {
     public static final short STAIRS_UP = 6;
     public static final short CORNER = 7;
 
-    public static final short GOLD = 10;
+    public static final short ROGUE = 10;
+    public static final short GOLD = 11;
 
     private final int mapSeed;
     public final int mapWidth, mapHeight;
@@ -88,6 +89,8 @@ public class DungeonMap implements Disposable {
         //addCorridorWalls();
 
         distributeGold();
+
+        placeRogue();
     }
 
     // derive seed for a specific level of a map
@@ -500,6 +503,23 @@ public class DungeonMap implements Disposable {
             count--;
             if(count == 0)
                 return;
+        }
+    }
+
+    private void placeRogue(){
+        while(true) {
+            int location = MathUtils.random(0, rooms.size-1);
+            Room room = rooms.get(location);
+            if(room.isStairWell)
+                continue;
+
+            if(occupance[room.centre.y][room.centre.x] != EMPTY)
+                continue;
+
+            occupance[room.centre.y][room.centre.x] = ROGUE;
+            orientation[room.centre.y][room.centre.x] = 2;
+
+            return;
         }
     }
 
