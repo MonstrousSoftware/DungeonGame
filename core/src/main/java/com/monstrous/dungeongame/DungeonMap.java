@@ -25,10 +25,6 @@ public class DungeonMap implements Disposable {
     public static final int MAX_SIZE = 10;          // max size of room
     public static final float LOOP_FACTOR = 0.125f; // probability factor [0..1] to add some extra non-MST edge to paths
 
-    public static final short EMPTY = 0;
-    public static final short ROGUE = 10;
-    public static final short GOLD = 11;
-
     private final int mapSeed;
     public final int mapWidth, mapHeight;
     public final Array<Room> rooms;
@@ -36,7 +32,6 @@ public class DungeonMap implements Disposable {
     public float[] vertices;                // array of x,y per room centre
     public ShortArray indices;              // index list from triangulation
     private TileType [][] grid;             // map grid for fixed architecture, walls, etc.
-    //public int[][] initialOccupancy;               // item in grid cell, 0 for none.
     public Direction [][] tileOrientation;      // orientation of tile
     public GameObjects gameObjects;
 
@@ -80,11 +75,10 @@ public class DungeonMap implements Disposable {
 
         //addCorridorWalls();
 
-        distributeGold();
+        gameObjects = new GameObjects(mapWidth, mapHeight);
 
         placeRogue();
-
-
+        distributeGold();
     }
 
     // derive seed for a specific level of a map
@@ -489,10 +483,8 @@ public class DungeonMap implements Disposable {
     }
 
     private void distributeGold(){
-        //initialOccupancy = new int[mapHeight][mapWidth];
-        gameObjects = new GameObjects(mapWidth, mapHeight);
 
-        int count = MathUtils.random(1, 15);        // nr of gold drops
+        int count = MathUtils.random(10, 25);        // nr of gold drops
         while(true){
             int location = MathUtils.random(0, rooms.size-1);
             Room room = rooms.get(location);
@@ -503,12 +495,13 @@ public class DungeonMap implements Disposable {
             GameObject occupant = gameObjects.getOccupant(room.x+rx, room.y+ry);
             if(occupant != null)
                 continue;
-//            if(initialOccupancy[room.y+ry][room.x+rx] != EMPTY)
-//                continue;
+
             occupant = new GameObject(GameObjectTypes.gold, room.x+rx, room.y+ry, Direction.SOUTH);
             gameObjects.setOccupant(room.x+rx, room.y+ry, occupant);
-            // seems redundan to provide x,y twice
-            //initialOccupancy[room.y+ry][room.x+rx] = GOLD;
+            gameObjects.add(occupant);
+            occupant.goldQuantity = MathUtils.random(1,20);
+            // seems redundant to provide x,y twice
+
 
             count--;
             if(count == 0)
@@ -525,14 +518,11 @@ public class DungeonMap implements Disposable {
             GameObject occupant = gameObjects.getOccupant(room.centre.x, room.centre.y);
             if(occupant != null)
                 continue;
-//            if(initialOccupancy[room.centre.y][room.centre.x] != EMPTY)
-//                continue;
+
             occupant = new GameObject(GameObjectTypes.rogue, room.centre.x, room.centre.y, Direction.SOUTH);
             gameObjects.setOccupant(room.centre.x, room.centre.y, occupant);
+            gameObjects.add(occupant);
             occupant.direction = Direction.SOUTH;
-
-//            initialOccupancy[room.centre.y][room.centre.x] = ROGUE;
-//            tileOrientation[room.centre.y][room.centre.x] = Direction.SOUTH;
 
             return;
         }

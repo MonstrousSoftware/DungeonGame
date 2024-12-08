@@ -21,6 +21,7 @@ public class MapScreen implements Screen {
     public final static int MAP_HEIGHT = 60;
     public final static int MARGIN = 5;
 
+    private World world;
     private int seed = 1234;
     private int level = 0;
     private DungeonMap map;
@@ -31,6 +32,10 @@ public class MapScreen implements Screen {
     private SpriteBatch batch;
     private BitmapFont font;
     private StringBuilder sb;
+
+    public MapScreen(World world) {
+        this.world = world;
+    }
 
     @Override
     public void show() {
@@ -138,7 +143,8 @@ public class MapScreen implements Screen {
         shapeRenderer.setColor(Color.GOLD);
         for(int x = 0; x < MAP_WIDTH; x++){
             for(int y = 0; y < MAP_HEIGHT; y++) {
-                if(map.initialOccupancy[y][x] == GOLD) {
+                GameObject occupant = map.gameObjects.getOccupant(x,y);
+                if(occupant != null && occupant.type == GameObjectTypes.gold){
                     shapeRenderer.circle(x + m+.5f, y + m+.5f, 0.5f);
                 }
 

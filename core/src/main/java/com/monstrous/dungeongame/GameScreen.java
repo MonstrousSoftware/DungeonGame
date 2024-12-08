@@ -30,7 +30,7 @@ public class GameScreen extends ScreenAdapter {
     private DungeonScenes dungeonScenes;
     private DungeonMap map;
     private GameObjectTypes gameObjectTypes;
-    private GameObjects gameObjects;
+    //private GameObjects gameObjects;
     private OrthoCamController camController;
     private KeyController keyController;
 
@@ -74,19 +74,20 @@ public class GameScreen extends ScreenAdapter {
         sceneManager.environment.set(PBRCubemapAttribute.createSpecularEnv(specularCubemap));
         sceneManager.environment.set(PBRCubemapAttribute.createDiffuseEnv(diffuseCubemap));
 
-        map = new DungeonMap(1234, 0, MAP_WIDTH, MAP_HEIGHT);
         gameObjectTypes = new GameObjectTypes();
-        gameObjects = new GameObjects(MAP_WIDTH, MAP_HEIGHT);
+        map = new DungeonMap(1234, 0, MAP_WIDTH, MAP_HEIGHT);
+
+        //gameObjects = new GameObjects(MAP_WIDTH, MAP_HEIGHT);
 
         dungeonScenes = new DungeonScenes(sceneManager);
         dungeonScenes.buildMap( map);
-        dungeonScenes.populateMap( map, gameObjects );
+        dungeonScenes.populateMap( map );
 
-        dungeonScenes.placeRogue( map, gameObjects );
+        dungeonScenes.placeRogue( map );
 
 
         camController = new OrthoCamController(camera, dungeonScenes.getRogue().scene.modelInstance);
-        keyController = new KeyController(map, dungeonScenes, gameObjects);
+        keyController = new KeyController(map, dungeonScenes );
 
         gui = new GUI( dungeonScenes.getRogue() );
 

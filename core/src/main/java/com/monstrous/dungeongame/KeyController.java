@@ -7,12 +7,12 @@ public class KeyController extends InputAdapter {
 
     private DungeonMap map;
     private DungeonScenes scenes;
-    private GameObjects gameObjects;
+    //private GameObjects gameObjects;
 
-    public KeyController(DungeonMap map, DungeonScenes scenes, GameObjects gameObjects) {
+    public KeyController(DungeonMap map, DungeonScenes scenes) {
         this.map = map;
         this.scenes = scenes;
-        this.gameObjects = gameObjects;
+        //this.gameObjects = gameObjects;
     }
 
     @Override
@@ -39,21 +39,21 @@ public class KeyController extends InputAdapter {
         y += dy;
         TileType cell = map.getGrid(x, y);
         if(walkable(cell)) {
-            GameObject occupant = gameObjects.getOccupant(x, y);
+            GameObject occupant = map.gameObjects.getOccupant(x, y);
             if(occupant != null){
                 Gdx.app.log("occupant", occupant.type.name);
                 if(occupant.type.pickup){
                     Gdx.app.log("Pickup", occupant.type.name);
                                                             // assumes gold
                     MessageBox.addLine("You picked up "+occupant.goldQuantity+" "+occupant.type.name);
-                    gameObjects.clearOccupant(x, y);
+                    map.gameObjects.clearOccupant(x, y);
                     scenes.remove(occupant.scene);
                     if(occupant.type == GameObjectTypes.gold){
                         scenes.getRogue().goldQuantity += occupant.goldQuantity;
                     }
                 }
             }
-            scenes.moveRogue(map, gameObjects, x, y);
+            scenes.moveRogue( x, y);
         }
     }
 
@@ -67,7 +67,7 @@ public class KeyController extends InputAdapter {
         MessageBox.addLine("You dropped 1 gold.");
 
         rogue.goldQuantity--;
-        GameObject gold = scenes.placeObject(gameObjects, GameObjectTypes.gold, rogue.x, rogue.y);
+        GameObject gold = scenes.placeObject(map.gameObjects, GameObjectTypes.gold, rogue.x, rogue.y);
         gold.goldQuantity = 1;
     }
 

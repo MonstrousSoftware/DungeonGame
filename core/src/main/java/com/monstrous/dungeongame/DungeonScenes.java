@@ -77,13 +77,15 @@ public class DungeonScenes implements Disposable {
 
     }
 
-    public void populateMap(DungeonMap map, GameObjects gameObjects){
+    public void populateMap(DungeonMap map){
 
         for(int x = 0; x < map.mapWidth; x++){
             for(int y = 0; y < map.mapHeight; y++){
-                if(map.initialOccupancy[y][x] == GOLD){
-                    GameObject gold = placeObject(gameObjects,GameObjectTypes.gold, x, y );
-                    gold.goldQuantity = MathUtils.random(1,20);
+                GameObject occupant = map.gameObjects.getOccupant(x,y);
+                if(occupant != null && occupant.type == GameObjectTypes.gold){
+                    addScene(occupant);
+//                    GameObject gold = placeObject(gameObjects,GameObjectTypes.gold, x, y );
+//                    gold.goldQuantity = MathUtils.random(1,20);
                 }
             }
         }
@@ -91,11 +93,13 @@ public class DungeonScenes implements Disposable {
 
     public GameObject placeObject(GameObjects gameObjects, GameObjectType type, int x, int y){
         GameObject go = new GameObject(type, x, y, Direction.SOUTH);
-        Scene item = new Scene(type.sceneAsset.scene);
-        item.modelInstance.transform.setTranslation(SCALE*x, 0, SCALE*y);
-        item.modelInstance.transform.rotate(Vector3.Y, Direction.SOUTH.ordinal() * 90);
-        sceneManager.addScene(item);
-        go.scene = item;
+//        Scene item = new Scene(type.sceneAsset.scene);
+//        item.modelInstance.transform.setTranslation(SCALE*x, 0, SCALE*y);
+//        item.modelInstance.transform.rotate(Vector3.Y, Direction.SOUTH.ordinal() * 90);
+//        sceneManager.addScene(item);
+//        go.scene = item;
+
+        addScene(go);
         gameObjects.add(go);
         if(!type.isPlayer)
             gameObjects.setOccupant(x, y, go);
@@ -103,12 +107,26 @@ public class DungeonScenes implements Disposable {
         return go;
     }
 
-    public void placeRogue(DungeonMap map, GameObjects gameObjects){
+    public void addScene(GameObject gameObject){
+
+        Scene item = new Scene(gameObject.type.sceneAsset.scene);
+        item.modelInstance.transform.setTranslation(SCALE*gameObject.x, 0, SCALE*gameObject.y);
+        item.modelInstance.transform.rotate(Vector3.Y, Direction.SOUTH.ordinal() * 90);
+        sceneManager.addScene(item);
+        gameObject.scene = item;
+    }
+
+    public void placeRogue(DungeonMap map){
 
         for(int x = 0; x < map.mapWidth; x++){
             for(int y = 0; y < map.mapHeight; y++){
-                if(map.initialOccupancy[y][x] == ROGUE){
-                    rogue = placeObject(gameObjects, GameObjectTypes.rogue, x, y);
+                GameObject occupant = map.gameObjects.getOccupant(x,y);
+                if(occupant != null && occupant.type == GameObjectTypes.rogue){
+                    rogue = occupant;
+                    addScene(rogue);
+//                }
+//                if(map.initialOccupancy[y][x] == ROGUE){
+//                    rogue = placeObject(gameObjects, GameObjectTypes.rogue, x, y);
                     adaptModel(rogue.scene, Equipped.NONE);
                     return;
                 }
@@ -149,7 +167,7 @@ public class DungeonScenes implements Disposable {
         rogue.scene.modelInstance.transform.setTranslation(SCALE*x, 0, SCALE*y);
     }
 
-    public void moveRogue(DungeonMap map, GameObjects gameObjects, int x, int y){
+    public void moveRogue( int x, int y){
         //gameObjects.clearOccupant(rogue.x, rogue.y);
         rogue.x = x;
         rogue.y = y;

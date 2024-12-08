@@ -14,7 +14,10 @@ public class GameObjectTypes implements Disposable {
 
     public static Array<GameObjectType> types;
 
+
     public GameObjectTypes() {
+        if(rogue != null)
+            return;
         types = new Array<>();
 
         rogue = new GameObjectType("Rogue", true, false);
