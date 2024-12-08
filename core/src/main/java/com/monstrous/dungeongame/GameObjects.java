@@ -2,6 +2,10 @@ package com.monstrous.dungeongame;
 
 import com.badlogic.gdx.utils.Array;
 
+// occupant of a grid cell is an item that is present there, e.g. gold or
+// an enemy character. There can only be zero or one occupant per grid cell.
+// Architecture and the player are never occupants.
+
 public class GameObjects {
     public Array<GameObject> gameObjects;
 

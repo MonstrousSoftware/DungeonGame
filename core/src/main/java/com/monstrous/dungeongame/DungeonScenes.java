@@ -6,9 +6,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.model.NodePart;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
-import net.mgsx.gltf.loaders.glb.GLBLoader;
 import net.mgsx.gltf.loaders.gltf.GLTFLoader;
 import net.mgsx.gltf.scene3d.scene.Scene;
 import net.mgsx.gltf.scene3d.scene.SceneAsset;
@@ -28,8 +28,8 @@ public class DungeonScenes implements Disposable {
     private SceneAsset sceneAssetWall;
     private SceneAsset sceneAssetDoorWay;
     private SceneAsset sceneAssetCorner;
-    private SceneAsset sceneAssetGold;
-    private SceneAsset sceneAssetRogue;
+//    private SceneAsset sceneAssetGold;
+//    private SceneAsset sceneAssetRogue;
 
     public DungeonScenes(SceneManager sceneManager) {
         this.sceneManager = sceneManager;
@@ -38,9 +38,9 @@ public class DungeonScenes implements Disposable {
         sceneAssetWall = new GLTFLoader().load(Gdx.files.internal("models/wall.gltf"));
         sceneAssetDoorWay = new GLTFLoader().load(Gdx.files.internal("models/wall_open_scaffold.gltf"));
         sceneAssetCorner = new GLTFLoader().load(Gdx.files.internal("models/wall_corner.gltf"));
-        sceneAssetGold = new GLTFLoader().load(Gdx.files.internal("models/coin_stack_small.gltf"));
+//        sceneAssetGold = new GLTFLoader().load(Gdx.files.internal("models/coin_stack_small.gltf"));
 
-        sceneAssetRogue = new GLBLoader().load(Gdx.files.internal("characters/Rogue.glb"));
+//        sceneAssetRogue = new GLBLoader().load(Gdx.files.internal("characters/Rogue.glb"));
     }
 
     public void buildMap(DungeonMap map){
@@ -81,18 +81,26 @@ public class DungeonScenes implements Disposable {
 
         for(int x = 0; x < map.mapWidth; x++){
             for(int y = 0; y < map.mapHeight; y++){
-                Scene item;
                 if(map.initialOccupancy[y][x] == GOLD){
-                    GameObject gold = new GameObject(GameObjectTypes.gold, x, y, Direction.NORTH);
-                    item = new Scene(sceneAssetGold.scene);
-                    item.modelInstance.transform.setTranslation(SCALE*x, 0, SCALE*y);
-                    sceneManager.addScene(item);
-                    gold.scene = item;
-                    gameObjects.add(gold);
-                    gameObjects.setOccupant(x, y, gold);
+                    GameObject gold = placeObject(gameObjects,GameObjectTypes.gold, x, y );
+                    gold.goldQuantity = MathUtils.random(1,20);
                 }
             }
         }
+    }
+
+    public GameObject placeObject(GameObjects gameObjects, GameObjectType type, int x, int y){
+        GameObject go = new GameObject(type, x, y, Direction.SOUTH);
+        Scene item = new Scene(type.sceneAsset.scene);
+        item.modelInstance.transform.setTranslation(SCALE*x, 0, SCALE*y);
+        item.modelInstance.transform.rotate(Vector3.Y, Direction.SOUTH.ordinal() * 90);
+        sceneManager.addScene(item);
+        go.scene = item;
+        gameObjects.add(go);
+        if(!type.isPlayer)
+            gameObjects.setOccupant(x, y, go);
+        // how to handle enemies walking over gold etc.
+        return go;
     }
 
     public void placeRogue(DungeonMap map, GameObjects gameObjects){
@@ -100,16 +108,8 @@ public class DungeonScenes implements Disposable {
         for(int x = 0; x < map.mapWidth; x++){
             for(int y = 0; y < map.mapHeight; y++){
                 if(map.initialOccupancy[y][x] == ROGUE){
-                    rogue = new GameObject(GameObjectTypes.rogue, x, y, Direction.SOUTH);
-                    Scene rogueScene = new Scene(sceneAssetRogue.scene);
-                    rogueScene.modelInstance.transform.setTranslation(SCALE*x, 0, SCALE*y);
-                    rogueScene.modelInstance.transform.rotate(Vector3.Y, Direction.SOUTH.ordinal() * 90);
-                    sceneManager.addScene(rogueScene);
-                    rogue.scene = rogueScene;
-                    gameObjects.add(rogue);
-                    gameObjects.setOccupant(rogue.x, rogue.y, rogue);
-
-                    adaptModel(rogueScene, Equipped.NONE);
+                    rogue = placeObject(gameObjects, GameObjectTypes.rogue, x, y);
+                    adaptModel(rogue.scene, Equipped.NONE);
                     return;
                 }
             }
@@ -150,10 +150,10 @@ public class DungeonScenes implements Disposable {
     }
 
     public void moveRogue(DungeonMap map, GameObjects gameObjects, int x, int y){
-        gameObjects.clearOccupant(rogue.x, rogue.y);
+        //gameObjects.clearOccupant(rogue.x, rogue.y);
         rogue.x = x;
         rogue.y = y;
-        gameObjects.setOccupant(rogue.x, rogue.y, rogue);
+        //gameObjects.setOccupant(rogue.x, rogue.y, rogue);
         rogue.scene.modelInstance.transform.setTranslation(SCALE*x, 0, SCALE*y);
     }
 
@@ -172,7 +172,7 @@ public class DungeonScenes implements Disposable {
         sceneAssetWall.dispose();
         sceneAssetDoorWay.dispose();
         sceneAssetCorner.dispose();
-        sceneAssetGold.dispose();
-        sceneAssetRogue.dispose();
+//        sceneAssetGold.dispose();
+//        sceneAssetRogue.dispose();
     }
 }

@@ -38,6 +38,7 @@ public class DungeonMap implements Disposable {
     private TileType [][] grid;             // map grid for fixed architecture, walls, etc.
     public int[][] initialOccupancy;               // item in grid cell, 0 for none.
     public Direction [][] tileOrientation;      // orientation of tile
+  //  public GameObjects gameObjects;
 
 
     // levelNr : 0 for top level, increasing as we go down

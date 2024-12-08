@@ -26,7 +26,7 @@ public class KeyController extends InputAdapter {
             case '1':   equip( Equipped.KNIFE ); return true;
             case '2':   equip( Equipped.THROWABLE ); return true;
             case '3':   equip( Equipped.CROSSBOW ); return true;
-
+            case 'p':   dropGold(); return true;
             default:    return false;
         }
     }
@@ -41,18 +41,34 @@ public class KeyController extends InputAdapter {
         if(walkable(cell)) {
             GameObject occupant = gameObjects.getOccupant(x, y);
             if(occupant != null){
+                Gdx.app.log("occupant", occupant.type.name);
                 if(occupant.type.pickup){
                     Gdx.app.log("Pickup", occupant.type.name);
-                    MessageBox.addLine("You picked up "+occupant.type.name);
+                                                            // assumes gold
+                    MessageBox.addLine("You picked up "+occupant.goldQuantity+" "+occupant.type.name);
                     gameObjects.clearOccupant(x, y);
                     scenes.remove(occupant.scene);
                     if(occupant.type == GameObjectTypes.gold){
-                        scenes.getRogue().gold++;
+                        scenes.getRogue().goldQuantity += occupant.goldQuantity;
                     }
                 }
             }
             scenes.moveRogue(map, gameObjects, x, y);
         }
+    }
+
+    // testing
+    private void dropGold(){
+        GameObject rogue = scenes.getRogue();
+        if(rogue.goldQuantity == 0) {
+            MessageBox.addLine("You have no gold to drop.");
+            return;
+        }
+        MessageBox.addLine("You dropped 1 gold.");
+
+        rogue.goldQuantity--;
+        GameObject gold = scenes.placeObject(gameObjects, GameObjectTypes.gold, rogue.x, rogue.y);
+        gold.goldQuantity = 1;
     }
 
     private boolean walkable(TileType cell){

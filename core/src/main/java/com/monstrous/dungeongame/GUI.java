@@ -47,7 +47,7 @@ public class GUI implements Disposable {
     private void update(){
         sb.setLength(0);
         sb.append("GOLD: ");
-        sb.append(rogue.gold);
+        sb.append(rogue.goldQuantity);
         gold.setText(sb.toString());
         if(MessageBox.lines.size > 0)
             message.setText(MessageBox.lines.get(MessageBox.lines.size-1));
