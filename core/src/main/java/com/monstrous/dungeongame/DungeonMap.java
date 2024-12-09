@@ -126,30 +126,32 @@ public class DungeonMap implements Disposable {
 
     // a stair well is a special type of room of fixed size with stair tiles inside.
     private Room generateStairWell(int id, TileType stairType){
-        int direction = MathUtils.random(0, 3); // random direction NESW
+        int d = MathUtils.random(0, 3); // random direction NESW
+        Direction direction = Direction.values()[d];
         // place horizontal or vertical
-        int w = (direction == 1 || direction == 3) ? 3 : 1;
-        int h = (direction == 1 || direction == 3) ? 1 : 3;
+        int w = (direction == Direction.EAST || direction == Direction.WEST) ? 3 : 1;
+        int h = (direction == Direction.EAST || direction == Direction.WEST) ? 1 : 3;
         Room stairWell = placeRoom(id, w, h);
         if(stairType == TileType.STAIRS_UP) {
-            direction = (direction + 2) % 4;    // reverse direction
+            d = (d + 2) % 4;    // reverse direction
+            direction = Direction.values()[d];
             // offset stairwell one cell compared to the floor above
             switch(direction){
-                case 0: stairWell.y++; break;
-                case 1: stairWell.x--; break;
-                case 2: stairWell.y--; break;
-                case 3: stairWell.x++; break;
+                case NORTH: stairWell.y++; break;
+                case EAST: stairWell.x--; break;
+                case SOUTH: stairWell.y--; break;
+                case WEST: stairWell.x++; break;
             }
         }
         switch(direction) {
-            case 2:     // pointing south
-            case 1:     // pointing east
+            case SOUTH:     // pointing south
+            case EAST:     // pointing east
                 stairWell.centre.set(stairWell.x, stairWell.y); // centre connection node on the landing
                 break;
-            case 0:     // pointing north
+            case NORTH:     // pointing north
                 stairWell.centre.set(stairWell.x, stairWell.y+2); // centre connection node on the landing
                 break;
-            case 3:     // pointing west
+            case WEST:     // pointing west
                 stairWell.centre.set(stairWell.x+2, stairWell.y); // centre connection node on the landing
                 break;
         }
@@ -328,10 +330,16 @@ public class DungeonMap implements Disposable {
             grid[ry+y][rx] = TileType.WALL; tileOrientation[ry+y][rx] = Direction.EAST;
             grid[ry+y][rx+rw] = TileType.WALL; tileOrientation[ry+y][rx+rw] = Direction.EAST;
         }
-        grid[ry][rx] = TileType.WALL_CORNER; tileOrientation[ry][rx] = Direction.EAST;
-        grid[ry+rh][rx] = TileType.WALL_CORNER; tileOrientation[ry+rh][rx] = Direction.SOUTH;
-        grid[ry][rx+rw] = TileType.WALL_CORNER; tileOrientation[ry][rx+rw] = Direction.NORTH;
-        grid[ry+rh][rx+rw] = TileType.WALL_CORNER; tileOrientation[ry+rh][rx+rw] = Direction.WEST;
+        // rotate the wall corner model as needed
+        //
+        //    E---S
+        //    |   |
+        //    N---W
+        //
+        grid[ry][rx] = TileType.WALL_CORNER; tileOrientation[ry][rx] = Direction.NORTH;
+        grid[ry+rh][rx] = TileType.WALL_CORNER; tileOrientation[ry+rh][rx] = Direction.EAST;
+        grid[ry][rx+rw] = TileType.WALL_CORNER; tileOrientation[ry][rx+rw] = Direction.WEST;
+        grid[ry+rh][rx+rw] = TileType.WALL_CORNER; tileOrientation[ry+rh][rx+rw] = Direction.SOUTH;
     }
 
     private void addDoor(int x, int y, Direction direction){

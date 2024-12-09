@@ -18,10 +18,13 @@ public class KeyController extends InputAdapter {
     @Override
     public boolean keyTyped(char character) {
         switch(character){
+            // left/right keys translate to -x/+x
+            // up/down to +y/-y
+            //
             case 'w':   tryMoveRogue(0, 1, Direction.NORTH); return true;
-            case 'a':   tryMoveRogue(1, 0, Direction.EAST); return true;
+            case 'a':   tryMoveRogue(-1, 0, Direction.WEST); return true;
             case 's':   tryMoveRogue(0, -1, Direction.SOUTH); return true;
-            case 'd':   tryMoveRogue(-1,0, Direction.WEST); return true;
+            case 'd':   tryMoveRogue(1,0, Direction.EAST); return true;
             case '0':   equip( Equipped.NONE ); return true;
             case '1':   equip( Equipped.KNIFE ); return true;
             case '2':   equip( Equipped.THROWABLE ); return true;

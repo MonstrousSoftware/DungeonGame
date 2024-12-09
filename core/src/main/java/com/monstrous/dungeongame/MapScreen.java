@@ -17,8 +17,8 @@ import static com.monstrous.dungeongame.DungeonMap.*;
 
 
 public class MapScreen implements Screen {
-    public final static int MAP_WIDTH = 80;
-    public final static int MAP_HEIGHT = 60;
+    public final static int MAP_WIDTH = 50;
+    public final static int MAP_HEIGHT = 50;
     public final static int MARGIN = 5;
 
     private World world;
@@ -33,9 +33,9 @@ public class MapScreen implements Screen {
     private BitmapFont font;
     private StringBuilder sb;
 
-    public MapScreen(World world) {
-        this.world = world;
-    }
+//    public MapScreen(World world) {
+//        this.world = world;
+//    }
 
     @Override
     public void show() {

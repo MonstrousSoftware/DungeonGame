@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.model.NodePart;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
 import net.mgsx.gltf.loaders.gltf.GLTFLoader;
@@ -20,7 +21,6 @@ public class DungeonScenes implements Disposable {
     private final static float SCALE = 4f;
 
     public GameObject rogue;
-    //private Scene rogueScene;
 
     private SceneManager sceneManager;
 
@@ -28,8 +28,7 @@ public class DungeonScenes implements Disposable {
     private SceneAsset sceneAssetWall;
     private SceneAsset sceneAssetDoorWay;
     private SceneAsset sceneAssetCorner;
-//    private SceneAsset sceneAssetGold;
-//    private SceneAsset sceneAssetRogue;
+
 
     public DungeonScenes(SceneManager sceneManager) {
         this.sceneManager = sceneManager;
@@ -38,9 +37,6 @@ public class DungeonScenes implements Disposable {
         sceneAssetWall = new GLTFLoader().load(Gdx.files.internal("models/wall.gltf"));
         sceneAssetDoorWay = new GLTFLoader().load(Gdx.files.internal("models/wall_open_scaffold.gltf"));
         sceneAssetCorner = new GLTFLoader().load(Gdx.files.internal("models/wall_corner.gltf"));
-//        sceneAssetGold = new GLTFLoader().load(Gdx.files.internal("models/coin_stack_small.gltf"));
-
-//        sceneAssetRogue = new GLBLoader().load(Gdx.files.internal("characters/Rogue.glb"));
     }
 
     public void buildMap(DungeonMap map){
@@ -51,7 +47,7 @@ public class DungeonScenes implements Disposable {
                 TileType cell = map.getGrid(x,y);
                 if(cell != TileType.VOID){
                     tile = new Scene(sceneAssetFloor.scene);
-                    tile.modelInstance.transform.setTranslation(SCALE*x, 0, SCALE*y);
+                    setTransform(tile.modelInstance.transform, x, y, Direction.NORTH);
                     sceneManager.addScene(tile);
                 }
                 tile = null;
@@ -67,9 +63,7 @@ public class DungeonScenes implements Disposable {
                 }
 
                 if(tile != null) {
-                    tile.modelInstance.transform.setTranslation(SCALE * x, 0, SCALE * y);
-                    if(map.tileOrientation[y][x] != Direction.NORTH)
-                        tile.modelInstance.transform.rotate(Vector3.Y, map.tileOrientation[y][x].ordinal() * 90);
+                    setTransform(tile.modelInstance.transform, x, y, map.tileOrientation[y][x]);
                     sceneManager.addScene(tile);
                 }
             }
@@ -84,8 +78,6 @@ public class DungeonScenes implements Disposable {
                 GameObject occupant = map.gameObjects.getOccupant(x,y);
                 if(occupant != null && occupant.type == GameObjectTypes.gold){
                     addScene(occupant);
-//                    GameObject gold = placeObject(gameObjects,GameObjectTypes.gold, x, y );
-//                    gold.goldQuantity = MathUtils.random(1,20);
                 }
             }
         }
@@ -93,11 +85,6 @@ public class DungeonScenes implements Disposable {
 
     public GameObject placeObject(GameObjects gameObjects, GameObjectType type, int x, int y){
         GameObject go = new GameObject(type, x, y, Direction.SOUTH);
-//        Scene item = new Scene(type.sceneAsset.scene);
-//        item.modelInstance.transform.setTranslation(SCALE*x, 0, SCALE*y);
-//        item.modelInstance.transform.rotate(Vector3.Y, Direction.SOUTH.ordinal() * 90);
-//        sceneManager.addScene(item);
-//        go.scene = item;
 
         addScene(go);
         gameObjects.add(go);
@@ -110,8 +97,7 @@ public class DungeonScenes implements Disposable {
     public void addScene(GameObject gameObject){
 
         Scene item = new Scene(gameObject.type.sceneAsset.scene);
-        item.modelInstance.transform.setTranslation(SCALE*gameObject.x, 0, SCALE*gameObject.y);
-        item.modelInstance.transform.rotate(Vector3.Y, Direction.SOUTH.ordinal() * 90);
+        setTransform(item.modelInstance.transform, gameObject.x, gameObject.y, Direction.SOUTH);
         sceneManager.addScene(item);
         gameObject.scene = item;
     }
@@ -124,14 +110,24 @@ public class DungeonScenes implements Disposable {
                 if(occupant != null && occupant.type == GameObjectTypes.rogue){
                     rogue = occupant;
                     addScene(rogue);
-//                }
-//                if(map.initialOccupancy[y][x] == ROGUE){
-//                    rogue = placeObject(gameObjects, GameObjectTypes.rogue, x, y);
                     adaptModel(rogue.scene, Equipped.NONE);
                     return;
                 }
             }
         }
+    }
+
+    // The next two methods should be the only place where we convert logical x,y to a transform
+    //
+    private void setTransform(Matrix4 transform, int x, int y, Direction dir){
+        transform.setToRotation(Vector3.Y, 180-dir.ordinal() * 90);
+        transform.setTranslation(SCALE*x, 0, -SCALE*y);
+
+    }
+
+    // leave orientation as it is
+    private void setTransform(Matrix4 transform, int x, int y){
+        transform.setTranslation(SCALE*x, 0, -SCALE*y);
     }
 
     public void adaptModel(Scene rogue, int equipped){
@@ -163,16 +159,14 @@ public class DungeonScenes implements Disposable {
 
     public void turnRogue(DungeonMap map, Direction dir, int x, int y ){
         rogue.direction = dir;
-        rogue.scene.modelInstance.transform.setToRotation(Vector3.Y, dir.ordinal() * 90);
-        rogue.scene.modelInstance.transform.setTranslation(SCALE*x, 0, SCALE*y);
+        setTransform(rogue.scene.modelInstance.transform, x, y, dir);
     }
 
     public void moveRogue( int x, int y){
-        //gameObjects.clearOccupant(rogue.x, rogue.y);
         rogue.x = x;
         rogue.y = y;
-        //gameObjects.setOccupant(rogue.x, rogue.y, rogue);
-        rogue.scene.modelInstance.transform.setTranslation(SCALE*x, 0, SCALE*y);
+        setTransform(rogue.scene.modelInstance.transform, x, y);
+
     }
 
     public void remove(Scene scene){
@@ -190,7 +184,5 @@ public class DungeonScenes implements Disposable {
         sceneAssetWall.dispose();
         sceneAssetDoorWay.dispose();
         sceneAssetCorner.dispose();
-//        sceneAssetGold.dispose();
-//        sceneAssetRogue.dispose();
     }
 }

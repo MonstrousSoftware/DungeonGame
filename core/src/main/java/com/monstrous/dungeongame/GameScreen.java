@@ -44,10 +44,10 @@ public class GameScreen extends ScreenAdapter {
         camera = new OrthographicCamera();
         camera.near = -500f;
         camera.far = 500;
-        camera.position.set(-10,10, -10);
+        camera.position.set(5,5, 5);
         camera.zoom = 0.03f;
         camera.up.set(Vector3.Y);
-        camera.lookAt( new Vector3(5, 0, 5));
+        camera.lookAt( new Vector3(0, 0, 0));
         camera.update();
         sceneManager.setCamera(camera);
 
