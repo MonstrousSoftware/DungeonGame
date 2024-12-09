@@ -1,6 +1,7 @@
 package com.monstrous.dungeongame;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -33,11 +34,13 @@ public class GUI implements Disposable {
         Table screenTable = new Table();
         screenTable.setFillParent(true);
 
-        //screenTable.add(new Label("GOLD:", skin)).pad(10).top().left();
+
         gold = new Label("GOLD: 0", skin);
+        //gold.setColor(Color.GOLD);
         screenTable.add(gold).pad(10).left().top().expandX();
         screenTable.row();
         message = new Label("..", skin);
+        // message.setColor(Color.BLUE);
         screenTable.add(message).pad(10).top().left().expand();
         screenTable.pack();
         stage.addActor(screenTable);

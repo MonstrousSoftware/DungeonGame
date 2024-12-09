@@ -26,6 +26,10 @@ public class DungeonScenes implements Disposable {
 
     private SceneAsset sceneAssetFloor;
     private SceneAsset sceneAssetWall;
+    private SceneAsset sceneAssetWall2;
+    private SceneAsset sceneAssetWall3;
+    private SceneAsset sceneAssetWall4;
+    private SceneAsset sceneAssetWall5;
     private SceneAsset sceneAssetDoorWay;
     private SceneAsset sceneAssetCorner;
     private SceneAsset sceneAssetWallTsplit;
@@ -37,6 +41,10 @@ public class DungeonScenes implements Disposable {
 
         sceneAssetFloor = new GLTFLoader().load(Gdx.files.internal("models/floor_tile_large.gltf"));
         sceneAssetWall = new GLTFLoader().load(Gdx.files.internal("models/wall.gltf"));
+        sceneAssetWall2 = new GLTFLoader().load(Gdx.files.internal("models/wall_arched.gltf"));
+        sceneAssetWall3 = new GLTFLoader().load(Gdx.files.internal("models/wall_archedwindow_gated.gltf"));
+        sceneAssetWall4 = new GLTFLoader().load(Gdx.files.internal("models/wall_archedwindow_gated_scaffold.gltf"));
+        sceneAssetWall5 = new GLTFLoader().load(Gdx.files.internal("models/wall_gated.gltf"));
         sceneAssetDoorWay = new GLTFLoader().load(Gdx.files.internal("models/wall_open_scaffold.gltf"));
         sceneAssetCorner = new GLTFLoader().load(Gdx.files.internal("models/wall_corner.gltf"));
         sceneAssetWallTsplit = new GLTFLoader().load(Gdx.files.internal("models/wall_Tsplit.gltf"));
@@ -48,39 +56,6 @@ public class DungeonScenes implements Disposable {
             if(room.uncovered)
                 buildRoom(map, room);
 
-//        for(int x = 0; x < map.mapWidth; x++){
-//            for(int y = 0; y < map.mapHeight; y++){
-//                Scene tile;
-//                TileType cell = map.getGrid(x,y);
-//                if(cell != TileType.VOID){
-//                    tile = new Scene(sceneAssetFloor.scene);
-//                    setTransform(tile.modelInstance.transform, x, y, Direction.NORTH);
-//                    sceneManager.addScene(tile);
-//                }
-//                tile = null;
-//                if(cell == TileType.WALL){
-//                    tile = new Scene(sceneAssetWall.scene);
-//
-//                }
-//                else if(cell == TileType.DOORWAY){
-//                    tile = new Scene(sceneAssetDoorWay.scene);
-//                }
-//                else if(cell == TileType.WALL_CORNER){
-//                    tile = new Scene(sceneAssetCorner.scene);
-//                }
-//                else if(cell == TileType.WALL_T_SPLIT){
-//                    tile = new Scene(sceneAssetWallTsplit.scene);
-//                }
-//                else if(cell == TileType.WALL_CROSSING){
-//                    tile = new Scene(sceneAssetWallCrossing.scene);
-//                }
-//
-//                if(tile != null) {
-//                    setTransform(tile.modelInstance.transform, x, y, map.tileOrientation[y][x]);
-//                    sceneManager.addScene(tile);
-//                }
-//            }
-//        }
     }
 
     public void buildRoom(DungeonMap map, Room room){
@@ -97,7 +72,16 @@ public class DungeonScenes implements Disposable {
                 }
                 tile = null;
                 if(cell == TileType.WALL){
-                    tile = new Scene(sceneAssetWall.scene);
+                    if(MathUtils.random(1.0f) < 0.1f)
+                        tile = new Scene(sceneAssetWall2.scene);
+                    else if(MathUtils.random(1.0f) < 0.1f)
+                        tile = new Scene(sceneAssetWall3.scene);
+                    else if(MathUtils.random(1.0f) < 0.1f)
+                        tile = new Scene(sceneAssetWall4.scene);
+                    else if(MathUtils.random(1.0f) < 0.1f)
+                        tile = new Scene(sceneAssetWall5.scene);
+                    else
+                        tile = new Scene(sceneAssetWall.scene);
                 }
                 else if(cell == TileType.DOORWAY){
                     tile = new Scene(sceneAssetDoorWay.scene);

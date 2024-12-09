@@ -6,19 +6,26 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g3d.environment.SpotLight;
+import com.badlogic.gdx.graphics.g3d.shaders.DepthShader;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import net.mgsx.gltf.scene3d.attributes.PBRCubemapAttribute;
+import net.mgsx.gltf.scene3d.attributes.PBRFloatAttribute;
 import net.mgsx.gltf.scene3d.attributes.PBRTextureAttribute;
 import net.mgsx.gltf.scene3d.lights.DirectionalLightEx;
+import net.mgsx.gltf.scene3d.lights.DirectionalShadowLight;
 import net.mgsx.gltf.scene3d.lights.PointLightEx;
 import net.mgsx.gltf.scene3d.lights.SpotLightEx;
 import net.mgsx.gltf.scene3d.scene.SceneManager;
 
+import net.mgsx.gltf.scene3d.shaders.PBRDepthShaderProvider;
+import net.mgsx.gltf.scene3d.shaders.PBRShaderConfig;
+import net.mgsx.gltf.scene3d.shaders.PBRShaderProvider;
 import net.mgsx.gltf.scene3d.utils.IBLBuilder;
 
 
 public class GameScreen extends ScreenAdapter {
+    final static int SHADOW_MAP_SIZE = 2048;
 
     private Main game;
     private World world;
@@ -34,6 +41,7 @@ public class GameScreen extends ScreenAdapter {
     private OrthoCamController camController;
     private KeyController keyController;
     private PointLightEx pointLight;
+    private DirectionalShadowLight shadowCastingLight;
 
 
     public GameScreen(Main game) {
@@ -44,13 +52,23 @@ public class GameScreen extends ScreenAdapter {
     @Override
     public void show() {
 
-        sceneManager = new SceneManager(45);
+        // create a scene manager allowing for required number of bones and only the number of lights we need
+        PBRShaderConfig config = PBRShaderProvider.createDefaultConfig();
+        config.numBones = 45;
+        config.numDirectionalLights = 1;
+        config.numPointLights = 6;
+
+        DepthShader.Config depthConfig = PBRShaderProvider.createDefaultDepthConfig();
+        depthConfig.numBones = 45;
+
+        sceneManager = new SceneManager(new PBRShaderProvider(config), new PBRDepthShaderProvider(depthConfig));
+
 
         // setup camera
         camera = new OrthographicCamera();
         camera.near = -500f;
         camera.far = 500;
-        camera.position.set(5,8, 5);
+        camera.position.set(5,5, 5);
         camera.zoom = 0.03f;
         camera.up.set(Vector3.Y);
         camera.lookAt( new Vector3(0, 0, 0));
@@ -60,11 +78,11 @@ public class GameScreen extends ScreenAdapter {
 
 
         // setup light
-        light = new DirectionalLightEx();
-        light.direction.set(1, -3, 1).nor();
-        light.color.set(Color.WHITE);
-        light.intensity = 0.1f;
-        sceneManager.environment.add(light);
+//        light = new DirectionalLightEx();
+//        light.direction.set(1, -3, 1).nor();
+//        light.color.set(Color.WHITE);
+//        light.intensity = 0.1f;
+//        sceneManager.environment.add(light);
 
         pointLight = new PointLightEx();
         pointLight.color.set(Color.YELLOW);
@@ -72,8 +90,18 @@ public class GameScreen extends ScreenAdapter {
         pointLight.intensity = 3f;
         sceneManager.environment.add(pointLight);
 
+        // setup shadow light
+        shadowCastingLight = new DirectionalShadowLight(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
+        shadowCastingLight.direction.set(-3, -2, -3).nor();
+        shadowCastingLight.color.set(Color.YELLOW);
+        shadowCastingLight.intensity = .5f;
+        shadowCastingLight.setViewport(64, 64, 0.1f, 50f);
+
+        sceneManager.environment.add(shadowCastingLight);
+        sceneManager.environment.set(new PBRFloatAttribute(PBRFloatAttribute.ShadowBias, 1f/256f));
+
         // setup quick IBL (image based lighting)
-        IBLBuilder iblBuilder = IBLBuilder.createOutdoor(light);
+        IBLBuilder iblBuilder = IBLBuilder.createOutdoor(shadowCastingLight);
         environmentCubemap = iblBuilder.buildEnvMap(1024);
         diffuseCubemap = iblBuilder.buildIrradianceMap(256);
         specularCubemap = iblBuilder.buildRadianceMap(10);
@@ -133,6 +161,7 @@ public class GameScreen extends ScreenAdapter {
         camController.update(deltaTime);
         dungeonScenes.getRogue().scene.modelInstance.transform.getTranslation(pointLight.position);
         pointLight.position.y = 3;
+        shadowCastingLight.setCenter(pointLight.position);
 
         // render
         ScreenUtils.clear(Color.BLACK, true);

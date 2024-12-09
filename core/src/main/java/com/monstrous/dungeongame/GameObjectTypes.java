@@ -21,7 +21,7 @@ public class GameObjectTypes implements Disposable {
         types = new Array<>();
 
         rogue = new GameObjectType("Rogue", true, false);
-        rogue.sceneAsset = new GLBLoader().load(Gdx.files.internal("characters/Rogue.glb"));
+        rogue.sceneAsset = new GLBLoader().load(Gdx.files.internal("characters/Rogue_Hooded.glb"));
         rogue.isPlayer = true;
         types.add(rogue);
 
