@@ -21,7 +21,7 @@ import com.badlogic.gdx.utils.ShortArray;
 
 
 public class DungeonMap implements Disposable {
-    public static final int MIN_SIZE = 5;           // min size of room
+    public static final int MIN_SIZE = 4;           // min size of room
     public static final int MAX_SIZE = 12;          // max size of room
     public static final float LOOP_FACTOR = 0.125f; // probability factor [0..1] to add some extra non-MST edge to paths
 
@@ -89,18 +89,16 @@ public class DungeonMap implements Disposable {
     private void generateRooms(Array<Room> rooms){
 
         int attempts = 0;
-        while(attempts < 40) {       // stop after N attempts to place a random room, the map must be quite full
+        while(attempts < 150) {       // stop after N attempts to place a random room, the map must be quite full
             Room room = generateRoom(roomId);
             boolean overlap = checkOverlap(room, rooms);
-            if(!overlap) {
-                boolean adjacent = checkAdjacency(room, rooms);
-                if(!adjacent) {
-                    rooms.add(room);
-                    attempts = 0;
-                    roomId++;
-                }
-                else
-                    attempts++;
+            boolean adjacent = false;
+            if(!overlap)
+                adjacent = checkAdjacency(room, rooms);
+            if(!overlap && !adjacent) {
+                rooms.add(room);
+                attempts = 0;
+                roomId++;
             }
             else
                 attempts++;

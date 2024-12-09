@@ -5,8 +5,8 @@ package com.monstrous.dungeongame;
 // and the items and enemies within it: gameObjects
 
 public class World {
-    public final static int MAP_WIDTH = 30;
-    public final static int MAP_HEIGHT = 30;
+    public final static int MAP_WIDTH = 80;
+    public final static int MAP_HEIGHT = 80;
 
     public int seed = 1234;
     public int level = 0;
