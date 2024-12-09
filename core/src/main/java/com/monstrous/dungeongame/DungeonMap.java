@@ -33,7 +33,7 @@ public class DungeonMap implements Disposable {
     public ShortArray indices;              // index list from triangulation
     private TileType [][] grid;             // map grid for fixed architecture, walls, etc.
     public Direction [][] tileOrientation;      // orientation of tile
-    public GameObjects gameObjects;
+//    public GameObjects gameObjects;
 
 
     // levelNr : 0 for top level, increasing as we go down
@@ -75,10 +75,10 @@ public class DungeonMap implements Disposable {
 
         //addCorridorWalls();
 
-        gameObjects = new GameObjects(mapWidth, mapHeight);
-
-        placeRogue();
-        distributeGold();
+//        gameObjects = new GameObjects(mapWidth, mapHeight);
+//
+//        placeRogue();
+//        distributeGold();
     }
 
     // derive seed for a specific level of a map
@@ -490,51 +490,51 @@ public class DungeonMap implements Disposable {
         }
     }
 
-    private void distributeGold(){
-
-        int count = MathUtils.random(10, 25);        // nr of gold drops
-        while(true){
-            int location = MathUtils.random(0, rooms.size-1);
-            Room room = rooms.get(location);
-            if(room.isStairWell)
-                continue;
-            int rx = MathUtils.random(0, room.width-1);
-            int ry = MathUtils.random(0, room.height-1);
-            GameObject occupant = gameObjects.getOccupant(room.x+rx, room.y+ry);
-            if(occupant != null)
-                continue;
-
-            occupant = new GameObject(GameObjectTypes.gold, room.x+rx, room.y+ry, Direction.SOUTH);
-            gameObjects.setOccupant(room.x+rx, room.y+ry, occupant);
-            gameObjects.add(occupant);
-            occupant.goldQuantity = MathUtils.random(1,20);
-            // seems redundant to provide x,y twice
-
-
-            count--;
-            if(count == 0)
-                return;
-        }
-    }
-
-    private void placeRogue(){
-        while(true) {
-            int location = MathUtils.random(0, rooms.size-1);
-            Room room = rooms.get(location);
-            if(room.isStairWell)
-                continue;
-            GameObject occupant = gameObjects.getOccupant(room.centre.x, room.centre.y);
-            if(occupant != null)
-                continue;
-
-            occupant = new GameObject(GameObjectTypes.rogue, room.centre.x, room.centre.y, Direction.SOUTH);
-            gameObjects.setOccupant(room.centre.x, room.centre.y, occupant);
-            gameObjects.add(occupant);
-            occupant.direction = Direction.SOUTH;
-
-            return;
-        }
-    }
+//    private void distributeGold(){
+//
+//        int count = MathUtils.random(10, 25);        // nr of gold drops
+//        while(true){
+//            int location = MathUtils.random(0, rooms.size-1);
+//            Room room = rooms.get(location);
+//            if(room.isStairWell)
+//                continue;
+//            int rx = MathUtils.random(0, room.width-1);
+//            int ry = MathUtils.random(0, room.height-1);
+//            GameObject occupant = gameObjects.getOccupant(room.x+rx, room.y+ry);
+//            if(occupant != null)
+//                continue;
+//
+//            occupant = new GameObject(GameObjectTypes.gold, room.x+rx, room.y+ry, Direction.SOUTH);
+//            gameObjects.setOccupant(room.x+rx, room.y+ry, occupant);
+//            gameObjects.add(occupant);
+//            occupant.goldQuantity = MathUtils.random(1,20);
+//            // seems redundant to provide x,y twice
+//
+//
+//            count--;
+//            if(count == 0)
+//                return;
+//        }
+//    }
+//
+//    private void placeRogue(){
+//        while(true) {
+//            int location = MathUtils.random(0, rooms.size-1);
+//            Room room = rooms.get(location);
+//            if(room.isStairWell)
+//                continue;
+//            GameObject occupant = gameObjects.getOccupant(room.centre.x, room.centre.y);
+//            if(occupant != null)
+//                continue;
+//
+//            occupant = new GameObject(GameObjectTypes.rogue, room.centre.x, room.centre.y, Direction.SOUTH);
+//            gameObjects.setOccupant(room.centre.x, room.centre.y, occupant);
+//            gameObjects.add(occupant);
+//            occupant.direction = Direction.SOUTH;
+//
+//            return;
+//        }
+//    }
 
     @Override
     public void dispose() {

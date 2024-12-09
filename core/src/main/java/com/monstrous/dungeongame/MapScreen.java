@@ -1,8 +1,6 @@
 package com.monstrous.dungeongame;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -16,14 +14,11 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import static com.monstrous.dungeongame.DungeonMap.*;
 
 
-public class MapScreen implements Screen {
-    public final static int MAP_WIDTH = 50;
-    public final static int MAP_HEIGHT = 50;
+public class MapScreen extends ScreenAdapter {
     public final static int MARGIN = 5;
 
+    private Main game;
     private World world;
-    private int seed = 1234;
-    private int level = 0;
     private DungeonMap map;
     private ShapeRenderer shapeRenderer;
     private OrthographicCamera camera;
@@ -33,16 +28,17 @@ public class MapScreen implements Screen {
     private BitmapFont font;
     private StringBuilder sb;
 
-//    public MapScreen(World world) {
-//        this.world = world;
-//    }
+    public MapScreen(Main game) {
+        this.game = game;
+        this.world = game.world;
+    }
 
     @Override
     public void show() {
-        map = new DungeonMap(seed, level, MAP_WIDTH, MAP_HEIGHT);
+        map = world.map;
         shapeRenderer = new ShapeRenderer();
         camera = new OrthographicCamera();
-        viewport = new FitViewport(MAP_WIDTH+2*MARGIN, MAP_HEIGHT+2*MARGIN, camera);
+        viewport = new FitViewport(world.map.mapWidth+2*MARGIN, world.map.mapHeight+2*MARGIN, camera);
         uiViewport = new ScreenViewport();
         batch = new SpriteBatch();
         font = new BitmapFont();
@@ -52,9 +48,13 @@ public class MapScreen implements Screen {
     @Override
     public void render(float delta) {
         if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
-            level++;
-            System.out.println("seed: "+seed+ " level: "+level);
-            map = new DungeonMap(seed, level, MAP_WIDTH, MAP_HEIGHT);
+            world.levelDown();
+            System.out.println("seed: "+world.seed+ " level: "+world.level);
+            map = world.map;
+        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)){
+            game.setScreen( new GameScreen(game) );
+            return;
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.P)){
             System.out.println("Hello");
@@ -75,11 +75,11 @@ public class MapScreen implements Screen {
 
         // grid
 //        shapeRenderer.setColor(Color.DARK_GRAY);
-//        for(int x = 0; x <= MAP_WIDTH; x++){
-//            shapeRenderer.line(x+m, m, x+m, MAP_HEIGHT+m);
+//        for(int x = 0; x <= world.map.mapWidth; x++){
+//            shapeRenderer.line(x+m, m, x+m, world.map.mapHeight+m);
 //        }
-//        for(int y = 0; y <= MAP_HEIGHT; y++){
-//            shapeRenderer.line(m, y+m, MAP_WIDTH+m, y+m);
+//        for(int y = 0; y <= world.map.mapHeight; y++){
+//            shapeRenderer.line(m, y+m, world.map.mapWidth+m, y+m);
 //        }
 
 
@@ -111,8 +111,8 @@ public class MapScreen implements Screen {
         // corridors & wall
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
-        for(int x = 0; x < MAP_WIDTH; x++){
-            for(int y = 0; y < MAP_HEIGHT; y++) {
+        for(int x = 0; x < world.map.mapWidth; x++){
+            for(int y = 0; y < world.map.mapHeight; y++) {
                 TileType cell = map.getGrid(x,y);
                 if(cell == TileType.CORRIDOR) {
                     shapeRenderer.setColor(Color.BLUE);
@@ -141,9 +141,9 @@ public class MapScreen implements Screen {
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.GOLD);
-        for(int x = 0; x < MAP_WIDTH; x++){
-            for(int y = 0; y < MAP_HEIGHT; y++) {
-                GameObject occupant = map.gameObjects.getOccupant(x,y);
+        for(int x = 0; x < world.map.mapWidth; x++){
+            for(int y = 0; y < world.map.mapHeight; y++) {
+                GameObject occupant = world.gameObjects.getOccupant(x,y);
                 if(occupant != null && occupant.type == GameObjectTypes.gold){
                     shapeRenderer.circle(x + m+.5f, y + m+.5f, 0.5f);
                 }
@@ -154,9 +154,9 @@ public class MapScreen implements Screen {
 
         sb.setLength(0);
         sb.append("Map seed: ");
-        sb.append(seed);
+        sb.append(world.seed);
         sb.append(" Level: ");
-        sb.append(level);
+        sb.append(world.level);
         batch.begin();
         font.draw(batch, sb.toString(), 10 ,90 );
 
@@ -173,15 +173,6 @@ public class MapScreen implements Screen {
         batch.setProjectionMatrix(uiViewport.getCamera().combined);
     }
 
-    @Override
-    public void pause() {
-        // Invoked when your application is paused.
-    }
-
-    @Override
-    public void resume() {
-        // Invoked when your application is resumed after pause.
-    }
 
     @Override
     public void hide() {
@@ -192,6 +183,5 @@ public class MapScreen implements Screen {
     public void dispose() {
         // Destroy screen's assets here.
         shapeRenderer.dispose();
-        map.dispose();
     }
 }

@@ -71,11 +71,11 @@ public class DungeonScenes implements Disposable {
 
     }
 
-    public void populateMap(DungeonMap map){
+    public void populateMap(World world){
 
-        for(int x = 0; x < map.mapWidth; x++){
-            for(int y = 0; y < map.mapHeight; y++){
-                GameObject occupant = map.gameObjects.getOccupant(x,y);
+        for(int x = 0; x < world.map.mapWidth; x++){
+            for(int y = 0; y < world.map.mapHeight; y++){
+                GameObject occupant = world.gameObjects.getOccupant(x,y);
                 if(occupant != null && occupant.type == GameObjectTypes.gold){
                     addScene(occupant);
                 }
@@ -102,11 +102,11 @@ public class DungeonScenes implements Disposable {
         gameObject.scene = item;
     }
 
-    public void placeRogue(DungeonMap map){
+    public void placeRogue(World world){
 
-        for(int x = 0; x < map.mapWidth; x++){
-            for(int y = 0; y < map.mapHeight; y++){
-                GameObject occupant = map.gameObjects.getOccupant(x,y);
+        for(int x = 0; x < world.map.mapWidth; x++){
+            for(int y = 0; y < world.map.mapHeight; y++){
+                GameObject occupant = world.gameObjects.getOccupant(x,y);
                 if(occupant != null && occupant.type == GameObjectTypes.rogue){
                     rogue = occupant;
                     addScene(rogue);

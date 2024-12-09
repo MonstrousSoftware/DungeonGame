@@ -1,6 +1,7 @@
 package com.monstrous.dungeongame;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.*;
@@ -18,7 +19,8 @@ public class GameScreen extends ScreenAdapter {
     public final static int MAP_WIDTH = 50;
     public final static int MAP_HEIGHT = 50;
 
-
+    private Main game;
+    private World world;
     private GUI gui;
     private SceneManager sceneManager;
     private OrthographicCamera camera;
@@ -34,6 +36,11 @@ public class GameScreen extends ScreenAdapter {
     private OrthoCamController camController;
     private KeyController keyController;
 
+
+    public GameScreen(Main game) {
+        this.game = game;
+        this.world = game.world;
+    }
 
     @Override
     public void show() {
@@ -74,20 +81,20 @@ public class GameScreen extends ScreenAdapter {
         sceneManager.environment.set(PBRCubemapAttribute.createSpecularEnv(specularCubemap));
         sceneManager.environment.set(PBRCubemapAttribute.createDiffuseEnv(diffuseCubemap));
 
-        gameObjectTypes = new GameObjectTypes();
-        map = new DungeonMap(1234, 0, MAP_WIDTH, MAP_HEIGHT);
+        //gameObjectTypes = new GameObjectTypes();
+        map = world.map; //new DungeonMap(1234, 0, MAP_WIDTH, MAP_HEIGHT);
 
         //gameObjects = new GameObjects(MAP_WIDTH, MAP_HEIGHT);
 
         dungeonScenes = new DungeonScenes(sceneManager);
-        dungeonScenes.buildMap( map);
-        dungeonScenes.populateMap( map );
+        dungeonScenes.buildMap( world.map );
+        dungeonScenes.populateMap( world );
 
-        dungeonScenes.placeRogue( map );
+        dungeonScenes.placeRogue( world );
 
 
         camController = new OrthoCamController(camera, dungeonScenes.getRogue().scene.modelInstance);
-        keyController = new KeyController(map, dungeonScenes );
+        keyController = new KeyController(world, dungeonScenes );
 
         gui = new GUI( dungeonScenes.getRogue() );
 
@@ -105,6 +112,10 @@ public class GameScreen extends ScreenAdapter {
 
     @Override
     public void render(float deltaTime) {
+        if(Gdx.input.isKeyJustPressed(Input.Keys.M)){
+            game.setScreen( new MapScreen(game) );
+            return;
+        }
 
         camController.update(deltaTime);
 

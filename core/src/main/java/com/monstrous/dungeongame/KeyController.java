@@ -5,14 +5,16 @@ import com.badlogic.gdx.InputAdapter;
 
 public class KeyController extends InputAdapter {
 
+    private World world;
     private DungeonMap map;
     private DungeonScenes scenes;
-    //private GameObjects gameObjects;
+    private GameObjects gameObjects;
 
-    public KeyController(DungeonMap map, DungeonScenes scenes) {
-        this.map = map;
+    public KeyController(World world, DungeonScenes scenes) {
+        this.world = world;
+        this.map = world.map;
+        this.gameObjects = world.gameObjects;
         this.scenes = scenes;
-        //this.gameObjects = gameObjects;
     }
 
     @Override
@@ -42,14 +44,14 @@ public class KeyController extends InputAdapter {
         y += dy;
         TileType cell = map.getGrid(x, y);
         if(walkable(cell)) {
-            GameObject occupant = map.gameObjects.getOccupant(x, y);
+            GameObject occupant = gameObjects.getOccupant(x, y);
             if(occupant != null){
                 Gdx.app.log("occupant", occupant.type.name);
                 if(occupant.type.pickup){
                     Gdx.app.log("Pickup", occupant.type.name);
                                                             // assumes gold
                     MessageBox.addLine("You picked up "+occupant.goldQuantity+" "+occupant.type.name);
-                    map.gameObjects.clearOccupant(x, y);
+                    gameObjects.clearOccupant(x, y);
                     scenes.remove(occupant.scene);
                     if(occupant.type == GameObjectTypes.gold){
                         scenes.getRogue().goldQuantity += occupant.goldQuantity;
@@ -70,7 +72,7 @@ public class KeyController extends InputAdapter {
         MessageBox.addLine("You dropped 1 gold.");
 
         rogue.goldQuantity--;
-        GameObject gold = scenes.placeObject(map.gameObjects, GameObjectTypes.gold, rogue.x, rogue.y);
+        GameObject gold = scenes.placeObject(gameObjects, GameObjectTypes.gold, rogue.x, rogue.y);
         gold.goldQuantity = 1;
     }
 

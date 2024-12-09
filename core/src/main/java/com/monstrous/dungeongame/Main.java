@@ -10,7 +10,7 @@ public class Main extends Game {
 
     @Override
     public void create() {
-        //world = new World();
-        setScreen(new GameScreen());
+        world = new World();
+        setScreen(new MapScreen(this));
     }
 }
