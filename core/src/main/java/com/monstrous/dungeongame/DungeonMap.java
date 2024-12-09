@@ -21,11 +21,10 @@ import com.badlogic.gdx.utils.ShortArray;
 
 
 public class DungeonMap implements Disposable {
-    public static final int MIN_SIZE = 3;           // min size of room
-    public static final int MAX_SIZE = 10;          // max size of room
+    public static final int MIN_SIZE = 5;           // min size of room
+    public static final int MAX_SIZE = 12;          // max size of room
     public static final float LOOP_FACTOR = 0.125f; // probability factor [0..1] to add some extra non-MST edge to paths
 
-    private final int mapSeed;
     public final int mapWidth, mapHeight;
     public final Array<Room> rooms;
     public int roomId;                      // to give each room a unique id
@@ -33,13 +32,12 @@ public class DungeonMap implements Disposable {
     public ShortArray indices;              // index list from triangulation
     private TileType [][] grid;             // map grid for fixed architecture, walls, etc.
     public Direction [][] tileOrientation;      // orientation of tile
-//    public GameObjects gameObjects;
+
 
 
     // levelNr : 0 for top level, increasing as we go down
 
     public DungeonMap(int mapSeed, int levelNr, int width, int height) {
-        this.mapSeed = mapSeed;
         this.mapWidth = width;
         this.mapHeight = height;
         rooms = new Array<>();
@@ -48,16 +46,16 @@ public class DungeonMap implements Disposable {
         roomId = 0;
         rooms.clear();
 
-        if(levelNr > 0) {    // is there a floor above?
-            // use the higher level's seed to generate the stairs from above
-            MathUtils.random.setSeed(getLevelSeed(mapSeed, levelNr-1));
-            generateStairWells(TileType.STAIRS_UP);  // stairs coming down
-        }
+//        if (levelNr > 0) {    // is there a floor above?
+//            // use the higher level's seed to generate the stairs from above
+//            MathUtils.random.setSeed(getLevelSeed(mapSeed, levelNr - 1));
+//            generateStairWells(TileType.STAIRS_UP);  // stairs coming down
+//        }
 
         MathUtils.random.setSeed(getLevelSeed(mapSeed, levelNr));
 
         // generate stairs to the level below
-        generateStairWells(TileType.STAIRS_DOWN);    // stairs going down
+//        generateStairWells(TileType.STAIRS_DOWN);    // stairs going down
 
         generateRooms(rooms);
 
@@ -74,11 +72,6 @@ public class DungeonMap implements Disposable {
         makeCorridors();
 
         //addCorridorWalls();
-
-//        gameObjects = new GameObjects(mapWidth, mapHeight);
-//
-//        placeRogue();
-//        distributeGold();
     }
 
     // derive seed for a specific level of a map
@@ -98,9 +91,14 @@ public class DungeonMap implements Disposable {
             Room room = generateRoom(roomId);
             boolean overlap = checkOverlap(room, rooms);
             if(!overlap) {
-                rooms.add(room);
-                attempts = 0;
-                roomId++;
+                boolean adjacent = checkAdjacency(room, rooms);
+                if(!adjacent) {
+                    rooms.add(room);
+                    attempts = 0;
+                    roomId++;
+                }
+                else
+                    attempts++;
             }
             else
                 attempts++;
@@ -168,12 +166,25 @@ public class DungeonMap implements Disposable {
 
     private boolean checkOverlap(Room newRoom, Array<Room> rooms){
 
-        // add a 1 unit boundary around the new room to leave room for walls
-        Room expandedRoom = new Room(-1, newRoom.x-1, newRoom.y-1,
-                                newRoom.width+2, newRoom.height+2);
+        for(Room room : rooms ){
+            if(room.overlaps(newRoom))
+                return true;
+        }
+        return false;
+    }
+
+    // avoid rooms that are immediately next to each other with 2 separate walls.  They should share a common wall or it looks weird.
+    //
+    private boolean checkAdjacency(Room newRoom, Array<Room> rooms){
 
         for(Room room : rooms ){
-            if(room.overlaps(expandedRoom))
+            if(room.x+room.width == newRoom.x-1)
+                return true;
+            if(room.x-1 == newRoom.x+newRoom.width)
+                return true;
+            if(room.y+room.height == newRoom.y-1)
+                return true;
+            if(room.y-1 == newRoom.y+newRoom.height)
                 return true;
         }
         return false;
@@ -316,19 +327,22 @@ public class DungeonMap implements Disposable {
 
     private void addRoom(int rx, int ry, int rw, int rh){
 
-        for(int x = 0; x < rw; x++){
-            for(int y = 0; y < rh; y++){
+        // the walls are place around the perimeter (inside the room)
+        // so effective size of the room area is (rw-2)*(rh-2)
+        //
+        for(int x = 1; x < rw; x++){
+            for(int y = 1; y < rh; y++){
                 grid[ry+y][rx+x] = TileType.ROOM;
             }
         }
 
-        for(int x = 0; x < rw; x++){
-            grid[ry][rx+x] = TileType.WALL;
-            grid[ry+rh][rx+x] = TileType.WALL;
+        for(int x = 1; x < rw; x++){
+            placeWall(rx+x, ry, Direction.SOUTH);
+            placeWall(rx+x, ry+rh, Direction.NORTH);
         }
-        for(int y = 0; y < rh; y++){
-            grid[ry+y][rx] = TileType.WALL; tileOrientation[ry+y][rx] = Direction.EAST;
-            grid[ry+y][rx+rw] = TileType.WALL; tileOrientation[ry+y][rx+rw] = Direction.EAST;
+        for(int y = 1; y < rh; y++){
+            placeWall(rx, ry+y, Direction.WEST);
+            placeWall(rx+rw, ry+y, Direction.EAST);
         }
         // rotate the wall corner model as needed
         //
@@ -336,10 +350,36 @@ public class DungeonMap implements Disposable {
         //    |   |
         //    N---W
         //
-        grid[ry][rx] = TileType.WALL_CORNER; tileOrientation[ry][rx] = Direction.NORTH;
-        grid[ry+rh][rx] = TileType.WALL_CORNER; tileOrientation[ry+rh][rx] = Direction.EAST;
-        grid[ry][rx+rw] = TileType.WALL_CORNER; tileOrientation[ry][rx+rw] = Direction.WEST;
-        grid[ry+rh][rx+rw] = TileType.WALL_CORNER; tileOrientation[ry+rh][rx+rw] = Direction.SOUTH;
+        placeCorner(rx, ry, Direction.NORTH);
+        placeCorner(rx, ry+rh, Direction.EAST);
+        placeCorner(rx+rw, ry, Direction.WEST);
+        placeCorner(rx+rw, ry+rh, Direction.SOUTH);
+    }
+
+    private void placeWall(int x, int y, Direction dir){
+        if(grid[y][x] != TileType.VOID) {
+            if(grid[y][x] == TileType.WALL && (tileOrientation[y][x] == dir || tileOrientation[y][x] == Direction.opposite(dir)) )
+                return;     // aligned with existing wall
+            System.out.println("Wall into non-void " + x + " , " + y + " type:" + grid[y][x]);
+            grid[y][x] = TileType.WALL_T_SPLIT;
+            tileOrientation[y][x] = dir;
+        } else {
+            grid[y][x] = TileType.WALL;
+            tileOrientation[y][x] = dir;
+        }
+    }
+
+    private void placeCorner(int x, int y, Direction dir){
+        if(grid[y][x] != TileType.VOID) {
+            System.out.println("Corner into non-void " + x + " , " + y + " type:" + grid[y][x]+" in dir "+tileOrientation[y][x]);
+            if(grid[y][x] == TileType.WALL)
+                grid[y][x] = TileType.WALL_T_SPLIT; // keep wall orientation
+            else if (grid[y][x] == TileType.WALL_CORNER)    // 2 corners            should sometime be a T
+                grid[y][x] = TileType.WALL_CROSSING;
+        } else {
+            grid[y][x] = TileType.WALL_CORNER;
+            tileOrientation[y][x] = dir;
+        }
     }
 
     private void addDoor(int x, int y, Direction direction){
@@ -403,13 +443,12 @@ public class DungeonMap implements Disposable {
                         grid[current.y][current.x] = TileType.CORRIDOR;
                     if (grid[current.y][current.x] == TileType.WALL  )
                         grid[current.y][current.x] = TileType.DOORWAY;
-                    //TileType cell = grid[current.y][current.x];
                     current = current.parent;
                 }
                 return; // finished
             }
 
-            // remove node from fring and add it to the closed set
+            // remove node from fringe and add it to the closed set
             fringe.removeValue(current, true);
             closed.add(current);
 
@@ -438,6 +477,7 @@ public class DungeonMap implements Disposable {
                     case ROOM:      cost += 10; break;
                     case CORRIDOR:  cost += 1; break;
                     case WALL:      cost += 20; break;
+                    case WALL_CORNER:    cost += 100; break;
                     case STAIRS_DOWN:    cost += 100; break;        // never path via a staircase
                     case STAIRS_UP:      cost += 100; break;
                 }
@@ -490,51 +530,6 @@ public class DungeonMap implements Disposable {
         }
     }
 
-//    private void distributeGold(){
-//
-//        int count = MathUtils.random(10, 25);        // nr of gold drops
-//        while(true){
-//            int location = MathUtils.random(0, rooms.size-1);
-//            Room room = rooms.get(location);
-//            if(room.isStairWell)
-//                continue;
-//            int rx = MathUtils.random(0, room.width-1);
-//            int ry = MathUtils.random(0, room.height-1);
-//            GameObject occupant = gameObjects.getOccupant(room.x+rx, room.y+ry);
-//            if(occupant != null)
-//                continue;
-//
-//            occupant = new GameObject(GameObjectTypes.gold, room.x+rx, room.y+ry, Direction.SOUTH);
-//            gameObjects.setOccupant(room.x+rx, room.y+ry, occupant);
-//            gameObjects.add(occupant);
-//            occupant.goldQuantity = MathUtils.random(1,20);
-//            // seems redundant to provide x,y twice
-//
-//
-//            count--;
-//            if(count == 0)
-//                return;
-//        }
-//    }
-//
-//    private void placeRogue(){
-//        while(true) {
-//            int location = MathUtils.random(0, rooms.size-1);
-//            Room room = rooms.get(location);
-//            if(room.isStairWell)
-//                continue;
-//            GameObject occupant = gameObjects.getOccupant(room.centre.x, room.centre.y);
-//            if(occupant != null)
-//                continue;
-//
-//            occupant = new GameObject(GameObjectTypes.rogue, room.centre.x, room.centre.y, Direction.SOUTH);
-//            gameObjects.setOccupant(room.centre.x, room.centre.y, occupant);
-//            gameObjects.add(occupant);
-//            occupant.direction = Direction.SOUTH;
-//
-//            return;
-//        }
-//    }
 
     @Override
     public void dispose() {

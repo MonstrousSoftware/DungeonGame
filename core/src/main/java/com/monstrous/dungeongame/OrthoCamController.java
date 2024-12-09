@@ -96,7 +96,7 @@ public class OrthoCamController extends InputAdapter {
         if(cam.zoom < MAX_ZOOM)
             cam.zoom = MAX_ZOOM;
 
-        Gdx.app.log("zoom", ""+cam.zoom);
+        //Gdx.app.log("zoom", ""+cam.zoom);
     }
 
     @Override

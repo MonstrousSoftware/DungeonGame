@@ -13,8 +13,9 @@ public class Populator {
             Room room = map.rooms.get(location);
             if(room.isStairWell)
                 continue;
-            int rx = MathUtils.random(0, room.width-1);
-            int ry = MathUtils.random(0, room.height-1);
+            // find a point inside the room (edges are walls)
+            int rx = MathUtils.random(1, room.width-3);
+            int ry = MathUtils.random(1, room.height-3);
             GameObject occupant = gameObjects.getOccupant(room.x+rx, room.y+ry);
             if(occupant != null)
                 continue;

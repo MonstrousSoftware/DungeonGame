@@ -8,5 +8,7 @@ public enum TileType {
     DOORWAY,
     STAIRS_DOWN,
     STAIRS_UP,
-    WALL_CORNER
+    WALL_CORNER,
+    WALL_T_SPLIT,
+    WALL_CROSSING
 }

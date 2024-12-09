@@ -62,16 +62,18 @@ public class MapScreen extends ScreenAdapter {
         ScreenUtils.clear(Color.BLACK);
         shapeRenderer.setProjectionMatrix(camera.combined);
 
-        // rooms
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(Color.GREEN);
-        for(Room room : map.rooms) {
-            shapeRenderer.rect(room.x+MARGIN, room.y+MARGIN, room.width, room.height);
-        }
-        shapeRenderer.end();
-
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         int m = MARGIN;
+
+        // rooms
+//        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+//        shapeRenderer.setColor(Color.GREEN);
+//        for(Room room : map.rooms) {
+//            shapeRenderer.rect(room.x+m, room.y+m, room.width, room.height);
+//        }
+//        shapeRenderer.end();
+
+//        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+//        int m = MARGIN;
 
         // grid
 //        shapeRenderer.setColor(Color.DARK_GRAY);
@@ -83,29 +85,29 @@ public class MapScreen extends ScreenAdapter {
 //        }
 
 
-        shapeRenderer.setColor(Color.GRAY);
-        for( int tri = 0; tri < map.indices.size; tri+= 3 ){
-            int i1 = map.indices.get(tri);
-            int i2 = map.indices.get(tri+1);
-            int i3 = map.indices.get(tri+2);
-            float x1 = map.vertices[2*i1];
-            float y1 = map.vertices[2*i1+1];
-            float x2 = map.vertices[2*i2];
-            float y2 = map.vertices[2*i2+1];
-            float x3 = map.vertices[2*i3];
-            float y3 = map.vertices[2*i3+1];
-
-            shapeRenderer.triangle(x1+m, y1+m, x2+m, y2+m, x3+m, y3+m);
-        }
+//        shapeRenderer.setColor(Color.GRAY);
+//        for( int tri = 0; tri < map.indices.size; tri+= 3 ){
+//            int i1 = map.indices.get(tri);
+//            int i2 = map.indices.get(tri+1);
+//            int i3 = map.indices.get(tri+2);
+//            float x1 = map.vertices[2*i1];
+//            float y1 = map.vertices[2*i1+1];
+//            float x2 = map.vertices[2*i2];
+//            float y2 = map.vertices[2*i2+1];
+//            float x3 = map.vertices[2*i3];
+//            float y3 = map.vertices[2*i3+1];
+//
+//            shapeRenderer.triangle(x1+m, y1+m, x2+m, y2+m, x3+m, y3+m);
+//        }
 
         // minimum spanning tree
-        shapeRenderer.setColor(Color.RED);
-        for(Room room: map.rooms){
-            for(Room nbor : room.closeNeighbours) {
-                shapeRenderer.line(room.centre.x + m, room.centre.y + m, nbor.centre.x + m, nbor.centre.y + m);
-            }
-        }
-        shapeRenderer.end();
+//        shapeRenderer.setColor(Color.RED);
+//        for(Room room: map.rooms){
+//            for(Room nbor : room.closeNeighbours) {
+//                shapeRenderer.line(room.centre.x + m, room.centre.y + m, nbor.centre.x + m, nbor.centre.y + m);
+//            }
+//        }
+//        shapeRenderer.end();
 
 
         // corridors & wall
@@ -114,11 +116,19 @@ public class MapScreen extends ScreenAdapter {
         for(int x = 0; x < world.map.mapWidth; x++){
             for(int y = 0; y < world.map.mapHeight; y++) {
                 TileType cell = map.getGrid(x,y);
+                if(cell == TileType.ROOM) {
+                    shapeRenderer.setColor(Color.GREEN);
+                    shapeRenderer.rect(x + m, y + m, 1, 1);
+                }
                 if(cell == TileType.CORRIDOR) {
                     shapeRenderer.setColor(Color.BLUE);
                     shapeRenderer.rect(x + m, y + m, 1, 1);
                 }
                 if(cell == TileType.WALL) {
+                    shapeRenderer.setColor(Color.DARK_GRAY);
+                    shapeRenderer.rect(x + m, y + m, 1, 1);
+                }
+                if(cell == TileType.WALL_CORNER) {
                     shapeRenderer.setColor(Color.DARK_GRAY);
                     shapeRenderer.rect(x + m, y + m, 1, 1);
                 }
@@ -140,12 +150,17 @@ public class MapScreen extends ScreenAdapter {
 
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(Color.GOLD);
+
         for(int x = 0; x < world.map.mapWidth; x++){
             for(int y = 0; y < world.map.mapHeight; y++) {
                 GameObject occupant = world.gameObjects.getOccupant(x,y);
                 if(occupant != null && occupant.type == GameObjectTypes.gold){
+                    shapeRenderer.setColor(Color.GOLD);
                     shapeRenderer.circle(x + m+.5f, y + m+.5f, 0.5f);
+                }
+                if(occupant != null && occupant.type == GameObjectTypes.rogue){
+                    shapeRenderer.setColor(Color.WHITE);
+                    shapeRenderer.circle(x + m+.5f, y + m+.5f, 0.7f);
                 }
 
             }

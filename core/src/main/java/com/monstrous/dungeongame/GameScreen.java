@@ -81,16 +81,14 @@ public class GameScreen extends ScreenAdapter {
         sceneManager.environment.set(PBRCubemapAttribute.createSpecularEnv(specularCubemap));
         sceneManager.environment.set(PBRCubemapAttribute.createDiffuseEnv(diffuseCubemap));
 
-        //gameObjectTypes = new GameObjectTypes();
-        map = world.map; //new DungeonMap(1234, 0, MAP_WIDTH, MAP_HEIGHT);
 
-        //gameObjects = new GameObjects(MAP_WIDTH, MAP_HEIGHT);
+        map = world.map;
 
         dungeonScenes = new DungeonScenes(sceneManager);
         dungeonScenes.buildMap( world.map );
+        dungeonScenes.placeRogue( world );
         dungeonScenes.populateMap( world );
 
-        dungeonScenes.placeRogue( world );
 
 
         camController = new OrthoCamController(camera, dungeonScenes.getRogue().scene.modelInstance);
@@ -115,6 +113,16 @@ public class GameScreen extends ScreenAdapter {
         if(Gdx.input.isKeyJustPressed(Input.Keys.M)){
             game.setScreen( new MapScreen(game) );
             return;
+        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.L)){
+            world.levelDown();
+            System.out.println("seed: "+world.seed+ " level: "+world.level);
+            map = world.map;
+            sceneManager.getRenderableProviders().clear();
+            dungeonScenes.buildMap( world.map );
+            dungeonScenes.placeRogue( world );
+            dungeonScenes.populateMap( world );
+
         }
 
         camController.update(deltaTime);

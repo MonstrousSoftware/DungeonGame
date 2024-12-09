@@ -28,6 +28,8 @@ public class DungeonScenes implements Disposable {
     private SceneAsset sceneAssetWall;
     private SceneAsset sceneAssetDoorWay;
     private SceneAsset sceneAssetCorner;
+    private SceneAsset sceneAssetWallTsplit;
+    private SceneAsset sceneAssetWallCrossing;
 
 
     public DungeonScenes(SceneManager sceneManager) {
@@ -37,6 +39,8 @@ public class DungeonScenes implements Disposable {
         sceneAssetWall = new GLTFLoader().load(Gdx.files.internal("models/wall.gltf"));
         sceneAssetDoorWay = new GLTFLoader().load(Gdx.files.internal("models/wall_open_scaffold.gltf"));
         sceneAssetCorner = new GLTFLoader().load(Gdx.files.internal("models/wall_corner.gltf"));
+        sceneAssetWallTsplit = new GLTFLoader().load(Gdx.files.internal("models/wall_Tsplit.gltf"));
+        sceneAssetWallCrossing = new GLTFLoader().load(Gdx.files.internal("models/wall_crossing.gltf"));
     }
 
     public void buildMap(DungeonMap map){
@@ -60,6 +64,12 @@ public class DungeonScenes implements Disposable {
                 }
                 else if(cell == TileType.WALL_CORNER){
                     tile = new Scene(sceneAssetCorner.scene);
+                }
+                else if(cell == TileType.WALL_T_SPLIT){
+                    tile = new Scene(sceneAssetWallTsplit.scene);
+                }
+                else if(cell == TileType.WALL_CROSSING){
+                    tile = new Scene(sceneAssetWallCrossing.scene);
                 }
 
                 if(tile != null) {
@@ -103,6 +113,7 @@ public class DungeonScenes implements Disposable {
     }
 
     public void placeRogue(World world){
+        world.gameObjects.gameObjects.clear();
 
         for(int x = 0; x < world.map.mapWidth; x++){
             for(int y = 0; y < world.map.mapHeight; y++){

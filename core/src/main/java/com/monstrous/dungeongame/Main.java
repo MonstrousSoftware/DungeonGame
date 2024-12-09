@@ -11,6 +11,6 @@ public class Main extends Game {
     @Override
     public void create() {
         world = new World();
-        setScreen(new MapScreen(this));
+        setScreen(new GameScreen(this));
     }
 }
