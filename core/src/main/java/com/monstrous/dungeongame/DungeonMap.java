@@ -32,6 +32,8 @@ public class DungeonMap implements Disposable {
     public ShortArray indices;              // index list from triangulation
     private TileType [][] grid;             // map grid for fixed architecture, walls, etc.
     public Direction [][] tileOrientation;      // orientation of tile
+    public int[][] roomCode;                // id of the room
+    public boolean[][] corridorSeen;         // has the corridor segment been seen?
 
 
 
@@ -306,15 +308,19 @@ public class DungeonMap implements Disposable {
     private void fillGrid(){
         grid = new TileType[mapHeight][mapWidth];
         tileOrientation = new Direction[mapHeight][mapWidth];
+        roomCode = new int[mapHeight][mapWidth];
+        corridorSeen = new boolean[mapHeight][mapWidth];
+
         for(int x = 0; x < mapWidth; x++) {
             for (int y = 0; y < mapHeight; y++) {
                 grid[y][x] = TileType.VOID;
                 tileOrientation[y][x] = Direction.NORTH;
+                roomCode[y][x] = -1;
             }
         }
 
         for(Room room : rooms ){
-            addRoom(room.x, room.y, room.width, room.height);
+            addRoom(room);
             // todo stairwells
 //            for(int x =  room.x; x < room.x+room.width; x++){
 //                for(int y =  room.y; y < room.y+room.height; y++){
@@ -325,9 +331,20 @@ public class DungeonMap implements Disposable {
         }
     }
 
-    private void addRoom(int rx, int ry, int rw, int rh){
+    private void addRoom(Room room){
 
-        // the walls are place around the perimeter (inside the room)
+        int rx = room.x;
+        int ry = room.y;
+        int rw = room.width;
+        int rh = room.height;
+
+        for(int x = 0; x <= rw; x++){
+            for(int y = 0; y <= rh; y++){
+                roomCode[ry+y][rx+x] = room.id;
+            }
+        }
+
+        // the walls are placed around the perimeter (inside the room)
         // so effective size of the room area is (rw-2)*(rh-2)
         //
         for(int x = 1; x < rw; x++){

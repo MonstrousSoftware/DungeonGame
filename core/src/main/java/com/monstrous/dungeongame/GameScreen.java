@@ -5,19 +5,20 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.g3d.environment.SpotLight;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import net.mgsx.gltf.scene3d.attributes.PBRCubemapAttribute;
 import net.mgsx.gltf.scene3d.attributes.PBRTextureAttribute;
 import net.mgsx.gltf.scene3d.lights.DirectionalLightEx;
+import net.mgsx.gltf.scene3d.lights.PointLightEx;
+import net.mgsx.gltf.scene3d.lights.SpotLightEx;
 import net.mgsx.gltf.scene3d.scene.SceneManager;
 
 import net.mgsx.gltf.scene3d.utils.IBLBuilder;
 
 
 public class GameScreen extends ScreenAdapter {
-    public final static int MAP_WIDTH = 50;
-    public final static int MAP_HEIGHT = 50;
 
     private Main game;
     private World world;
@@ -30,11 +31,9 @@ public class GameScreen extends ScreenAdapter {
     private Texture brdfLUT;
     private DirectionalLightEx light;
     private DungeonScenes dungeonScenes;
-    private DungeonMap map;
-    private GameObjectTypes gameObjectTypes;
-    //private GameObjects gameObjects;
     private OrthoCamController camController;
     private KeyController keyController;
+    private PointLightEx pointLight;
 
 
     public GameScreen(Main game) {
@@ -51,7 +50,7 @@ public class GameScreen extends ScreenAdapter {
         camera = new OrthographicCamera();
         camera.near = -500f;
         camera.far = 500;
-        camera.position.set(5,5, 5);
+        camera.position.set(5,8, 5);
         camera.zoom = 0.03f;
         camera.up.set(Vector3.Y);
         camera.lookAt( new Vector3(0, 0, 0));
@@ -64,7 +63,14 @@ public class GameScreen extends ScreenAdapter {
         light = new DirectionalLightEx();
         light.direction.set(1, -3, 1).nor();
         light.color.set(Color.WHITE);
+        light.intensity = 0.1f;
         sceneManager.environment.add(light);
+
+        pointLight = new PointLightEx();
+        pointLight.color.set(Color.YELLOW);
+        pointLight.range = 8f;
+        pointLight.intensity = 3f;
+        sceneManager.environment.add(pointLight);
 
         // setup quick IBL (image based lighting)
         IBLBuilder iblBuilder = IBLBuilder.createOutdoor(light);
@@ -76,19 +82,16 @@ public class GameScreen extends ScreenAdapter {
         // This texture is provided by the library, no need to have it in your assets.
         brdfLUT = new Texture(Gdx.files.classpath("net/mgsx/gltf/shaders/brdfLUT.png"));
 
-        sceneManager.setAmbientLight(1f);
+        sceneManager.setAmbientLight(0.0f);
         sceneManager.environment.set(new PBRTextureAttribute(PBRTextureAttribute.BRDFLUTTexture, brdfLUT));
         sceneManager.environment.set(PBRCubemapAttribute.createSpecularEnv(specularCubemap));
         sceneManager.environment.set(PBRCubemapAttribute.createDiffuseEnv(diffuseCubemap));
 
-
-        map = world.map;
-
         dungeonScenes = new DungeonScenes(sceneManager);
-        dungeonScenes.buildMap( world.map );
         dungeonScenes.placeRogue( world );
-        dungeonScenes.populateMap( world );
-
+        dungeonScenes.buildMap( world.map );
+        dungeonScenes.buildCorridors( world.map );
+        dungeonScenes.populateMap(world);
 
 
         camController = new OrthoCamController(camera, dungeonScenes.getRogue().scene.modelInstance);
@@ -117,18 +120,22 @@ public class GameScreen extends ScreenAdapter {
         if(Gdx.input.isKeyJustPressed(Input.Keys.L)){
             world.levelDown();
             System.out.println("seed: "+world.seed+ " level: "+world.level);
-            map = world.map;
             sceneManager.getRenderableProviders().clear();
-            dungeonScenes.buildMap( world.map );
             dungeonScenes.placeRogue( world );
-            dungeonScenes.populateMap( world );
+            int roomId = world.map.roomCode[dungeonScenes.rogue.y][dungeonScenes.rogue.x];
+            Room room = world.map.rooms.get(roomId);
+            dungeonScenes.buildRoom( world.map, room );
+            dungeonScenes.populateRoom(world, room);
+            camController.setTrackedObject( dungeonScenes.getRogue().scene.modelInstance );
 
         }
 
         camController.update(deltaTime);
+        dungeonScenes.getRogue().scene.modelInstance.transform.getTranslation(pointLight.position);
+        pointLight.position.y = 3;
 
         // render
-        ScreenUtils.clear(Color.LIGHT_GRAY, true);
+        ScreenUtils.clear(Color.BLACK, true);
         sceneManager.update(deltaTime);
         sceneManager.render();
 

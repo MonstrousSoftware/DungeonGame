@@ -6,14 +6,10 @@ import com.badlogic.gdx.InputAdapter;
 public class KeyController extends InputAdapter {
 
     private World world;
-    private DungeonMap map;
     private DungeonScenes scenes;
-    private GameObjects gameObjects;
 
     public KeyController(World world, DungeonScenes scenes) {
         this.world = world;
-        this.map = world.map;
-        this.gameObjects = world.gameObjects;
         this.scenes = scenes;
     }
 
@@ -39,25 +35,38 @@ public class KeyController extends InputAdapter {
     private void tryMoveRogue(int dx, int dy, Direction dir){
         int x = scenes.rogue.x;
         int y = scenes.rogue.y;
-        scenes.turnRogue(map, dir, x, y);
+        scenes.turnRogue(world.map, dir, x, y);
         x += dx;
         y += dy;
-        TileType cell = map.getGrid(x, y);
+        TileType cell = world.map.getGrid(x, y);
         if(walkable(cell)) {
-            GameObject occupant = gameObjects.getOccupant(x, y);
+            GameObject occupant = world.gameObjects.getOccupant(x, y);
             if(occupant != null){
                 Gdx.app.log("occupant", occupant.type.name);
                 if(occupant.type.pickup){
                     Gdx.app.log("Pickup", occupant.type.name);
                                                             // assumes gold
                     MessageBox.addLine("You picked up "+occupant.goldQuantity+" "+occupant.type.name);
-                    gameObjects.clearOccupant(x, y);
+                    world.gameObjects.clearOccupant(x, y);
                     scenes.remove(occupant.scene);
                     if(occupant.type == GameObjectTypes.gold){
                         scenes.getRogue().goldQuantity += occupant.goldQuantity;
                     }
                 }
             }
+
+            // show the room if this is the first time we enter it
+            int roomId = world.map.roomCode[y][x];
+            if(roomId >= 0) {
+                Room room = world.map.rooms.get(roomId);
+                if (!room.uncovered) {
+                    scenes.buildRoom(world.map, room);
+                    scenes.populateRoom(world, room);
+                }
+            } else {
+                scenes.visitCorridorSegment(world.map, x, y);
+            }
+
             scenes.moveRogue( x, y);
         }
     }
@@ -72,7 +81,7 @@ public class KeyController extends InputAdapter {
         MessageBox.addLine("You dropped 1 gold.");
 
         rogue.goldQuantity--;
-        GameObject gold = scenes.placeObject(gameObjects, GameObjectTypes.gold, rogue.x, rogue.y);
+        GameObject gold = scenes.placeObject(world.gameObjects, GameObjectTypes.gold, rogue.x, rogue.y);
         gold.goldQuantity = 1;
     }
 

@@ -44,9 +44,50 @@ public class DungeonScenes implements Disposable {
     }
 
     public void buildMap(DungeonMap map){
+        for(Room room: map.rooms)
+            if(room.uncovered)
+                buildRoom(map, room);
 
-        for(int x = 0; x < map.mapWidth; x++){
-            for(int y = 0; y < map.mapHeight; y++){
+//        for(int x = 0; x < map.mapWidth; x++){
+//            for(int y = 0; y < map.mapHeight; y++){
+//                Scene tile;
+//                TileType cell = map.getGrid(x,y);
+//                if(cell != TileType.VOID){
+//                    tile = new Scene(sceneAssetFloor.scene);
+//                    setTransform(tile.modelInstance.transform, x, y, Direction.NORTH);
+//                    sceneManager.addScene(tile);
+//                }
+//                tile = null;
+//                if(cell == TileType.WALL){
+//                    tile = new Scene(sceneAssetWall.scene);
+//
+//                }
+//                else if(cell == TileType.DOORWAY){
+//                    tile = new Scene(sceneAssetDoorWay.scene);
+//                }
+//                else if(cell == TileType.WALL_CORNER){
+//                    tile = new Scene(sceneAssetCorner.scene);
+//                }
+//                else if(cell == TileType.WALL_T_SPLIT){
+//                    tile = new Scene(sceneAssetWallTsplit.scene);
+//                }
+//                else if(cell == TileType.WALL_CROSSING){
+//                    tile = new Scene(sceneAssetWallCrossing.scene);
+//                }
+//
+//                if(tile != null) {
+//                    setTransform(tile.modelInstance.transform, x, y, map.tileOrientation[y][x]);
+//                    sceneManager.addScene(tile);
+//                }
+//            }
+//        }
+    }
+
+    public void buildRoom(DungeonMap map, Room room){
+        room.uncovered = true;
+
+        for(int x = room.x; x <= room.x + room.width; x++){
+            for(int y = room.y; y <= room.y + room.height; y++){
                 Scene tile;
                 TileType cell = map.getGrid(x,y);
                 if(cell != TileType.VOID){
@@ -57,7 +98,6 @@ public class DungeonScenes implements Disposable {
                 tile = null;
                 if(cell == TileType.WALL){
                     tile = new Scene(sceneAssetWall.scene);
-
                 }
                 else if(cell == TileType.DOORWAY){
                     tile = new Scene(sceneAssetDoorWay.scene);
@@ -78,13 +118,48 @@ public class DungeonScenes implements Disposable {
                 }
             }
         }
+    }
 
+
+
+    // show corridor segment if not seen before
+    public void visitCorridorSegment(DungeonMap map, int x, int y){
+        if(map.corridorSeen[y][x])
+            return;
+        map.corridorSeen[y][x] = true;
+
+        TileType cell = map.getGrid(x,y);
+        if(cell != TileType.VOID){
+            Scene tile = new Scene(sceneAssetFloor.scene);
+            setTransform(tile.modelInstance.transform, x, y, Direction.NORTH);
+            sceneManager.addScene(tile);
+        }
+    }
+
+    public void buildCorridors(DungeonMap map){
+        for(int x = 0; x < map.mapWidth; x++){
+            for(int y = 0; y < map.mapHeight; y++){
+                if(map.corridorSeen[y][x]){
+                    TileType cell = map.getGrid(x,y);
+                    if(cell != TileType.VOID){
+                        Scene tile = new Scene(sceneAssetFloor.scene);
+                        setTransform(tile.modelInstance.transform, x, y, Direction.NORTH);
+                        sceneManager.addScene(tile);
+                    }
+                }
+            }
+        }
     }
 
     public void populateMap(World world){
+        for(Room room: world.map.rooms)
+            if(room.uncovered)
+                populateRoom(world, room);
+    }
 
-        for(int x = 0; x < world.map.mapWidth; x++){
-            for(int y = 0; y < world.map.mapHeight; y++){
+    public void populateRoom(World world, Room room){
+        for(int x = room.x; x < room.x+room.width; x++){
+            for(int y = room.y; y < room.y + room.height; y++){
                 GameObject occupant = world.gameObjects.getOccupant(x,y);
                 if(occupant != null && occupant.type == GameObjectTypes.gold){
                     addScene(occupant);
@@ -113,6 +188,7 @@ public class DungeonScenes implements Disposable {
     }
 
     public void placeRogue(World world){
+
         world.gameObjects.gameObjects.clear();
 
         for(int x = 0; x < world.map.mapWidth; x++){
@@ -122,6 +198,14 @@ public class DungeonScenes implements Disposable {
                     rogue = occupant;
                     addScene(rogue);
                     adaptModel(rogue.scene, Equipped.NONE);
+
+                    int roomId = world.map.roomCode[rogue.y][rogue.x];
+                    if(roomId >= 0) {
+                        Room room = world.map.rooms.get(roomId);
+                        room.uncovered = true;
+                    }
+                    else
+                        visitCorridorSegment(world.map, x, y);
                     return;
                 }
             }

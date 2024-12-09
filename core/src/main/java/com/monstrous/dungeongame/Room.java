@@ -12,6 +12,7 @@ public class Room {
     public Array<Room> closeNeighbours;     // connected rooms from minimum spanning tree plus some extra ones for fun
     public boolean isStairWell;
     public TileType stairType;           // STAIRS_UP or STAIRS_DOWN (only valid if isStairWell)
+    public boolean uncovered;
 
     public Room(int id, int x, int y, int w, int h) {
         this.id = id;
@@ -24,6 +25,7 @@ public class Room {
         distances = new Array<>();
         closeNeighbours = new Array<>();
         isStairWell = false;
+        uncovered = false;
     }
 
     public boolean overlaps (Room r) {

@@ -27,7 +27,10 @@ public class OrthoCamController extends InputAdapter {
         this.trackedObject = trackedObject;
         position = new Vector3();
         prevPosition = new Vector3();
-        //trackedObject.transform.getTranslation(prevPosition);
+    }
+
+    public void setTrackedObject(final ModelInstance trackedObject){
+        this.trackedObject = trackedObject;
     }
 
     public void update( float deltaTime ) {
