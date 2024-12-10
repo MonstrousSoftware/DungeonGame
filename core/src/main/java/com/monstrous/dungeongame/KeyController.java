@@ -75,10 +75,15 @@ public class KeyController extends InputAdapter {
             else if( world.map.getGrid(x,y) == TileType.STAIRS_DOWN_DEEP){
                 scenes.rogue.z = -6;
             }
+            else if( world.map.getGrid(x,y) == TileType.STAIRS_UP){
+                scenes.rogue.z = 2;
+            }
+            else if( world.map.getGrid(x,y) == TileType.STAIRS_UP_HIGH){
+                scenes.rogue.z = 6;
+            }
             else {
                 scenes.rogue.z = 0;
             }
-
             scenes.moveRogue( x, y, scenes.rogue.z);
         }
     }
@@ -104,6 +109,8 @@ public class KeyController extends InputAdapter {
             case DOORWAY:
             case STAIRS_DOWN:
             case STAIRS_DOWN_DEEP:
+            case STAIRS_UP:
+            case STAIRS_UP_HIGH:
                 return true;
             default:
                 return false;

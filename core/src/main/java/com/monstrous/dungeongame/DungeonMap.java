@@ -51,11 +51,11 @@ public class DungeonMap implements Disposable {
         roomId = 0;
         rooms.clear();
 
-//        if (levelNr > 0) {    // is there a floor above?
-//            // use the higher level's seed to generate the stairs from above
-//            MathUtils.random.setSeed(getLevelSeed(mapSeed, levelNr - 1));
-//            generateStairWells(TileType.STAIRS_UP);  // stairs coming down
-//        }
+        if (levelNr > 0) {    // is there a floor above?
+            // use the higher level's seed to generate the stairs from above
+            MathUtils.random.setSeed(getLevelSeed(mapSeed, levelNr - 1));
+            generateStairWells(TileType.STAIRS_UP);  // stairs coming down
+        }
 
         MathUtils.random.setSeed(getLevelSeed(mapSeed, levelNr));
 
@@ -119,9 +119,13 @@ public class DungeonMap implements Disposable {
     private void generateStairWells(TileType stairType){
         int count = MathUtils.random(1, 2); // how many stair wells to generate?
         for(int i = 0; i < count; i++){
-            Room stairWell = generateStairWell(roomId++, stairType);
+            Room stairWell = generateStairWell(roomId, stairType);
             stairWell.stairType = stairType;
-            rooms.add(stairWell);
+            boolean overlap = checkOverlap(stairWell, rooms);
+            if(!overlap) {
+                rooms.add(stairWell);
+                roomId++;
+            }
         }
     }
 
@@ -139,16 +143,16 @@ public class DungeonMap implements Disposable {
 
         if(stairType == TileType.STAIRS_UP) {
             d = (d + 2) % 4;    // reverse direction
-            direction = Direction.values()[d];
+            stairWell.stairsDirection = Direction.values()[d];
             // offset stairwell one cell compared to the floor above
-            switch(direction){
+            switch(stairWell.stairsDirection){
                 case NORTH: stairWell.y++; break;
                 case EAST: stairWell.x--; break;
                 case SOUTH: stairWell.y--; break;
                 case WEST: stairWell.x++; break;
             }
         }
-        switch(direction) {
+        switch(stairWell.stairsDirection) {
             case NORTH:
             case EAST:     // pointing east
                 stairWell.centre.set(stairWell.x, stairWell.y); // centre connection node on the landing
@@ -349,26 +353,30 @@ public class DungeonMap implements Disposable {
             }
         }
 
+        TileType t2 = TileType.STAIRS_DOWN_DEEP;
+        if(room.stairType == TileType.STAIRS_UP)
+            t2 = TileType.STAIRS_UP_HIGH;
+
         switch(room.stairsDirection){
             case NORTH:
                 grid[room.centre.y][room.centre.x] = TileType.ROOM;
-                grid[room.centre.y-1][room.centre.x] = TileType.STAIRS_DOWN;
-                grid[room.centre.y-2][room.centre.x] = TileType.STAIRS_DOWN_DEEP;
+                grid[room.centre.y-1][room.centre.x] = room.stairType;
+                grid[room.centre.y-2][room.centre.x] = t2;
                 break;
             case SOUTH:
                 grid[room.centre.y][room.centre.x] = TileType.ROOM;
-                grid[room.centre.y+1][room.centre.x] = TileType.STAIRS_DOWN;
-                grid[room.centre.y+2][room.centre.x] = TileType.STAIRS_DOWN_DEEP;
+                grid[room.centre.y+1][room.centre.x] = room.stairType;
+                grid[room.centre.y+2][room.centre.x] = t2;
                 break;
             case EAST:
                 grid[room.centre.y][room.centre.x] = TileType.ROOM;
-                grid[room.centre.y][room.centre.x+1] = TileType.STAIRS_DOWN;
-                grid[room.centre.y][room.centre.x+2] = TileType.STAIRS_DOWN_DEEP;
+                grid[room.centre.y][room.centre.x-1] = room.stairType;
+                grid[room.centre.y][room.centre.x-2] = t2;
                 break;
             case WEST:
                 grid[room.centre.y][room.centre.x] = TileType.ROOM;
-                grid[room.centre.y][room.centre.x-1] = TileType.STAIRS_DOWN;
-                grid[room.centre.y][room.centre.x-2] = TileType.STAIRS_DOWN_DEEP;
+                grid[room.centre.y][room.centre.x+1] = room.stairType;
+                grid[room.centre.y][room.centre.x+2] = t2;
                 break;
         }
 

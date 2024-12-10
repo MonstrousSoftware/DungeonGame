@@ -9,7 +9,7 @@ public class World {
     public final static int MAP_HEIGHT = 30;
 
     public int seed = 1234;
-    public int level = 0;
+    public int level = 1;
 
     public DungeonMap map;
     public GameObjects gameObjects;

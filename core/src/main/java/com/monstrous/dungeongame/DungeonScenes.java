@@ -55,7 +55,7 @@ public class DungeonScenes implements Disposable {
 
     public void buildMap(DungeonMap map){
         for(Room room: map.rooms)
-            if(room.uncovered)
+            //if(room.uncovered)
                 buildRoom(map, room);
 
     }
@@ -105,6 +105,14 @@ public class DungeonScenes implements Disposable {
                 else if(cell == TileType.STAIRS_DOWN_DEEP){
                     tile = new Scene(sceneAssetStairs.scene);
                     z = -8;
+                }
+                else if(cell == TileType.STAIRS_UP){
+                    tile = new Scene(sceneAssetStairs.scene);
+                    z = 0;
+                }
+                else if(cell == TileType.STAIRS_UP_HIGH){
+                    tile = new Scene(sceneAssetStairs.scene);
+                    z = 4;
                 }
 
                 if(tile != null) {

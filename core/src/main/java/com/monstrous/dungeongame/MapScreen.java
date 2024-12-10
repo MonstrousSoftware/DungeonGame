@@ -136,6 +136,10 @@ public class MapScreen extends ScreenAdapter {
                     shapeRenderer.setColor(Color.BROWN);
                     shapeRenderer.rect(x + m, y + m, 1, 1);
                 }
+                if(cell == TileType.STAIRS_UP_HIGH) {
+                    shapeRenderer.setColor(Color.ORANGE);
+                    shapeRenderer.rect(x + m, y + m, 1, 1);
+                }
             }
         }
         shapeRenderer.end();
