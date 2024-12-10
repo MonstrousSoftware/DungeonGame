@@ -8,7 +8,12 @@ public class Populator {
     public static void distributeGold(DungeonMap map, GameObjects gameObjects ){
 
         int count = MathUtils.random(10, 25);        // nr of gold drops
+        int attempts = 0;
         while(true){
+            attempts++;
+            if(attempts > 10)       // avoid endless loop
+                break;
+
             int location = MathUtils.random(0, map.rooms.size-1);
             Room room = map.rooms.get(location);
             if(room.isStairWell)

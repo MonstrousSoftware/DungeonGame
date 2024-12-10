@@ -35,6 +35,7 @@ public class KeyController extends InputAdapter {
     private void tryMoveRogue(int dx, int dy, Direction dir){
         int x = scenes.rogue.x;
         int y = scenes.rogue.y;
+
         scenes.turnRogue(world.map, dir, x, y);
         x += dx;
         y += dy;
@@ -47,8 +48,10 @@ public class KeyController extends InputAdapter {
                     Gdx.app.log("Pickup", occupant.type.name);
                                                             // assumes gold
                     MessageBox.addLine("You picked up "+occupant.goldQuantity+" "+occupant.type.name);
+
+                    if(occupant.scene != null)
+                        scenes.remove(occupant.scene);
                     world.gameObjects.clearOccupant(x, y);
-                    scenes.remove(occupant.scene);
                     if(occupant.type == GameObjectTypes.gold){
                         scenes.getRogue().goldQuantity += occupant.goldQuantity;
                     }
@@ -63,11 +66,20 @@ public class KeyController extends InputAdapter {
                     scenes.buildRoom(world.map, room);
                     scenes.populateRoom(world, room);
                 }
-            } else {
+            } else if( world.map.getGrid(x,y) == TileType.CORRIDOR){
                 scenes.visitCorridorSegment(world.map, x, y);
             }
+            if( world.map.getGrid(x,y) == TileType.STAIRS_DOWN){
+                scenes.rogue.z = -2;
+            }
+            else if( world.map.getGrid(x,y) == TileType.STAIRS_DOWN_DEEP){
+                scenes.rogue.z = -6;
+            }
+            else {
+                scenes.rogue.z = 0;
+            }
 
-            scenes.moveRogue( x, y);
+            scenes.moveRogue( x, y, scenes.rogue.z);
         }
     }
 
@@ -86,8 +98,16 @@ public class KeyController extends InputAdapter {
     }
 
     private boolean walkable(TileType cell){
-
-        return (cell == TileType.ROOM || cell == TileType.CORRIDOR || cell == TileType.DOORWAY);
+        switch(cell){
+            case ROOM:
+            case CORRIDOR:
+            case DOORWAY:
+            case STAIRS_DOWN:
+            case STAIRS_DOWN_DEEP:
+                return true;
+            default:
+                return false;
+        }
     }
 
     private void equip( int equipped ){

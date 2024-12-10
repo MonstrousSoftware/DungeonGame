@@ -73,7 +73,7 @@ public class MapScreen extends ScreenAdapter {
 //        shapeRenderer.end();
 
 //        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-//        int m = MARGIN;
+//
 
         // grid
 //        shapeRenderer.setColor(Color.DARK_GRAY);
@@ -100,14 +100,6 @@ public class MapScreen extends ScreenAdapter {
 //            shapeRenderer.triangle(x1+m, y1+m, x2+m, y2+m, x3+m, y3+m);
 //        }
 
-        // minimum spanning tree
-//        shapeRenderer.setColor(Color.RED);
-//        for(Room room: map.rooms){
-//            for(Room nbor : room.closeNeighbours) {
-//                shapeRenderer.line(room.centre.x + m, room.centre.y + m, nbor.centre.x + m, nbor.centre.y + m);
-//            }
-//        }
-//        shapeRenderer.end();
 
 
         // corridors & wall
@@ -124,11 +116,7 @@ public class MapScreen extends ScreenAdapter {
                     shapeRenderer.setColor(Color.BLUE);
                     shapeRenderer.rect(x + m, y + m, 1, 1);
                 }
-                if(cell == TileType.WALL) {
-                    shapeRenderer.setColor(Color.DARK_GRAY);
-                    shapeRenderer.rect(x + m, y + m, 1, 1);
-                }
-                if(cell == TileType.WALL_CORNER) {
+                if(cell == TileType.WALL || cell == TileType.WALL_T_SPLIT || cell == TileType.WALL_CORNER ) {
                     shapeRenderer.setColor(Color.DARK_GRAY);
                     shapeRenderer.rect(x + m, y + m, 1, 1);
                 }
@@ -138,6 +126,10 @@ public class MapScreen extends ScreenAdapter {
                 }
                 if(cell == TileType.STAIRS_DOWN) {
                     shapeRenderer.setColor(Color.RED);
+                    shapeRenderer.rect(x + m, y + m, 1, 1);
+                }
+                if(cell == TileType.STAIRS_DOWN_DEEP) {
+                    shapeRenderer.setColor(0.5f, 0f, 0f, 1.0f);
                     shapeRenderer.rect(x + m, y + m, 1, 1);
                 }
                 if(cell == TileType.STAIRS_UP) {
@@ -166,6 +158,17 @@ public class MapScreen extends ScreenAdapter {
             }
         }
         shapeRenderer.end();
+
+        // minimum spanning tree
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(Color.RED);
+        for(Room room: map.rooms){
+            for(Room nbor : room.closeNeighbours) {
+                shapeRenderer.line(room.centre.x + m, room.centre.y + m, nbor.centre.x + m, nbor.centre.y + m);
+            }
+        }
+        shapeRenderer.end();
+
 
         sb.setLength(0);
         sb.append("Map seed: ");

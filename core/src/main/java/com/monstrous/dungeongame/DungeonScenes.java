@@ -34,6 +34,7 @@ public class DungeonScenes implements Disposable {
     private SceneAsset sceneAssetCorner;
     private SceneAsset sceneAssetWallTsplit;
     private SceneAsset sceneAssetWallCrossing;
+    private SceneAsset sceneAssetStairs;
 
 
     public DungeonScenes(SceneManager sceneManager) {
@@ -49,6 +50,7 @@ public class DungeonScenes implements Disposable {
         sceneAssetCorner = new GLTFLoader().load(Gdx.files.internal("models/wall_corner.gltf"));
         sceneAssetWallTsplit = new GLTFLoader().load(Gdx.files.internal("models/wall_Tsplit.gltf"));
         sceneAssetWallCrossing = new GLTFLoader().load(Gdx.files.internal("models/wall_crossing.gltf"));
+        sceneAssetStairs = new GLTFLoader().load(Gdx.files.internal("models/stairs.gltf"));
     }
 
     public void buildMap(DungeonMap map){
@@ -65,12 +67,13 @@ public class DungeonScenes implements Disposable {
             for(int y = room.y; y <= room.y + room.height; y++){
                 Scene tile;
                 TileType cell = map.getGrid(x,y);
-                if(cell != TileType.VOID){
+                if(cell!= TileType.VOID && cell != TileType.STAIRS_DOWN && cell != TileType.STAIRS_DOWN_DEEP){
                     tile = new Scene(sceneAssetFloor.scene);
-                    setTransform(tile.modelInstance.transform, x, y, Direction.NORTH);
+                    setTransform(tile.modelInstance.transform, x, y, 0, Direction.NORTH);
                     sceneManager.addScene(tile);
                 }
                 tile = null;
+                int z = 0;
                 if(cell == TileType.WALL){
                     if(MathUtils.random(1.0f) < 0.1f)
                         tile = new Scene(sceneAssetWall2.scene);
@@ -95,9 +98,17 @@ public class DungeonScenes implements Disposable {
                 else if(cell == TileType.WALL_CROSSING){
                     tile = new Scene(sceneAssetWallCrossing.scene);
                 }
+                else if(cell == TileType.STAIRS_DOWN){
+                    tile = new Scene(sceneAssetStairs.scene);
+                    z = -4;
+                }
+                else if(cell == TileType.STAIRS_DOWN_DEEP){
+                    tile = new Scene(sceneAssetStairs.scene);
+                    z = -8;
+                }
 
                 if(tile != null) {
-                    setTransform(tile.modelInstance.transform, x, y, map.tileOrientation[y][x]);
+                    setTransform(tile.modelInstance.transform, x, y, z, map.tileOrientation[y][x]);
                     sceneManager.addScene(tile);
                 }
             }
@@ -115,7 +126,7 @@ public class DungeonScenes implements Disposable {
         TileType cell = map.getGrid(x,y);
         if(cell != TileType.VOID){
             Scene tile = new Scene(sceneAssetFloor.scene);
-            setTransform(tile.modelInstance.transform, x, y, Direction.NORTH);
+            setTransform(tile.modelInstance.transform, x, y, 0, Direction.NORTH);
             sceneManager.addScene(tile);
         }
     }
@@ -127,7 +138,7 @@ public class DungeonScenes implements Disposable {
                     TileType cell = map.getGrid(x,y);
                     if(cell != TileType.VOID){
                         Scene tile = new Scene(sceneAssetFloor.scene);
-                        setTransform(tile.modelInstance.transform, x, y, Direction.NORTH);
+                        setTransform(tile.modelInstance.transform, x, y, 0, Direction.NORTH);
                         sceneManager.addScene(tile);
                     }
                 }
@@ -166,7 +177,7 @@ public class DungeonScenes implements Disposable {
     public void addScene(GameObject gameObject){
 
         Scene item = new Scene(gameObject.type.sceneAsset.scene);
-        setTransform(item.modelInstance.transform, gameObject.x, gameObject.y, Direction.SOUTH);
+        setTransform(item.modelInstance.transform, gameObject.x, gameObject.y, 0, Direction.SOUTH);
         sceneManager.addScene(item);
         gameObject.scene = item;
     }
@@ -198,15 +209,15 @@ public class DungeonScenes implements Disposable {
 
     // The next two methods should be the only place where we convert logical x,y to a transform
     //
-    private void setTransform(Matrix4 transform, int x, int y, Direction dir){
+    private void setTransform(Matrix4 transform, int x, int y, int z, Direction dir){
         transform.setToRotation(Vector3.Y, 180-dir.ordinal() * 90);
-        transform.setTranslation(SCALE*x, 0, -SCALE*y);
+        transform.setTranslation(SCALE*x, z, -SCALE*y);
 
     }
 
     // leave orientation as it is
-    private void setTransform(Matrix4 transform, int x, int y){
-        transform.setTranslation(SCALE*x, 0, -SCALE*y);
+    private void setTransform(Matrix4 transform, int x, int y, int z){
+        transform.setTranslation(SCALE*x, z, -SCALE*y);
     }
 
     public void adaptModel(Scene rogue, int equipped){
@@ -238,13 +249,15 @@ public class DungeonScenes implements Disposable {
 
     public void turnRogue(DungeonMap map, Direction dir, int x, int y ){
         rogue.direction = dir;
-        setTransform(rogue.scene.modelInstance.transform, x, y, dir);
+        setTransform(rogue.scene.modelInstance.transform, x, y, rogue.z, dir);
     }
 
-    public void moveRogue( int x, int y){
+    public void moveRogue( int x, int y, int z){
         rogue.x = x;
         rogue.y = y;
-        setTransform(rogue.scene.modelInstance.transform, x, y);
+        rogue.z = z;
+
+        setTransform(rogue.scene.modelInstance.transform, x, y, z);
 
     }
 
@@ -263,5 +276,6 @@ public class DungeonScenes implements Disposable {
         sceneAssetWall.dispose();
         sceneAssetDoorWay.dispose();
         sceneAssetCorner.dispose();
+        // todo
     }
 }

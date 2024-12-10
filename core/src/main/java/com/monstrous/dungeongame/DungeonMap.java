@@ -18,11 +18,14 @@ import com.badlogic.gdx.utils.ShortArray;
 // 3. Find minimum spanning tree to find a minimal tree to connect all rooms
 // 4. Add some random edges to make it less minimal and to allow for some loops
 // 5. Use A* to turn edges into corridors with a bias to join to existing corridors
+//
+// Multiple levels are connected by staircases.
+
 
 
 public class DungeonMap implements Disposable {
     public static final int MIN_SIZE = 4;           // min size of room
-    public static final int MAX_SIZE = 12;          // max size of room
+    public static final int MAX_SIZE = 6; //12;          // max size of room
     public static final float LOOP_FACTOR = 0.125f; // probability factor [0..1] to add some extra non-MST edge to paths
 
     public final int mapWidth, mapHeight;
@@ -57,7 +60,7 @@ public class DungeonMap implements Disposable {
         MathUtils.random.setSeed(getLevelSeed(mapSeed, levelNr));
 
         // generate stairs to the level below
-//        generateStairWells(TileType.STAIRS_DOWN);    // stairs going down
+        generateStairWells(TileType.STAIRS_DOWN);    // stairs going down
 
         generateRooms(rooms);
 
@@ -126,10 +129,14 @@ public class DungeonMap implements Disposable {
     private Room generateStairWell(int id, TileType stairType){
         int d = MathUtils.random(0, 3); // random direction NESW
         Direction direction = Direction.values()[d];
+
         // place horizontal or vertical
         int w = (direction == Direction.EAST || direction == Direction.WEST) ? 3 : 1;
         int h = (direction == Direction.EAST || direction == Direction.WEST) ? 1 : 3;
         Room stairWell = placeRoom(id, w, h);
+        stairWell.stairsDirection = direction;
+
+
         if(stairType == TileType.STAIRS_UP) {
             d = (d + 2) % 4;    // reverse direction
             direction = Direction.values()[d];
@@ -142,11 +149,11 @@ public class DungeonMap implements Disposable {
             }
         }
         switch(direction) {
-            case SOUTH:     // pointing south
+            case NORTH:
             case EAST:     // pointing east
                 stairWell.centre.set(stairWell.x, stairWell.y); // centre connection node on the landing
                 break;
-            case NORTH:     // pointing north
+            case SOUTH:
                 stairWell.centre.set(stairWell.x, stairWell.y+2); // centre connection node on the landing
                 break;
             case WEST:     // pointing west
@@ -164,7 +171,10 @@ public class DungeonMap implements Disposable {
         return new Room(id, x, y, w, h);
     }
 
+
+
     private boolean checkOverlap(Room newRoom, Array<Room> rooms){
+
 
         for(Room room : rooms ){
             if(room.overlaps(newRoom))
@@ -318,15 +328,61 @@ public class DungeonMap implements Disposable {
         }
 
         for(Room room : rooms ){
-            addRoom(room);
-            // todo stairwells
-//            for(int x =  room.x; x < room.x+room.width; x++){
-//                for(int y =  room.y; y < room.y+room.height; y++){
-//                    grid[y][x] = room.isStairWell ? (short)room.stairType : ROOM;
-//                }
-//            }
-
+            if(room.isStairWell)
+                addStairWell(room);
+            else
+                addRoom(room);
         }
+    }
+
+    private void addStairWell(Room room){
+
+        int rx = room.x;
+        int ry = room.y;
+        int rw = room.width;
+        int rh = room.height;
+
+        for(int x = 0; x < rw; x++){
+            for(int y = 0; y < rh; y++){
+                roomCode[ry+y][rx+x] = room.id;
+                tileOrientation[ry+y][rx+x] = room.stairsDirection;
+            }
+        }
+
+        switch(room.stairsDirection){
+            case NORTH:
+                grid[room.centre.y][room.centre.x] = TileType.ROOM;
+                grid[room.centre.y-1][room.centre.x] = TileType.STAIRS_DOWN;
+                grid[room.centre.y-2][room.centre.x] = TileType.STAIRS_DOWN_DEEP;
+                break;
+            case SOUTH:
+                grid[room.centre.y][room.centre.x] = TileType.ROOM;
+                grid[room.centre.y+1][room.centre.x] = TileType.STAIRS_DOWN;
+                grid[room.centre.y+2][room.centre.x] = TileType.STAIRS_DOWN_DEEP;
+                break;
+            case EAST:
+                grid[room.centre.y][room.centre.x] = TileType.ROOM;
+                grid[room.centre.y][room.centre.x+1] = TileType.STAIRS_DOWN;
+                grid[room.centre.y][room.centre.x+2] = TileType.STAIRS_DOWN_DEEP;
+                break;
+            case WEST:
+                grid[room.centre.y][room.centre.x] = TileType.ROOM;
+                grid[room.centre.y][room.centre.x-1] = TileType.STAIRS_DOWN;
+                grid[room.centre.y][room.centre.x-2] = TileType.STAIRS_DOWN_DEEP;
+                break;
+        }
+
+
+
+
+//        // stair well has no walls
+//        for(int x = 0; x < rw; x++){
+//            for(int y = 0; y < rh; y++){
+//                grid[ry+y][rx+x] = room.stairType;
+//                tileOrientation[ry+y][rx+x] = room.stairsDirection;
+//            }
+//        }
+//        grid[room.centre.y][room.centre.x] = TileType.ROOM;
     }
 
     private void addRoom(Room room){
@@ -492,9 +548,10 @@ public class DungeonMap implements Disposable {
                     case ROOM:      cost += 10; break;
                     case CORRIDOR:  cost += 1; break;
                     case WALL:      cost += 20; break;
-                    case WALL_CORNER:    cost += 100; break;
-                    case STAIRS_DOWN:    cost += 100; break;        // never path via a staircase
-                    case STAIRS_UP:      cost += 100; break;
+                    case WALL_CORNER:    cost += 500; break;
+                    case STAIRS_DOWN:    cost += 500; break;        // never path via a staircase
+                    case STAIRS_DOWN_DEEP:    cost += 500; break;        // never path via a staircase
+                    case STAIRS_UP:      cost += 500; break;
                 }
                 Node nbor = null;
                 for(Node n : fringe){

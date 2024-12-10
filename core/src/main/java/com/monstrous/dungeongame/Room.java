@@ -1,6 +1,7 @@
 package com.monstrous.dungeongame;
 
 import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 
 public class Room {
@@ -12,6 +13,7 @@ public class Room {
     public Array<Room> closeNeighbours;     // connected rooms from minimum spanning tree plus some extra ones for fun
     public boolean isStairWell;
     public TileType stairType;           // STAIRS_UP or STAIRS_DOWN (only valid if isStairWell)
+    public Direction stairsDirection;
     public boolean uncovered;
 
     public Room(int id, int x, int y, int w, int h) {
@@ -28,8 +30,15 @@ public class Room {
         uncovered = false;
     }
 
+
+    // for rooms we allow one cell overlap to make walls coincide.
+    // for a stairwell we don't allow any overlap (assumes `this` could be a stairwell but `r` could not)
+    //
     public boolean overlaps (Room r) {
-        return x < r.x + r.width && x + width > r.x && y < r.y + r.height && y + height > r.y;
+        if(isStairWell)
+            return x <= r.x + r.width && x + width >= r.x && y <= r.y + r.height && y + height >= r.y;
+        else
+            return x < r.x + r.width && x + width > r.x && y < r.y + r.height && y + height > r.y;
     }
 
     public void addNeighbour(Room nbor){

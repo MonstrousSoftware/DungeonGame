@@ -6,6 +6,7 @@ public class GameObject {
 
     public GameObjectType type;
     public int x,y;
+    public int z;       // above/below ground level, e.g. when walking stairs
     public Direction direction;
     public Scene scene;
     public int equipped;
