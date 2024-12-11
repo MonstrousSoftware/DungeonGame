@@ -15,14 +15,19 @@ public class KeyController extends InputAdapter {
 
     @Override
     public boolean keyTyped(char character) {
-        if(world.rogue.stats.hitPoints <= 0)
+        if(world.rogue.stats.hitPoints <= 0) {
+            if(character == 'R'){
+                restart();
+                return true;
+            }
             return false;
+        }
 
         boolean handled = processKey(character);
         if(handled)
             world.enemies.step(scenes);
         if(world.rogue.stats.hitPoints <= 0){
-            MessageBox.addLine("You are dead.");
+            MessageBox.addLine("You are dead. Press R to restart.");
         }
 
         return handled;
@@ -42,9 +47,20 @@ public class KeyController extends InputAdapter {
             case '2':   equip( Equipped.THROWABLE ); return true;
             case '3':   equip( Equipped.CROSSBOW ); return true;
             case 'p':   dropGold(); return true;
+            case 'R':   restart(); return true;
             case ' ':   return true;        // do nothing
             default:    return false;
         }
+    }
+
+    private void restart(){
+        world.restart();
+        scenes.clear();
+        scenes.placeRogue( world );
+        int roomId = world.map.roomCode[world.rogue.y][world.rogue.x];
+        Room room = world.map.rooms.get(roomId);
+        scenes.buildRoom( world.map, room );
+        scenes.populateRoom(world, room);
     }
 
     private void tryMoveRogue(int dx, int dy, Direction dir){

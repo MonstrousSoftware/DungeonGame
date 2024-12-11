@@ -91,7 +91,8 @@ public class Enemies {
         MessageBox.addLine(actor.type.name+ " hit the "+other.type.name+"(HP: "+other.stats.hitPoints+")");
         if(other.stats.hitPoints <= 0){
             MessageBox.addLine(actor.type.name+ " has defeated the "+other.type.name+". (XP +1)");
-            scenes.remove(other.scene);
+            if(other.scene != null)
+                scenes.remove(other.scene);
             world.gameObjects.clearOccupant(other.x, other.y);
             actor.stats.experience++;
         }

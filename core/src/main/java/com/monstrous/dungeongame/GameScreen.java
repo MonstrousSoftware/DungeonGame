@@ -7,6 +7,7 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g3d.environment.SpotLight;
 import com.badlogic.gdx.graphics.g3d.shaders.DepthShader;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import net.mgsx.gltf.scene3d.attributes.PBRCubemapAttribute;
@@ -125,7 +126,7 @@ public class GameScreen extends ScreenAdapter {
         camController = new OrthoCamController(camera, world.rogue.scene.modelInstance);
         keyController = new KeyController(world, dungeonScenes );
 
-        gui = new GUI( world.rogue );
+        gui = new GUI( world );
 
         InputMultiplexer im = new InputMultiplexer();
         im.addProcessor(camController);
@@ -155,8 +156,18 @@ public class GameScreen extends ScreenAdapter {
             dungeonScenes.buildRoom( world.map, room );
             dungeonScenes.populateRoom(world, room);
             camController.setTrackedObject( world.rogue.scene.modelInstance );
-
         }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.R)){
+            world.restart();
+            sceneManager.getRenderableProviders().clear();
+            dungeonScenes.placeRogue( world );
+            int roomId = world.map.roomCode[world.rogue.y][world.rogue.x];
+            Room room = world.map.rooms.get(roomId);
+            dungeonScenes.buildRoom( world.map, room );
+            dungeonScenes.populateRoom(world, room);
+            camController.setTrackedObject( world.rogue.scene.modelInstance );
+        }
+
 
         camController.update(deltaTime);
         world.rogue.scene.modelInstance.transform.getTranslation(pointLight.position);

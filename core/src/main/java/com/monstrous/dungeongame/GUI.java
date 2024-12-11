@@ -14,15 +14,16 @@ public class GUI implements Disposable {
 
     public Stage stage;
     private Skin skin;
+    private Label level;
     private Label gold;
     private Label hp;
     private Label xp;
     private Label message1, message2, message3;
     private StringBuffer sb;
-    private GameObject rogue;
+    private World world;
 
-    public GUI( GameObject rogue ) {
-        this.rogue = rogue;
+    public GUI( World world ) {
+        this.world = world;
         skin = new Skin(Gdx.files.internal("blue-pixel-skin/blue-pixel.json"));
         stage = new Stage(new ScreenViewport());
         sb = new StringBuffer();
@@ -38,10 +39,13 @@ public class GUI implements Disposable {
         screenTable.setFillParent(true);
 
 
+        level = new Label("LEVEL: 0", skin);
         gold = new Label("GOLD: 0", skin);
         hp = new Label("HP: 0", skin);
         xp = new Label("XP: 0", skin);
         //gold.setColor(Color.GOLD);
+        screenTable.add(level).left().top().expandX();
+        screenTable.row();
         screenTable.add(gold).left().top().expandX();
         screenTable.row();
         screenTable.add(hp).left().top().expandX();
@@ -68,18 +72,23 @@ public class GUI implements Disposable {
 
     private void update(){
         sb.setLength(0);
+        sb.append("LEVEL: ");
+        sb.append(world.level);
+        level.setText(sb.toString());
+
+        sb.setLength(0);
         sb.append("GOLD: ");
-        sb.append(rogue.stats.gold);
+        sb.append(world.rogue.stats.gold);
         gold.setText(sb.toString());
 
         sb.setLength(0);
         sb.append("HP: ");
-        sb.append(rogue.stats.hitPoints);
+        sb.append(world.rogue.stats.hitPoints);
         hp.setText(sb.toString());
 
         sb.setLength(0);
         sb.append("XP: ");
-        sb.append(rogue.stats.experience);
+        sb.append(world.rogue.stats.experience);
         xp.setText(sb.toString());
 
         if(MessageBox.lines.size > 0)

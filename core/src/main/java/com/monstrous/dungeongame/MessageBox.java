@@ -12,4 +12,8 @@ public class MessageBox {
     public static void addLine(String message){
         lines.add(message);
     }
+
+    public static void clear(){
+        lines.clear();
+    }
 }

@@ -260,22 +260,13 @@ public class DungeonScenes implements Disposable {
         setTransform(go.scene.modelInstance.transform, x, y, z);
     }
 
-//    public void turnRogue( Direction dir, int x, int y ){
-//        turnObject(world.rogue, dir, x, y);
-//    }
-//
-//    public void moveRogue( int x, int y, int z){
-//        moveObject(rogue, x, y, z);
-//    }
-
     public void remove(Scene scene){
         sceneManager.removeScene(scene);
     }
 
-//    public GameObject getRogue(){
-//        return rogue;
-//    }
-
+    public void clear(){
+        sceneManager.getRenderableProviders().clear();
+    }
 
     @Override
     public void dispose() {
