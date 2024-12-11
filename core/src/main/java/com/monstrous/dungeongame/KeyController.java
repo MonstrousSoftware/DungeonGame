@@ -55,6 +55,9 @@ public class KeyController extends InputAdapter {
                     if(occupant.type == GameObjectTypes.gold){
                         scenes.getRogue().goldQuantity += occupant.goldQuantity;
                     }
+                } else if(occupant.type.isEnemy){
+                    fight(occupant);
+                    return;
                 }
             }
 
@@ -88,6 +91,18 @@ public class KeyController extends InputAdapter {
         }
     }
 
+
+    private void fight(GameObject enemy){
+        enemy.stats.hitPoints -= 1;
+        MessageBox.addLine("You hit the "+enemy.type.name+"(HP: "+enemy.stats.hitPoints+")");
+        if(enemy.stats.hitPoints <= 0){
+            MessageBox.addLine("You have defeated the "+enemy.type.name+". (XP +1)");
+            scenes.remove(enemy.scene);
+            world.gameObjects.clearOccupant(enemy.x, enemy.y);
+            world.rogue.stats.experience++;
+        }
+    }
+
     // testing
     private void dropGold(){
         GameObject rogue = scenes.getRogue();
@@ -118,7 +133,7 @@ public class KeyController extends InputAdapter {
     }
 
     private void equip( int equipped ){
-        scenes.getRogue().equipped = equipped;
+        scenes.getRogue().stats.equipped = equipped;
         scenes.adaptModel(scenes.getRogue().scene, equipped);
     }
 }

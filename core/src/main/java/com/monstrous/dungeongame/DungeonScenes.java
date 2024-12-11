@@ -55,7 +55,7 @@ public class DungeonScenes implements Disposable {
 
     public void buildMap(DungeonMap map){
         for(Room room: map.rooms)
-            //if(room.uncovered)
+            if(room.uncovered)
                 buildRoom(map, room);
 
     }
@@ -164,7 +164,7 @@ public class DungeonScenes implements Disposable {
         for(int x = room.x; x < room.x+room.width; x++){
             for(int y = room.y; y < room.y + room.height; y++){
                 GameObject occupant = world.gameObjects.getOccupant(x,y);
-                if(occupant != null && occupant.type == GameObjectTypes.gold){
+                if(occupant != null){ // && occupant.type == GameObjectTypes.gold){
                     addScene(occupant);
                 }
             }
@@ -191,29 +191,20 @@ public class DungeonScenes implements Disposable {
     }
 
     public void placeRogue(World world){
+        rogue = world.rogue;
+        addScene(rogue);
+        adaptModel(rogue.scene, Equipped.NONE);
 
-        world.gameObjects.gameObjects.clear();
-
-        for(int x = 0; x < world.map.mapWidth; x++){
-            for(int y = 0; y < world.map.mapHeight; y++){
-                GameObject occupant = world.gameObjects.getOccupant(x,y);
-                if(occupant != null && occupant.type == GameObjectTypes.rogue){
-                    rogue = occupant;
-                    addScene(rogue);
-                    adaptModel(rogue.scene, Equipped.NONE);
-
-                    int roomId = world.map.roomCode[rogue.y][rogue.x];
-                    if(roomId >= 0) {
-                        Room room = world.map.rooms.get(roomId);
-                        room.uncovered = true;
-                    }
-                    else
-                        visitCorridorSegment(world.map, x, y);
-                    return;
-                }
-            }
+        int roomId = world.map.roomCode[rogue.y][rogue.x];
+        if(roomId >= 0) {
+            Room room = world.map.rooms.get(roomId);
+            room.uncovered = true;
         }
+        else
+            visitCorridorSegment(world.map, rogue.x, rogue.y);
+
     }
+
 
     // The next two methods should be the only place where we convert logical x,y to a transform
     //

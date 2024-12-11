@@ -8,6 +8,7 @@ import net.mgsx.gltf.loaders.gltf.GLTFLoader;
 
 public class GameObjectTypes implements Disposable {
     public static GameObjectType rogue;
+    public static GameObjectType warrior;
     public static GameObjectType gold;
     public static GameObjectType knife;
     public static GameObjectType crossbow;
@@ -24,6 +25,11 @@ public class GameObjectTypes implements Disposable {
         rogue.sceneAsset = new GLBLoader().load(Gdx.files.internal("characters/Rogue_Hooded.glb"));
         rogue.isPlayer = true;
         types.add(rogue);
+
+        warrior = new GameObjectType("Warrior", true, false);
+        warrior.sceneAsset = new GLBLoader().load(Gdx.files.internal("characters/Skeleton_Warrior.glb"));
+        warrior.isEnemy = true;
+        types.add(warrior);
 
         gold = new GameObjectType("Gold", false, true);
         gold.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/coin_stack_small.gltf"));

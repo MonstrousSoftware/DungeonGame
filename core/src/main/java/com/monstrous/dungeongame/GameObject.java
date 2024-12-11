@@ -9,8 +9,9 @@ public class GameObject {
     public int z;       // above/below ground level, e.g. when walking stairs
     public Direction direction;
     public Scene scene;
-    public int equipped;
+    public CharacterStats stats;
     public int goldQuantity;
+
 
     public GameObject(GameObjectType type, int x, int y, Direction direction) {
         this.type = type;

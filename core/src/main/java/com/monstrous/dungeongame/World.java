@@ -13,6 +13,7 @@ public class World {
 
     public DungeonMap map;
     public GameObjects gameObjects;
+    public GameObject rogue;
 
     public World() {
         GameObjectTypes gameObjectTypes = new GameObjectTypes();
@@ -35,7 +36,11 @@ public class World {
         map = new DungeonMap(seed, level, MAP_WIDTH, MAP_HEIGHT);
 
         gameObjects = new GameObjects(MAP_WIDTH, MAP_HEIGHT);
+        // add dynamic object to the gameObjects list and its occupants grid
+
+        rogue = Populator.placeRogue(map, gameObjects);
         Populator.distributeGold(map, gameObjects);
-        Populator.placeRogue(map, gameObjects);
+        Populator.distributeWarriors(map, gameObjects);
+
     }
 }

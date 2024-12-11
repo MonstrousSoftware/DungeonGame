@@ -7,6 +7,7 @@ public class GameObjectType {
     public boolean character;
     public boolean pickup;
     public boolean isPlayer;
+    public boolean isEnemy;
     public SceneAsset sceneAsset;
 
     public GameObjectType(String name, boolean character, boolean pickup) {

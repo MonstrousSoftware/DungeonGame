@@ -55,14 +55,14 @@ button-up
   index: -1
 checkbox-off
   rotate: false
-  xy: 475, 120
+  xy: 407, 120
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 checkbox-on
   rotate: false
-  xy: 201, 73
+  xy: 441, 120
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
@@ -109,7 +109,7 @@ open-sans-regular-12
   index: -1
 slider-bg
   rotate: false
-  xy: 407, 120
+  xy: 475, 120
   size: 32, 32
   split: 13, 15, 10, 12
   pad: 14, 16, 14, 17
@@ -118,7 +118,7 @@ slider-bg
   index: -1
 slider-knob
   rotate: false
-  xy: 441, 120
+  xy: 201, 73
   size: 32, 32
   orig: 32, 32
   offset: 0, 0

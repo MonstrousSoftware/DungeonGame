@@ -14,7 +14,7 @@ public class GUI implements Disposable {
     public Stage stage;
     private Skin skin;
     private Label gold;
-    private Label message;
+    private Label message1, message2, message3;
     private StringBuffer sb;
     private GameObject rogue;
 
@@ -39,9 +39,18 @@ public class GUI implements Disposable {
         //gold.setColor(Color.GOLD);
         screenTable.add(gold).pad(10).left().top().expandX();
         screenTable.row();
-        message = new Label("..", skin);
+        message1 = new Label("..", skin);
+        message2 = new Label("..", skin);
+        message3 = new Label("..", skin);
         // message.setColor(Color.BLUE);
-        screenTable.add(message).pad(10).top().left().expand();
+        Table messageBox = new Table();
+        messageBox.add(message1);
+        messageBox.row();
+        messageBox.add(message2);
+        messageBox.row();
+        messageBox.add(message3);
+
+        screenTable.add(messageBox).top().left().expand();
         screenTable.pack();
         stage.addActor(screenTable);
     }
@@ -52,8 +61,13 @@ public class GUI implements Disposable {
         sb.append("GOLD: ");
         sb.append(rogue.goldQuantity);
         gold.setText(sb.toString());
+
         if(MessageBox.lines.size > 0)
-            message.setText(MessageBox.lines.get(MessageBox.lines.size-1));
+            message3.setText(MessageBox.lines.get(MessageBox.lines.size-1));
+        if(MessageBox.lines.size > 1)
+            message2.setText(MessageBox.lines.get(MessageBox.lines.size-2));
+        if(MessageBox.lines.size > 2)
+            message1.setText(MessageBox.lines.get(MessageBox.lines.size-3));
     }
 
 
