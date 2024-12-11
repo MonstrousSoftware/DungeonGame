@@ -91,12 +91,9 @@ public class GUI implements Disposable {
         sb.append(world.rogue.stats.experience);
         xp.setText(sb.toString());
 
-        if(MessageBox.lines.size > 0)
-            message3.setText(MessageBox.lines.get(MessageBox.lines.size-1));
-        if(MessageBox.lines.size > 1)
-            message2.setText(MessageBox.lines.get(MessageBox.lines.size-2));
-        if(MessageBox.lines.size > 2)
-            message1.setText(MessageBox.lines.get(MessageBox.lines.size-3));
+        message3.setText(MessageBox.lines.get(MessageBox.lines.size-1));
+        message2.setText(MessageBox.lines.get(MessageBox.lines.size-2));
+        message1.setText(MessageBox.lines.get(MessageBox.lines.size-3));
     }
 
 

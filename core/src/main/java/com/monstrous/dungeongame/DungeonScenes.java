@@ -261,7 +261,8 @@ public class DungeonScenes implements Disposable {
     }
 
     public void remove(Scene scene){
-        sceneManager.removeScene(scene);
+        if(scene != null)
+            sceneManager.removeScene(scene);
     }
 
     public void clear(){

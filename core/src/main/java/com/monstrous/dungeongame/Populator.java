@@ -54,6 +54,7 @@ public class Populator {
             // find a point inside the room (edges are walls)
             int rx = MathUtils.random(1, room.width-3);
             int ry = MathUtils.random(1, room.height-3);
+
             GameObject occupant = gameObjects.getOccupant(room.x+rx, room.y+ry);
             if(occupant != null)
                 continue;
@@ -93,7 +94,7 @@ public class Populator {
                 continue;
 
             GameObject rogue = new GameObject(GameObjectTypes.rogue, room.centre.x, room.centre.y, Direction.SOUTH);
-            //gameObjects.setOccupant(room.centre.x, room.centre.y, occupant);
+            gameObjects.setOccupant(room.centre.x, room.centre.y, rogue);
             rogue.stats = new CharacterStats();
             gameObjects.add(rogue);
             rogue.direction = Direction.SOUTH;

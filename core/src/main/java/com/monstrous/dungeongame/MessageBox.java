@@ -7,6 +7,7 @@ public class MessageBox {
 
     public MessageBox() {
         lines = new Array<>();
+        clear();
     }
 
     public static void addLine(String message){
@@ -15,5 +16,8 @@ public class MessageBox {
 
     public static void clear(){
         lines.clear();
+        addLine("");
+        addLine("");
+        addLine("");
     }
 }

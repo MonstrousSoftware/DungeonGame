@@ -53,9 +53,11 @@ public class World {
         enemies = new Enemies(this);
         // add dynamic object to the gameObjects list and its occupants grid
 
-        rogue = Populator.placeRogue(map, gameObjects);
+        rogue = Populator.placeRogue(map, gameObjects);         // todo not when moving between level;
         Populator.distributeGold(map, gameObjects);
         Populator.distributeEnemies(map, gameObjects, enemies);
+
+        gameObjects.clearOccupant(rogue.x, rogue.y);
 
     }
 }
