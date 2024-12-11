@@ -6,6 +6,7 @@ public class CharacterStats {
     public int strength;
     public int armour;
     public int experience;
+    public int gold;
 
     public CharacterStats() {
         equipped = 0;
@@ -13,5 +14,6 @@ public class CharacterStats {
         strength = 10;
         armour = 0;
         experience = 0;
+        gold = 0;
     }
 }

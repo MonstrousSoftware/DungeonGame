@@ -28,7 +28,7 @@ public class Populator {
             occupant = new GameObject(GameObjectTypes.gold, room.x+rx, room.y+ry, Direction.SOUTH);
             gameObjects.setOccupant(room.x+rx, room.y+ry, occupant);
             gameObjects.add(occupant);
-            occupant.goldQuantity = MathUtils.random(1,20);
+            occupant.quantity = MathUtils.random(1,20);
             // seems redundant to provide x,y twice
 
 
@@ -38,7 +38,7 @@ public class Populator {
         }
     }
 
-    public static void distributeEnemies(DungeonMap map, GameObjects gameObjects ){
+    public static void distributeEnemies(DungeonMap map, GameObjects gameObjects, Enemies enemies ){
 
         int count = MathUtils.random(2, 10);        //nr of drops
         int attempts = 0;
@@ -66,11 +66,11 @@ public class Populator {
                 case 2: type = GameObjectTypes.minion; break;
                 case 3: type = GameObjectTypes.imp; break;
             }
-            occupant = new GameObject(type, room.x+rx, room.y+ry, Direction.SOUTH);
-            gameObjects.setOccupant(room.x+rx, room.y+ry, occupant);
-            occupant.stats = new CharacterStats();
-            gameObjects.add(occupant);
-//            occupant.goldQuantity = MathUtils.random(1,20);
+            GameObject enemy = new GameObject(type, room.x+rx, room.y+ry, Direction.SOUTH);
+            gameObjects.setOccupant(room.x+rx, room.y+ry, enemy);
+            enemy.stats = new CharacterStats();
+            gameObjects.add(enemy);
+            enemies.add(enemy);
             // seems redundant to provide x,y twice
 
 

@@ -20,7 +20,7 @@ import static com.monstrous.dungeongame.DungeonMap.*;
 public class DungeonScenes implements Disposable {
     private final static float SCALE = 4f;
 
-    public GameObject rogue;
+    //public GameObject rogue;
 
     private SceneManager sceneManager;
 
@@ -191,7 +191,7 @@ public class DungeonScenes implements Disposable {
     }
 
     public void placeRogue(World world){
-        rogue = world.rogue;
+        GameObject rogue = world.rogue;
         addScene(rogue);
         adaptModel(rogue.scene, Equipped.NONE);
 
@@ -246,27 +246,35 @@ public class DungeonScenes implements Disposable {
             part.enabled = enabled;
     }
 
-    public void turnRogue(DungeonMap map, Direction dir, int x, int y ){
-        rogue.direction = dir;
-        setTransform(rogue.scene.modelInstance.transform, x, y, rogue.z, dir);
+
+    public void turnObject(GameObject go, Direction dir, int x, int y ){
+        go.direction = dir;
+        setTransform(go.scene.modelInstance.transform, x, y, go.z, dir);
     }
 
-    public void moveRogue( int x, int y, int z){
-        rogue.x = x;
-        rogue.y = y;
-        rogue.z = z;
+    public void moveObject( GameObject go, int x, int y, int z){
+        go.x = x;
+        go.y = y;
+        go.z = z;
 
-        setTransform(rogue.scene.modelInstance.transform, x, y, z);
-
+        setTransform(go.scene.modelInstance.transform, x, y, z);
     }
+
+//    public void turnRogue( Direction dir, int x, int y ){
+//        turnObject(world.rogue, dir, x, y);
+//    }
+//
+//    public void moveRogue( int x, int y, int z){
+//        moveObject(rogue, x, y, z);
+//    }
 
     public void remove(Scene scene){
         sceneManager.removeScene(scene);
     }
 
-    public GameObject getRogue(){
-        return rogue;
-    }
+//    public GameObject getRogue(){
+//        return rogue;
+//    }
 
 
     @Override

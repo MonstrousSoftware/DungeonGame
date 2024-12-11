@@ -122,10 +122,10 @@ public class GameScreen extends ScreenAdapter {
         dungeonScenes.populateMap(world);
 
 
-        camController = new OrthoCamController(camera, dungeonScenes.getRogue().scene.modelInstance);
+        camController = new OrthoCamController(camera, world.rogue.scene.modelInstance);
         keyController = new KeyController(world, dungeonScenes );
 
-        gui = new GUI( dungeonScenes.getRogue() );
+        gui = new GUI( world.rogue );
 
         InputMultiplexer im = new InputMultiplexer();
         im.addProcessor(camController);
@@ -150,16 +150,16 @@ public class GameScreen extends ScreenAdapter {
             System.out.println("seed: "+world.seed+ " level: "+world.level);
             sceneManager.getRenderableProviders().clear();
             dungeonScenes.placeRogue( world );
-            int roomId = world.map.roomCode[dungeonScenes.rogue.y][dungeonScenes.rogue.x];
+            int roomId = world.map.roomCode[world.rogue.y][world.rogue.x];
             Room room = world.map.rooms.get(roomId);
             dungeonScenes.buildRoom( world.map, room );
             dungeonScenes.populateRoom(world, room);
-            camController.setTrackedObject( dungeonScenes.getRogue().scene.modelInstance );
+            camController.setTrackedObject( world.rogue.scene.modelInstance );
 
         }
 
         camController.update(deltaTime);
-        dungeonScenes.getRogue().scene.modelInstance.transform.getTranslation(pointLight.position);
+        world.rogue.scene.modelInstance.transform.getTranslation(pointLight.position);
         pointLight.position.y = 3;
         shadowCastingLight.setCenter(pointLight.position);
 

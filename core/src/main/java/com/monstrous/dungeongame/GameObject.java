@@ -10,7 +10,7 @@ public class GameObject {
     public Direction direction;
     public Scene scene;
     public CharacterStats stats;
-    public int goldQuantity;
+    public int quantity;            // e.g. amount of gold for a gold object
 
 
     public GameObject(GameObjectType type, int x, int y, Direction direction) {
@@ -18,6 +18,6 @@ public class GameObject {
         this.x = x;
         this.y = y;
         this.direction = direction;
-        this.goldQuantity = 0;
+        this.quantity = 0;
     }
 }

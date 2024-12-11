@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
@@ -14,6 +15,8 @@ public class GUI implements Disposable {
     public Stage stage;
     private Skin skin;
     private Label gold;
+    private Label hp;
+    private Label xp;
     private Label message1, message2, message3;
     private StringBuffer sb;
     private GameObject rogue;
@@ -36,14 +39,21 @@ public class GUI implements Disposable {
 
 
         gold = new Label("GOLD: 0", skin);
+        hp = new Label("HP: 0", skin);
+        xp = new Label("XP: 0", skin);
         //gold.setColor(Color.GOLD);
-        screenTable.add(gold).pad(10).left().top().expandX();
+        screenTable.add(gold).left().top().expandX();
+        screenTable.row();
+        screenTable.add(hp).left().top().expandX();
+        screenTable.row();
+        screenTable.add(xp).left().top().expandX();
         screenTable.row();
         message1 = new Label("..", skin);
         message2 = new Label("..", skin);
         message3 = new Label("..", skin);
         // message.setColor(Color.BLUE);
         Table messageBox = new Table();
+        messageBox.align(Align.left);
         messageBox.add(message1);
         messageBox.row();
         messageBox.add(message2);
@@ -59,8 +69,18 @@ public class GUI implements Disposable {
     private void update(){
         sb.setLength(0);
         sb.append("GOLD: ");
-        sb.append(rogue.goldQuantity);
+        sb.append(rogue.stats.gold);
         gold.setText(sb.toString());
+
+        sb.setLength(0);
+        sb.append("HP: ");
+        sb.append(rogue.stats.hitPoints);
+        hp.setText(sb.toString());
+
+        sb.setLength(0);
+        sb.append("XP: ");
+        sb.append(rogue.stats.experience);
+        xp.setText(sb.toString());
 
         if(MessageBox.lines.size > 0)
             message3.setText(MessageBox.lines.get(MessageBox.lines.size-1));

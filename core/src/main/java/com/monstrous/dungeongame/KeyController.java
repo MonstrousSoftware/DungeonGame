@@ -15,6 +15,20 @@ public class KeyController extends InputAdapter {
 
     @Override
     public boolean keyTyped(char character) {
+        if(world.rogue.stats.hitPoints <= 0)
+            return false;
+
+        boolean handled = processKey(character);
+        if(handled)
+            world.enemies.step(scenes);
+        if(world.rogue.stats.hitPoints <= 0){
+            MessageBox.addLine("You are dead.");
+        }
+
+        return handled;
+    }
+
+    private boolean processKey(char character) {
         switch(character){
             // left/right keys translate to -x/+x
             // up/down to +y/-y
@@ -28,32 +42,33 @@ public class KeyController extends InputAdapter {
             case '2':   equip( Equipped.THROWABLE ); return true;
             case '3':   equip( Equipped.CROSSBOW ); return true;
             case 'p':   dropGold(); return true;
+            case ' ':   return true;        // do nothing
             default:    return false;
         }
     }
 
     private void tryMoveRogue(int dx, int dy, Direction dir){
-        int x = scenes.rogue.x;
-        int y = scenes.rogue.y;
+        int x = world.rogue.x;
+        int y = world.rogue.y;
 
-        scenes.turnRogue(world.map, dir, x, y);
+        scenes.turnObject( world.rogue, dir, x, y);
         x += dx;
         y += dy;
         TileType cell = world.map.getGrid(x, y);
-        if(walkable(cell)) {
+        if(TileType.walkable(cell)) {
             GameObject occupant = world.gameObjects.getOccupant(x, y);
             if(occupant != null){
                 Gdx.app.log("occupant", occupant.type.name);
                 if(occupant.type.pickup){
                     Gdx.app.log("Pickup", occupant.type.name);
                                                             // assumes gold
-                    MessageBox.addLine("You picked up "+occupant.goldQuantity+" "+occupant.type.name);
+                    MessageBox.addLine("You picked up "+occupant.quantity+" "+occupant.type.name);
 
                     if(occupant.scene != null)
                         scenes.remove(occupant.scene);
                     world.gameObjects.clearOccupant(x, y);
                     if(occupant.type == GameObjectTypes.gold){
-                        scenes.getRogue().goldQuantity += occupant.goldQuantity;
+                        world.rogue.stats.gold += occupant.quantity;
                     }
                 } else if(occupant.type.isEnemy){
                     fight(occupant);
@@ -73,21 +88,21 @@ public class KeyController extends InputAdapter {
                 scenes.visitCorridorSegment(world.map, x, y);
             }
             if( world.map.getGrid(x,y) == TileType.STAIRS_DOWN){
-                scenes.rogue.z = -2;
+                world.rogue.z = -2;
             }
             else if( world.map.getGrid(x,y) == TileType.STAIRS_DOWN_DEEP){
-                scenes.rogue.z = -6;
+                world.rogue.z = -6;
             }
             else if( world.map.getGrid(x,y) == TileType.STAIRS_UP){
-                scenes.rogue.z = 2;
+                world.rogue.z = 2;
             }
             else if( world.map.getGrid(x,y) == TileType.STAIRS_UP_HIGH){
-                scenes.rogue.z = 6;
+                world.rogue.z = 6;
             }
             else {
-                scenes.rogue.z = 0;
+                world.rogue.z = 0;
             }
-            scenes.moveRogue( x, y, scenes.rogue.z);
+            scenes.moveObject( world.rogue, x, y, world.rogue.z);
         }
     }
 
@@ -96,44 +111,38 @@ public class KeyController extends InputAdapter {
         enemy.stats.hitPoints -= 1;
         MessageBox.addLine("You hit the "+enemy.type.name+"(HP: "+enemy.stats.hitPoints+")");
         if(enemy.stats.hitPoints <= 0){
-            MessageBox.addLine("You have defeated the "+enemy.type.name+". (XP +1)");
-            scenes.remove(enemy.scene);
-            world.gameObjects.clearOccupant(enemy.x, enemy.y);
-            world.rogue.stats.experience++;
+            defeat(enemy);
         }
     }
 
+    private void defeat(GameObject enemy){
+        MessageBox.addLine("You have defeated the "+enemy.type.name+". (XP +1)");
+        scenes.remove(enemy.scene);
+        world.gameObjects.clearOccupant(enemy.x, enemy.y);
+        world.rogue.stats.experience++;
+        if(enemy.stats.gold > 0) {
+            MessageBox.addLine("You have take their gold. (+"+enemy.stats.gold+")");
+            world.rogue.stats.gold += enemy.stats.gold;
+        }
+    }
+
+
+
     // testing
     private void dropGold(){
-        GameObject rogue = scenes.getRogue();
-        if(rogue.goldQuantity == 0) {
+        if(world.rogue.stats.gold == 0) {
             MessageBox.addLine("You have no gold to drop.");
             return;
         }
         MessageBox.addLine("You dropped 1 gold.");
 
-        rogue.goldQuantity--;
-        GameObject gold = scenes.placeObject(world.gameObjects, GameObjectTypes.gold, rogue.x, rogue.y);
-        gold.goldQuantity = 1;
-    }
-
-    private boolean walkable(TileType cell){
-        switch(cell){
-            case ROOM:
-            case CORRIDOR:
-            case DOORWAY:
-            case STAIRS_DOWN:
-            case STAIRS_DOWN_DEEP:
-            case STAIRS_UP:
-            case STAIRS_UP_HIGH:
-                return true;
-            default:
-                return false;
-        }
+        world.rogue.stats.gold--;
+        GameObject gold = scenes.placeObject(world.gameObjects, GameObjectTypes.gold, world.rogue.x, world.rogue.y);
+        gold.quantity = 1;
     }
 
     private void equip( int equipped ){
-        scenes.getRogue().stats.equipped = equipped;
-        scenes.adaptModel(scenes.getRogue().scene, equipped);
+        world.rogue.stats.equipped = equipped;
+        scenes.adaptModel(world.rogue.scene, equipped);
     }
 }

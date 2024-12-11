@@ -12,5 +12,21 @@ public enum TileType {
     STAIRS_UP_HIGH,
     WALL_CORNER,
     WALL_T_SPLIT,
-    WALL_CROSSING
+    WALL_CROSSING;
+
+
+    public static boolean walkable(TileType cell){
+        switch(cell){
+            case ROOM:
+            case CORRIDOR:
+            case DOORWAY:
+            case STAIRS_DOWN:
+            case STAIRS_DOWN_DEEP:
+            case STAIRS_UP:
+            case STAIRS_UP_HIGH:
+                return true;
+            default:
+                return false;
+        }
+    }
 }
