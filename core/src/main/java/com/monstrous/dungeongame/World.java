@@ -40,7 +40,7 @@ public class World {
 
         rogue = Populator.placeRogue(map, gameObjects);
         Populator.distributeGold(map, gameObjects);
-        Populator.distributeWarriors(map, gameObjects);
+        Populator.distributeEnemies(map, gameObjects);
 
     }
 }

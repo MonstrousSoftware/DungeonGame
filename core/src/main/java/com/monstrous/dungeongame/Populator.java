@@ -38,7 +38,7 @@ public class Populator {
         }
     }
 
-    public static void distributeWarriors(DungeonMap map, GameObjects gameObjects ){
+    public static void distributeEnemies(DungeonMap map, GameObjects gameObjects ){
 
         int count = MathUtils.random(2, 10);        //nr of drops
         int attempts = 0;
@@ -58,7 +58,15 @@ public class Populator {
             if(occupant != null)
                 continue;
 
-            occupant = new GameObject(GameObjectTypes.warrior, room.x+rx, room.y+ry, Direction.SOUTH);
+            int enemyType = MathUtils.random(0, 3);
+            GameObjectType type = null;
+            switch(enemyType){
+                case 0: type = GameObjectTypes.warrior; break;
+                case 1: type = GameObjectTypes.mage; break;
+                case 2: type = GameObjectTypes.minion; break;
+                case 3: type = GameObjectTypes.imp; break;
+            }
+            occupant = new GameObject(type, room.x+rx, room.y+ry, Direction.SOUTH);
             gameObjects.setOccupant(room.x+rx, room.y+ry, occupant);
             occupant.stats = new CharacterStats();
             gameObjects.add(occupant);
