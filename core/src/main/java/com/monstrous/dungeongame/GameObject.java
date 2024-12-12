@@ -1,6 +1,7 @@
 package com.monstrous.dungeongame;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.MathUtils;
 import net.mgsx.gltf.scene3d.scene.Scene;
 
@@ -8,12 +9,13 @@ public class GameObject {
 
     public GameObjectType type;
     public int x,y;
-    public int z;       // above/below ground level, e.g. when walking stairs
+    public float z;       // above/below ground level, e.g. when walking stairs
     public Direction direction;
     public Scene scene;
     public CharacterStats stats;        // only for rogue and enemies
     public int quantity;            // e.g. amount of gold for a gold object
     public GameObject attackedBy;       // normally null
+
 
 
     public GameObject(GameObjectType type, int x, int y, Direction direction) {
@@ -25,6 +27,7 @@ public class GameObject {
         this.attackedBy = null;
     }
 
+    // NPC step
     public void step(World world, DungeonScenes scenes){
         if(attackedBy != null) {     // don't move while being attacked
             defend(world, scenes);
@@ -78,6 +81,8 @@ public class GameObject {
 
         if(occupant != null && occupant.type.pickup) {
             Gdx.app.log("Pickup", occupant.type.name);
+            Sounds.pickup();
+
             // assumes gold
             if(occupant.type.isCountable)
                 MessageBox.addLine(type.name + " picked up " + occupant.quantity + " " + occupant.type.name);
@@ -89,7 +94,6 @@ public class GameObject {
             if (occupant.type == GameObjectTypes.gold) {
                 stats.gold += occupant.quantity;
             }
-
         }
         if(!type.isPlayer) {
             world.gameObjects.setOccupant(x, y, this);
@@ -98,6 +102,8 @@ public class GameObject {
 
 
     private void fight(World world, DungeonScenes scenes, GameObject other){
+        if(type.isPlayer || other.type.isPlayer )
+            Sounds.fight();
         int hp = 1;
         String verb = "hits";
         if(stats.equipped == Equipped.KNIFE) {
@@ -114,6 +120,8 @@ public class GameObject {
 
 
     private void defeat(World world, DungeonScenes scenes, GameObject enemy){
+        if(type.isPlayer || enemy.type.isPlayer )
+            Sounds.monsterDeath();
         MessageBox.addLine(type.name+ " defeated the "+enemy.type.name+". (XP +"+enemy.stats.experience+")");
         scenes.remove(enemy.scene);
         world.gameObjects.clearOccupant(enemy.x, enemy.y);

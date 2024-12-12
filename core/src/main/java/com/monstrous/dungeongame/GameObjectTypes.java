@@ -76,10 +76,12 @@ public class GameObjectTypes implements Disposable {
 
         shield1 = new GameObjectType("Round Shield", false, true);
         shield1.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/shield_round.gltf"));
+        shield1.z = 1f;
         types.add(shield1);
 
         shield2 = new GameObjectType("Square Shield", false, true);
         shield2.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/shield_square.gltf"));
+        shield2.z = 1f;
         types.add(shield2);
 
      }

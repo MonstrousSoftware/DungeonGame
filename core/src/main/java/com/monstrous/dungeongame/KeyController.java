@@ -1,6 +1,5 @@
 package com.monstrous.dungeongame;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 
 public class KeyController extends InputAdapter {

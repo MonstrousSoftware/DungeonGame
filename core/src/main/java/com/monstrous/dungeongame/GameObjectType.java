@@ -11,6 +11,7 @@ public class GameObjectType {
     public boolean isCountable;
     public SceneAsset sceneAsset;
     public int initXP;
+    public float z;     // height to render at when place on the ground (to avoid some model being inside the floor)
 
     public GameObjectType(String name, boolean character, boolean pickup) {
         this.name = name;
@@ -19,5 +20,6 @@ public class GameObjectType {
         this.isPlayer = false;
         this.isCountable = false;
         this.initXP = 1;
+        this.z = 0f;
     }
 }

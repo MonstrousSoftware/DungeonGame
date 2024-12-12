@@ -41,6 +41,8 @@ public class Populator {
             // seems redundant to provide x,y twice
 
             gameObjects.add(occupant);
+            assert type != null;
+            occupant.z = type.z;
             occupant.quantity = 1;
             if(type == GameObjectTypes.gold)
                 occupant.quantity = MathUtils.random(1,20);

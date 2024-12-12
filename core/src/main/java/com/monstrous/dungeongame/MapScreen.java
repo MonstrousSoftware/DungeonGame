@@ -52,13 +52,11 @@ public class MapScreen extends ScreenAdapter {
             System.out.println("seed: "+world.seed+ " level: "+world.level);
             map = world.map;
         }
-        if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)){
+        if(Gdx.input.isKeyJustPressed(Input.Keys.M)){
             game.setScreen( new GameScreen(game) );
             return;
         }
-        if(Gdx.input.isKeyJustPressed(Input.Keys.P)){
-            System.out.println("Hello");
-        }
+
         ScreenUtils.clear(Color.BLACK);
         shapeRenderer.setProjectionMatrix(camera.combined);
 
@@ -164,14 +162,14 @@ public class MapScreen extends ScreenAdapter {
         shapeRenderer.end();
 
         // minimum spanning tree
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(Color.RED);
-        for(Room room: map.rooms){
-            for(Room nbor : room.closeNeighbours) {
-                shapeRenderer.line(room.centre.x + m, room.centre.y + m, nbor.centre.x + m, nbor.centre.y + m);
-            }
-        }
-        shapeRenderer.end();
+//        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+//        shapeRenderer.setColor(Color.RED);
+//        for(Room room: map.rooms){
+//            for(Room nbor : room.closeNeighbours) {
+//                shapeRenderer.line(room.centre.x + m, room.centre.y + m, nbor.centre.x + m, nbor.centre.y + m);
+//            }
+//        }
+//        shapeRenderer.end();
 
 
         sb.setLength(0);

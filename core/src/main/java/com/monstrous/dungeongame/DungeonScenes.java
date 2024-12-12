@@ -15,8 +15,6 @@ import net.mgsx.gltf.scene3d.scene.Scene;
 import net.mgsx.gltf.scene3d.scene.SceneAsset;
 import net.mgsx.gltf.scene3d.scene.SceneManager;
 
-import static com.monstrous.dungeongame.DungeonMap.*;
-
 public class DungeonScenes implements Disposable {
     private final static float SCALE = 4f;
 
@@ -164,7 +162,7 @@ public class DungeonScenes implements Disposable {
         for(int x = room.x; x < room.x+room.width; x++){
             for(int y = room.y; y < room.y + room.height; y++){
                 GameObject occupant = world.gameObjects.getOccupant(x,y);
-                if(occupant != null){ // && occupant.type == GameObjectTypes.gold){
+                if(occupant != null){
                     addScene(occupant);
                 }
             }
@@ -185,7 +183,7 @@ public class DungeonScenes implements Disposable {
     public void addScene(GameObject gameObject){
 
         Scene item = new Scene(gameObject.type.sceneAsset.scene);
-        setTransform(item.modelInstance.transform, gameObject.x, gameObject.y, 0, Direction.SOUTH);
+        setTransform(item.modelInstance.transform, gameObject.x, gameObject.y, gameObject.z, Direction.SOUTH);
         sceneManager.addScene(item);
         gameObject.scene = item;
     }
@@ -208,14 +206,14 @@ public class DungeonScenes implements Disposable {
 
     // The next two methods should be the only place where we convert logical x,y to a transform
     //
-    private void setTransform(Matrix4 transform, int x, int y, int z, Direction dir){
+    private void setTransform(Matrix4 transform, int x, int y, float z, Direction dir){
         transform.setToRotation(Vector3.Y, 180-dir.ordinal() * 90);
         transform.setTranslation(SCALE*x, z, -SCALE*y);
 
     }
 
     // leave orientation as it is
-    private void setTransform(Matrix4 transform, int x, int y, int z){
+    private void setTransform(Matrix4 transform, int x, int y, float z){
         transform.setTranslation(SCALE*x, z, -SCALE*y);
     }
 
@@ -255,7 +253,7 @@ public class DungeonScenes implements Disposable {
             setTransform(go.scene.modelInstance.transform, x, y, go.z, dir);
     }
 
-    public void moveObject( GameObject go, int x, int y, int z){
+    public void moveObject(GameObject go, int x, int y, float z){
         go.x = x;
         go.y = y;
         go.z = z;
