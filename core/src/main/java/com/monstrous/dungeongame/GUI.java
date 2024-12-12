@@ -61,11 +61,11 @@ public class GUI implements Disposable {
         // message.setColor(Color.BLUE);
         Table messageBox = new Table();
         messageBox.align(Align.left);
-        messageBox.add(message1);
+        messageBox.add(message1).left();
         messageBox.row();
-        messageBox.add(message2);
+        messageBox.add(message2).left();
         messageBox.row();
-        messageBox.add(message3);
+        messageBox.add(message3).left();
 
         uiPanel.add(messageBox).top().left().expand();
         uiPanel.pack();

@@ -229,8 +229,10 @@ public class DungeonScenes implements Disposable {
     // recursive method to enable/disable weapons
     private void checkNode(int level, Node node, int equipped ){
         //Gdx.app.log("Node", "level "+ level + " : "+node.id+ " nodeparts: "+node.parts.size);
-        if(node.id.contains("Knife"))
+        if(node.id.contentEquals("Knife"))
             setNodeParts(node, (equipped & Equipped.KNIFE) != 0);
+        else if(node.id.contains("Knife_Offhand"))
+            setNodeParts(node, false);
         else if(node.id.contains("Crossbow"))
             setNodeParts(node, (equipped & Equipped.CROSSBOW) != 0);
         else if(node.id.contains("Throwable"))

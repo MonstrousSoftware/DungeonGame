@@ -83,6 +83,7 @@ public class Populator {
             GameObject enemy = new GameObject(type, room.x+rx, room.y+ry, Direction.SOUTH);
             gameObjects.setOccupant(room.x+rx, room.y+ry, enemy);
             enemy.stats = new CharacterStats();
+            enemy.stats.experience = type.initXP;
             gameObjects.add(enemy);
             enemies.add(enemy);
             // seems redundant to provide x,y twice

@@ -15,8 +15,8 @@ public class KeyController extends InputAdapter {
 
     @Override
     public boolean keyTyped(char character) {
-        if(world.rogue.stats.hitPoints <= 0) {
-            if(character == 'R'){
+        if (world.rogue.stats.hitPoints <= 0) {
+            if (character == 'R') {
                 restart();
                 return true;
             }
@@ -24,9 +24,9 @@ public class KeyController extends InputAdapter {
         }
 
         boolean handled = processKey(character);
-        if(handled)
+        if (handled)
             world.enemies.step(scenes);
-        if(world.rogue.stats.hitPoints <= 0){
+        if (world.rogue.stats.hitPoints <= 0) {
             MessageBox.addLine("You are dead. Press Shift-R to restart.");
         }
 
@@ -34,33 +34,69 @@ public class KeyController extends InputAdapter {
     }
 
     private boolean processKey(char character) {
-        switch(character){
+        switch (character) {
             // left/right keys translate to -x/+x
             // up/down to +y/-y
             //
-            case 'w':   tryMoveRogue(0, 1, Direction.NORTH); return true;
-            case 'a':   tryMoveRogue(-1, 0, Direction.WEST); return true;
-            case 's':   tryMoveRogue(0, -1, Direction.SOUTH); return true;
-            case 'd':   tryMoveRogue(1,0, Direction.EAST); return true;
-            case '0':   equip( Equipped.NONE ); return true;
-            case '1':   equip( Equipped.KNIFE ); return true;
-            case '2':   equip( Equipped.THROWABLE ); return true;
-            case '3':   equip( Equipped.CROSSBOW ); return true;
-            case 'p':   dropGold(); return true;
-            case 'R':   restart(); return true;
-            case ' ':   return true;        // do nothing
-            default:    return false;
+            case 'w':
+                tryMoveRogue(0, 1, Direction.NORTH);
+                return true;
+            case 'a':
+                tryMoveRogue(-1, 0, Direction.WEST);
+                return true;
+            case 's':
+                tryMoveRogue(0, -1, Direction.SOUTH);
+                return true;
+            case 'd':
+                tryMoveRogue(1, 0, Direction.EAST);
+                return true;
+            case 'q':
+                turnRogue(false); return true;
+            case 'e':
+                turnRogue(true); return true;
+            case '0':
+                equip(Equipped.NONE);
+                return true;
+            case '1':
+                equip(Equipped.KNIFE);
+                return true;
+            case '2':
+                equip(Equipped.THROWABLE);
+                return true;
+            case '3':
+                equip(Equipped.CROSSBOW);
+                return true;
+            case 'p':
+                dropGold();
+                return true;
+            case 'R':
+                restart();
+                return true;
+            case ' ':
+                return true;        // do nothing
+            default:
+                return false;
         }
     }
 
-    private void restart(){
+    private void restart() {
         world.restart();
         scenes.clear();
-        scenes.placeRogue( world );
+        scenes.placeRogue(world);
         int roomId = world.map.roomCode[world.rogue.y][world.rogue.x];
         Room room = world.map.rooms.get(roomId);
-        scenes.buildRoom( world.map, room );
+        scenes.buildRoom(world.map, room);
         scenes.populateRoom(world, room);
+    }
+
+    private void turnRogue(boolean clockWise) {
+        int dir = world.rogue.direction.ordinal();
+        if(clockWise)
+            dir = (dir + 1) % 4;
+        else
+            dir = (dir+3) % 4;
+
+        scenes.turnObject(world.rogue, Direction.values()[dir], world.rogue.x, world.rogue.y);    // turn towards moving direction
     }
 
     private void tryMoveRogue(int dx, int dy, Direction dir){
@@ -104,11 +140,19 @@ public class KeyController extends InputAdapter {
             MessageBox.addLine("You have no gold to drop.");
             return;
         }
-        MessageBox.addLine("You dropped 1 gold.");
-
-        world.rogue.stats.gold--;
-        GameObject gold = scenes.placeObject(world.gameObjects, GameObjectTypes.gold, world.rogue.x, world.rogue.y);
-        gold.quantity = 1;
+        GameObject occupant = world.gameObjects.getOccupant(world.rogue.x, world.rogue.y);
+        if(occupant != null && occupant.type == GameObjectTypes.gold) {
+            MessageBox.addLine("You dropped 1 gold.");
+            // if there is already gold, add to it
+            world.rogue.stats.gold--;
+            occupant.quantity++;
+        } else if( occupant != null){
+            MessageBox.addLine("Cannot drop here.");
+        } else {
+            MessageBox.addLine("You dropped 1 gold.");
+            GameObject gold = scenes.placeObject(world.gameObjects, GameObjectTypes.gold, world.rogue.x, world.rogue.y);
+            gold.quantity = 1;
+        }
     }
 
     private void equip( int equipped ){

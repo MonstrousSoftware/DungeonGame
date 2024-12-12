@@ -32,11 +32,13 @@ public class GameObjectTypes implements Disposable {
         rogue = new GameObjectType("Rogue", true, false);
         rogue.sceneAsset = new GLBLoader().load(Gdx.files.internal("characters/Rogue_Hooded.glb"));
         rogue.isPlayer = true;
+        rogue.initXP = 0;
         types.add(rogue);
 
         warrior = new GameObjectType("Warrior", true, false);
         warrior.sceneAsset = new GLBLoader().load(Gdx.files.internal("characters/Skeleton_Warrior.glb"));
         warrior.isEnemy = true;
+        warrior.initXP = 3;
         types.add(warrior);
 
         mage = new GameObjectType("Mage", true, false);
@@ -52,6 +54,7 @@ public class GameObjectTypes implements Disposable {
         imp = new GameObjectType("Imp", true, false);
         imp.sceneAsset = new GLBLoader().load(Gdx.files.internal("characters/Skeleton_Rogue.glb"));
         imp.isEnemy = true;
+        imp.initXP = 2;
         types.add(imp);
 
         gold = new GameObjectType("Gold", false, true);

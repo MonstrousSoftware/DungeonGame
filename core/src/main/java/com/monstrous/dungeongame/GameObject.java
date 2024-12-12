@@ -11,7 +11,7 @@ public class GameObject {
     public int z;       // above/below ground level, e.g. when walking stairs
     public Direction direction;
     public Scene scene;
-    public CharacterStats stats;
+    public CharacterStats stats;        // only for rogue and enemies
     public int quantity;            // e.g. amount of gold for a gold object
     public GameObject attackedBy;       // normally null
 
@@ -98,8 +98,15 @@ public class GameObject {
 
 
     private void fight(World world, DungeonScenes scenes, GameObject other){
-        other.stats.hitPoints -= 1;
-        MessageBox.addLine(type.name+ " hit the "+other.type.name+"(HP: "+other.stats.hitPoints+")");
+        int hp = 1;
+        String verb = "hits";
+        if(stats.equipped == Equipped.KNIFE) {
+            hp = 2;
+            verb = "stabs";
+        }
+        hp += stats.experience /10;     // to tune
+        other.stats.hitPoints -= hp;
+        MessageBox.addLine(type.name+ " " + verb + " the "+other.type.name+"(HP: "+other.stats.hitPoints+")");
         if(other.stats.hitPoints <= 0){
             defeat(world, scenes, other);
         }
@@ -107,10 +114,10 @@ public class GameObject {
 
 
     private void defeat(World world, DungeonScenes scenes, GameObject enemy){
-        MessageBox.addLine(type.name+ " defeated the "+enemy.type.name+". (XP +1)");
+        MessageBox.addLine(type.name+ " defeated the "+enemy.type.name+". (XP +"+enemy.stats.experience+")");
         scenes.remove(enemy.scene);
         world.gameObjects.clearOccupant(enemy.x, enemy.y);
-        stats.experience++;
+        stats.experience += enemy.stats.experience;
         if(enemy.stats.gold > 0) {
             MessageBox.addLine(type.name+ " takes their gold. (+"+enemy.stats.gold+")");
             stats.gold += enemy.stats.gold;
