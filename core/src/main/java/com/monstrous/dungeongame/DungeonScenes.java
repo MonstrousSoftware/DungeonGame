@@ -249,7 +249,8 @@ public class DungeonScenes implements Disposable {
 
     public void turnObject(GameObject go, Direction dir, int x, int y ){
         go.direction = dir;
-        setTransform(go.scene.modelInstance.transform, x, y, go.z, dir);
+        if(go.scene != null)
+            setTransform(go.scene.modelInstance.transform, x, y, go.z, dir);
     }
 
     public void moveObject( GameObject go, int x, int y, int z){
@@ -257,7 +258,8 @@ public class DungeonScenes implements Disposable {
         go.y = y;
         go.z = z;
 
-        setTransform(go.scene.modelInstance.transform, x, y, z);
+        if(go.scene != null)    // characters can move offscreen, only update model instance if it exists
+            setTransform(go.scene.modelInstance.transform, x, y, z);
     }
 
     public void remove(Scene scene){

@@ -35,8 +35,11 @@ public class GUI implements Disposable {
         Gdx.app.log("GUI", "rebuild");
         stage.clear();
 
-        Table screenTable = new Table();
-        screenTable.setFillParent(true);
+
+
+
+
+        Table uiPanel = new Table();
 
 
         level = new Label("LEVEL: 0", skin);
@@ -44,14 +47,14 @@ public class GUI implements Disposable {
         hp = new Label("HP: 0", skin);
         xp = new Label("XP: 0", skin);
         //gold.setColor(Color.GOLD);
-        screenTable.add(level).left().top().expandX();
-        screenTable.row();
-        screenTable.add(gold).left().top().expandX();
-        screenTable.row();
-        screenTable.add(hp).left().top().expandX();
-        screenTable.row();
-        screenTable.add(xp).left().top().expandX();
-        screenTable.row();
+        uiPanel.add(level).left().top().expandX();
+        uiPanel.row();
+        uiPanel.add(gold).left().top().expandX();
+        uiPanel.row();
+        uiPanel.add(hp).left().top().expandX();
+        uiPanel.row();
+        uiPanel.add(xp).left().top().expandX();
+        uiPanel.row();
         message1 = new Label("..", skin);
         message2 = new Label("..", skin);
         message3 = new Label("..", skin);
@@ -64,8 +67,17 @@ public class GUI implements Disposable {
         messageBox.row();
         messageBox.add(message3);
 
-        screenTable.add(messageBox).top().left().expand();
+        uiPanel.add(messageBox).top().left().expand();
+        uiPanel.pack();
+
+        // Screen is split in 2 columns. Left for 3d view and Right for fixed width ui panel
+        Table screenTable = new Table();
+        screenTable.setFillParent(true);
+
+        screenTable.add().expand();         // empty column
+        screenTable.add(uiPanel).width(300).top().left();
         screenTable.pack();
+
         stage.addActor(screenTable);
     }
 

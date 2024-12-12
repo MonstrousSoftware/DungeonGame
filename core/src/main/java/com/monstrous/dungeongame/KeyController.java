@@ -27,7 +27,7 @@ public class KeyController extends InputAdapter {
         if(handled)
             world.enemies.step(scenes);
         if(world.rogue.stats.hitPoints <= 0){
-            MessageBox.addLine("You are dead. Press R to restart.");
+            MessageBox.addLine("You are dead. Press Shift-R to restart.");
         }
 
         return handled;
@@ -71,60 +71,66 @@ public class KeyController extends InputAdapter {
         x += dx;
         y += dy;
         TileType cell = world.map.getGrid(x, y);
-        if(TileType.walkable(cell)) {
-            GameObject occupant = world.gameObjects.getOccupant(x, y);
-            if(occupant != null){
-                Gdx.app.log("occupant", occupant.type.name);
-                if(occupant.type.pickup){
-                    Gdx.app.log("Pickup", occupant.type.name);
-                                                            // assumes gold
-                    MessageBox.addLine("You picked up "+occupant.quantity+" "+occupant.type.name);
+        if(!TileType.walkable(cell))
+            return;
 
-                    if(occupant.scene != null)
-                        scenes.remove(occupant.scene);
-                    world.gameObjects.clearOccupant(x, y);
-                    if(occupant.type == GameObjectTypes.gold){
-                        world.rogue.stats.gold += occupant.quantity;
-                    }
-                } else if(occupant.type.isEnemy){
-                    fight(occupant);
-                    return;
-                }
-            }
+        GameObject occupant = world.gameObjects.getOccupant(x, y);
 
-            // show the room if this is the first time we enter it
-            int roomId = world.map.roomCode[y][x];
-            if(roomId >= 0) {
-                Room room = world.map.rooms.get(roomId);
-                if (!room.uncovered) {
-                    scenes.buildRoom(world.map, room);
-                    scenes.populateRoom(world, room);
-                }
-            } else if( world.map.getGrid(x,y) == TileType.CORRIDOR){
-                scenes.visitCorridorSegment(world.map, x, y);
-            }
-            if( world.map.getGrid(x,y) == TileType.STAIRS_DOWN){
-                world.rogue.z = -2;
-            }
-            else if( world.map.getGrid(x,y) == TileType.STAIRS_DOWN_DEEP){
-                world.rogue.z = -6;
-            }
-            else if( world.map.getGrid(x,y) == TileType.STAIRS_UP){
-                world.rogue.z = 2;
-            }
-            else if( world.map.getGrid(x,y) == TileType.STAIRS_UP_HIGH){
-                world.rogue.z = 6;
-            }
-            else {
-                world.rogue.z = 0;
-            }
-            scenes.moveObject( world.rogue, x, y, world.rogue.z);
+        if(occupant != null && occupant.type.isEnemy){
+            fight(occupant);
+            return; // don't move into the target cell
         }
+
+//        world.gameObjects.clearOccupant( world.rogue.x, world.rogue.y);
+//        world.gameObjects.setOccupant(x, y, world.rogue);
+        scenes.moveObject( world.rogue, x, y, world.rogue.z);
+
+        if(occupant != null && occupant.type.pickup){
+            Gdx.app.log("Pickup", occupant.type.name);
+                                                    // assumes gold
+            MessageBox.addLine("You picked up "+occupant.quantity+" "+occupant.type.name);
+
+            if(occupant.scene != null)
+                scenes.remove(occupant.scene);
+            world.gameObjects.clearOccupant(x, y);
+            if(occupant.type == GameObjectTypes.gold){
+                world.rogue.stats.gold += occupant.quantity;
+            }
+        }
+
+        // show the room if this is the first time we enter it
+        int roomId = world.map.roomCode[y][x];
+        if(roomId >= 0) {
+            Room room = world.map.rooms.get(roomId);
+            if (!room.uncovered) {
+                scenes.buildRoom(world.map, room);
+                scenes.populateRoom(world, room);
+            }
+        } else if( world.map.getGrid(x,y) == TileType.CORRIDOR){
+            scenes.visitCorridorSegment(world.map, x, y);
+        }
+        if( world.map.getGrid(x,y) == TileType.STAIRS_DOWN){
+            world.rogue.z = -2;
+        }
+        else if( world.map.getGrid(x,y) == TileType.STAIRS_DOWN_DEEP){
+            world.rogue.z = -6;
+        }
+        else if( world.map.getGrid(x,y) == TileType.STAIRS_UP){
+            world.rogue.z = 2;
+        }
+        else if( world.map.getGrid(x,y) == TileType.STAIRS_UP_HIGH){
+            world.rogue.z = 6;
+        }
+        else {
+            world.rogue.z = 0;
+        }
+
     }
 
 
     private void fight(GameObject enemy){
         enemy.stats.hitPoints -= 1;
+        enemy.attackedBy = world.rogue;
         MessageBox.addLine("You hit the "+enemy.type.name+"(HP: "+enemy.stats.hitPoints+")");
         if(enemy.stats.hitPoints <= 0){
             defeat(enemy);

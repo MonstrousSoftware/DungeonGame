@@ -32,4 +32,5 @@ public class GameObjects {
     public void clearOccupant(int x, int y){
         occupant[y][x] = null;
     }
+
 }
