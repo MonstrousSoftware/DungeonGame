@@ -176,6 +176,7 @@ public class GameScreen extends ScreenAdapter {
         shadowCastingLight.setCenter(pointLight.position);
 
         // render
+        sceneManager.renderShadows();
         fbo.begin();
         ScreenUtils.clear(Color.BLACK, true);
         sceneManager.update(deltaTime);

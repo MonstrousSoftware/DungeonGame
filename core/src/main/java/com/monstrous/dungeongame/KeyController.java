@@ -100,12 +100,16 @@ public class KeyController extends InputAdapter {
     }
 
     private void tryMoveRogue(int dx, int dy, Direction dir){
+        // todo if on bottom of stairs and moving forward, move down a level
+
         world.rogue.tryMove(world, scenes, dx, dy, dir);
 
         int x = world.rogue.x;
         int y = world.rogue.y;
         // show the room if this is the first time we enter it
         int roomId = world.map.roomCode[y][x];
+
+        Gdx.app.log("Rogue on tile", world.map.getGrid(x,y).toString());
         if(roomId >= 0) {
 
             Room room = world.map.rooms.get(roomId);
@@ -134,7 +138,7 @@ public class KeyController extends InputAdapter {
         else {
             world.rogue.z = 0;
         }
-
+        scenes.moveObject( world.rogue, x, y, world.rogue.z);
     }
 
 
