@@ -64,40 +64,10 @@ public class KeyController extends InputAdapter {
     }
 
     private void tryMoveRogue(int dx, int dy, Direction dir){
+        world.rogue.tryMove(world, scenes, dx, dy, dir);
+
         int x = world.rogue.x;
         int y = world.rogue.y;
-
-        scenes.turnObject( world.rogue, dir, x, y);
-        x += dx;
-        y += dy;
-        TileType cell = world.map.getGrid(x, y);
-        if(!TileType.walkable(cell))
-            return;
-
-        GameObject occupant = world.gameObjects.getOccupant(x, y);
-
-        if(occupant != null && occupant.type.isEnemy){
-            fight(occupant);
-            return; // don't move into the target cell
-        }
-
-//        world.gameObjects.clearOccupant( world.rogue.x, world.rogue.y);
-//        world.gameObjects.setOccupant(x, y, world.rogue);
-        scenes.moveObject( world.rogue, x, y, world.rogue.z);
-
-        if(occupant != null && occupant.type.pickup){
-            Gdx.app.log("Pickup", occupant.type.name);
-                                                    // assumes gold
-            MessageBox.addLine("You picked up "+occupant.quantity+" "+occupant.type.name);
-
-            if(occupant.scene != null)
-                scenes.remove(occupant.scene);
-            world.gameObjects.clearOccupant(x, y);
-            if(occupant.type == GameObjectTypes.gold){
-                world.rogue.stats.gold += occupant.quantity;
-            }
-        }
-
         // show the room if this is the first time we enter it
         int roomId = world.map.roomCode[y][x];
         if(roomId >= 0) {
@@ -126,28 +96,6 @@ public class KeyController extends InputAdapter {
         }
 
     }
-
-
-    private void fight(GameObject enemy){
-        enemy.stats.hitPoints -= 1;
-        enemy.attackedBy = world.rogue;
-        MessageBox.addLine("You hit the "+enemy.type.name+"(HP: "+enemy.stats.hitPoints+")");
-        if(enemy.stats.hitPoints <= 0){
-            defeat(enemy);
-        }
-    }
-
-    private void defeat(GameObject enemy){
-        MessageBox.addLine("You have defeated the "+enemy.type.name+". (XP +1)");
-        scenes.remove(enemy.scene);
-        world.gameObjects.clearOccupant(enemy.x, enemy.y);
-        world.rogue.stats.experience++;
-        if(enemy.stats.gold > 0) {
-            MessageBox.addLine("You have take their gold. (+"+enemy.stats.gold+")");
-            world.rogue.stats.gold += enemy.stats.gold;
-        }
-    }
-
 
 
     // testing

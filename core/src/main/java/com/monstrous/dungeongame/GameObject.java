@@ -69,15 +69,20 @@ public class GameObject {
             return;
         }
 
-        world.gameObjects.clearOccupant( x, y);
-        world.gameObjects.setOccupant(x, y, this);
+        if(!type.isPlayer) {
+            world.gameObjects.clearOccupant(x, y);
+        }
+        x = tx;
+        y = ty;
         scenes.moveObject( this, x, y, z);
 
         if(occupant != null && occupant.type.pickup) {
             Gdx.app.log("Pickup", occupant.type.name);
             // assumes gold
-            MessageBox.addLine(type.name + " picked up " + occupant.quantity + " " + occupant.type.name);
-
+            if(occupant.type.isCountable)
+                MessageBox.addLine(type.name + " picked up " + occupant.quantity + " " + occupant.type.name);
+            else
+                MessageBox.addLine(type.name + " picked up a " + occupant.type.name);
             if (occupant.scene != null)
                 scenes.remove(occupant.scene);
             world.gameObjects.clearOccupant(x, y);
@@ -86,6 +91,9 @@ public class GameObject {
             }
 
         }
+        if(!type.isPlayer) {
+            world.gameObjects.setOccupant(x, y, this);
+        }
     }
 
 
@@ -93,11 +101,20 @@ public class GameObject {
         other.stats.hitPoints -= 1;
         MessageBox.addLine(type.name+ " hit the "+other.type.name+"(HP: "+other.stats.hitPoints+")");
         if(other.stats.hitPoints <= 0){
-            MessageBox.addLine(type.name+ " has defeated the "+other.type.name+". (XP +1)");
-            if(other.scene != null)
-                scenes.remove(other.scene);
-            world.gameObjects.clearOccupant(other.x, other.y);
-            stats.experience++;
+            defeat(world, scenes, other);
         }
     }
+
+
+    private void defeat(World world, DungeonScenes scenes, GameObject enemy){
+        MessageBox.addLine(type.name+ " defeated the "+enemy.type.name+". (XP +1)");
+        scenes.remove(enemy.scene);
+        world.gameObjects.clearOccupant(enemy.x, enemy.y);
+        stats.experience++;
+        if(enemy.stats.gold > 0) {
+            MessageBox.addLine(type.name+ " takes their gold. (+"+enemy.stats.gold+")");
+            stats.gold += enemy.stats.gold;
+        }
+    }
+
 }

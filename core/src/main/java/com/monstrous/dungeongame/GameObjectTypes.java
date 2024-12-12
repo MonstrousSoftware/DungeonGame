@@ -8,13 +8,18 @@ import net.mgsx.gltf.loaders.gltf.GLTFLoader;
 
 public class GameObjectTypes implements Disposable {
     public static GameObjectType rogue;
+
     public static GameObjectType warrior;
     public static GameObjectType mage;
     public static GameObjectType minion;
     public static GameObjectType imp;
+
     public static GameObjectType gold;
     public static GameObjectType knife;
     public static GameObjectType crossbow;
+    public static GameObjectType explosive;
+    public static GameObjectType shield1;
+    public static GameObjectType shield2;
 
     public static Array<GameObjectType> types;
 
@@ -51,12 +56,29 @@ public class GameObjectTypes implements Disposable {
 
         gold = new GameObjectType("Gold", false, true);
         gold.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/coin_stack_small.gltf"));
+        gold.isCountable = true;
         types.add(gold);
 
         knife = new GameObjectType("Knife", false, true);
+        knife.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/dagger.gltf"));
         types.add(knife);
+
         crossbow = new GameObjectType("Crossbow", false, true);
+        crossbow.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/crossbow_1handed.gltf"));
         types.add(crossbow);
+
+        explosive = new GameObjectType("Explosive", false, true);
+        explosive.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/smokebomb.gltf"));
+        types.add(explosive);
+
+        shield1 = new GameObjectType("Round Shield", false, true);
+        shield1.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/shield_round.gltf"));
+        types.add(shield1);
+
+        shield2 = new GameObjectType("Square Shield", false, true);
+        shield2.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/shield_square.gltf"));
+        types.add(shield2);
+
      }
 
     @Override

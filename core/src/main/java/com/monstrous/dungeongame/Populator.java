@@ -5,13 +5,13 @@ import com.badlogic.gdx.math.MathUtils;
 public class Populator {
 
 
-    public static void distributeGold(DungeonMap map, GameObjects gameObjects ){
+    public static void distributeGoodies(DungeonMap map, GameObjects gameObjects ){
 
-        int count = MathUtils.random(10, 25);        // nr of gold drops
+        int count = MathUtils.random(10, 105);        // nr of gold drops
         int attempts = 0;
         while(true){
             attempts++;
-            if(attempts > 10)       // avoid endless loop
+            if(attempts > 40)       // avoid endless loop
                 break;
 
             int location = MathUtils.random(0, map.rooms.size-1);
@@ -25,12 +25,25 @@ public class Populator {
             if(occupant != null)
                 continue;
 
-            occupant = new GameObject(GameObjectTypes.gold, room.x+rx, room.y+ry, Direction.SOUTH);
+            int goodieType = MathUtils.random(0, 5);
+            GameObjectType type = null;
+            switch(goodieType){
+                case 0: type = GameObjectTypes.gold; break;
+                case 1: type = GameObjectTypes.knife; break;
+                case 2: type = GameObjectTypes.crossbow; break;
+                case 3: type = GameObjectTypes.explosive; break;
+                case 4: type = GameObjectTypes.shield1; break;
+                case 5: type = GameObjectTypes.shield2; break;
+            }
+
+            occupant = new GameObject(type, room.x+rx, room.y+ry, Direction.SOUTH);
             gameObjects.setOccupant(room.x+rx, room.y+ry, occupant);
-            gameObjects.add(occupant);
-            occupant.quantity = MathUtils.random(1,20);
             // seems redundant to provide x,y twice
 
+            gameObjects.add(occupant);
+            occupant.quantity = 1;
+            if(type == GameObjectTypes.gold)
+                occupant.quantity = MathUtils.random(1,20);
 
             count--;
             if(count == 0)

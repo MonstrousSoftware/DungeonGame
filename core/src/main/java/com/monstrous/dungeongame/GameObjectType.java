@@ -8,6 +8,7 @@ public class GameObjectType {
     public boolean pickup;
     public boolean isPlayer;
     public boolean isEnemy;
+    public boolean isCountable;
     public SceneAsset sceneAsset;
 
     public GameObjectType(String name, boolean character, boolean pickup) {
@@ -15,5 +16,6 @@ public class GameObjectType {
         this.character = character;
         this.pickup = pickup;
         this.isPlayer = false;
+        this.isCountable = false;
     }
 }
