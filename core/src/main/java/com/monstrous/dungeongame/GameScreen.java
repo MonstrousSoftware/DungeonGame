@@ -7,7 +7,9 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g3d.environment.SpotLight;
 import com.badlogic.gdx.graphics.g3d.shaders.DepthShader;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -44,6 +46,8 @@ public class GameScreen extends ScreenAdapter {
     private KeyController keyController;
     private PointLightEx pointLight;
     private DirectionalShadowLight shadowCastingLight;
+    private FrameBuffer fbo;
+    private Filter filter;
 
 
     public GameScreen(Main game) {
@@ -74,6 +78,8 @@ public class GameScreen extends ScreenAdapter {
         camera.zoom = 0.03f;
         camera.up.set(Vector3.Y);
         camera.lookAt( new Vector3(0, 0, 0));
+
+
         camera.update();
         sceneManager.setCamera(camera);
 
@@ -128,6 +134,7 @@ public class GameScreen extends ScreenAdapter {
         keyController = new KeyController(world, dungeonScenes );
 
         gui = new GUI( world );
+        filter = new Filter();
 
         InputMultiplexer im = new InputMultiplexer();
         im.addProcessor(camController);
@@ -163,22 +170,33 @@ public class GameScreen extends ScreenAdapter {
 
         camController.setTrackedObject( world.rogue.scene.modelInstance );
         camController.update(deltaTime);
+
         world.rogue.scene.modelInstance.transform.getTranslation(pointLight.position);
         pointLight.position.y = 3;
         shadowCastingLight.setCenter(pointLight.position);
 
         // render
+        fbo.begin();
         ScreenUtils.clear(Color.BLACK, true);
         sceneManager.update(deltaTime);
-        sceneManager.render();
+        sceneManager.renderColors();
+        fbo.end();
+
+        ScreenUtils.clear(new Color(6/255f,0,30/255f,1), false);
+        filter.render(fbo,0,0, Gdx.graphics.getWidth() - GUI.PANEL_WIDTH, Gdx.graphics.getHeight());
 
         gui.render(deltaTime);
     }
 
     @Override
     public void resize(int width, int height) {
-        sceneManager.updateViewport(width, height);
+        if(fbo != null)
+            fbo.dispose();
+        fbo = new FrameBuffer(Pixmap.Format.RGBA8888, width - GUI.PANEL_WIDTH, height, true);
+
+        sceneManager.updateViewport(width - GUI.PANEL_WIDTH, height);
         gui.resize(width, height);
+        filter.resize(width, height);
     }
 
     @Override
@@ -195,5 +213,6 @@ public class GameScreen extends ScreenAdapter {
         specularCubemap.dispose();
         brdfLUT.dispose();
         gui.dispose();
+        filter.dispose();
     }
 }

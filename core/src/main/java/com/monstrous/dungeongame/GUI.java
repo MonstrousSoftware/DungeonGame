@@ -12,6 +12,8 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class GUI implements Disposable {
 
+    public static final int PANEL_WIDTH = 300;      // width of UI panel
+
     public Stage stage;
     private Skin skin;
     private Label level;
@@ -55,17 +57,16 @@ public class GUI implements Disposable {
         uiPanel.row();
         uiPanel.add(xp).left().top().expandX();
         uiPanel.row();
-        message1 = new Label("..", skin);
-        message2 = new Label("..", skin);
-        message3 = new Label("..", skin);
+        message1 = new Label("..", skin, "small");
+        message2 = new Label("..", skin, "small");
+        message3 = new Label("..", skin,"small");
         // message.setColor(Color.BLUE);
         Table messageBox = new Table();
-        messageBox.align(Align.left);
-        messageBox.add(message1).left();
+        messageBox.add(message1).pad(3).left();
         messageBox.row();
-        messageBox.add(message2).left();
+        messageBox.add(message2).pad(3).left();
         messageBox.row();
-        messageBox.add(message3).left();
+        messageBox.add(message3).pad(3).left();
 
         uiPanel.add(messageBox).top().left().expand();
         uiPanel.pack();
@@ -75,7 +76,7 @@ public class GUI implements Disposable {
         screenTable.setFillParent(true);
 
         screenTable.add().expand();         // empty column
-        screenTable.add(uiPanel).width(300).top().left();
+        screenTable.add(uiPanel).width(PANEL_WIDTH).top().left();
         screenTable.pack();
 
         stage.addActor(screenTable);
