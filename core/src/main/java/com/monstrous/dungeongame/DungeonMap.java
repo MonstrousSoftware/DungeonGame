@@ -346,10 +346,14 @@ public class DungeonMap implements Disposable {
         int rw = room.width;
         int rh = room.height;
 
+
+        Direction dir = room.stairsDirection;
+        if(room.stairType == TileType.STAIRS_UP)
+            dir = Direction.opposite(dir);
         for(int x = 0; x < rw; x++){
             for(int y = 0; y < rh; y++){
                 roomCode[ry+y][rx+x] = room.id;
-                tileOrientation[ry+y][rx+x] = room.stairsDirection;
+                tileOrientation[ry+y][rx+x] = dir;
             }
         }
 
@@ -359,38 +363,28 @@ public class DungeonMap implements Disposable {
 
         switch(room.stairsDirection){
             case NORTH:
-                grid[room.centre.y][room.centre.x] = TileType.ROOM;
-                grid[room.centre.y-1][room.centre.x] = room.stairType;
-                grid[room.centre.y-2][room.centre.x] = t2;
+                grid[room.y][room.x] = TileType.ROOM;
+                grid[room.y+1][room.x] = room.stairType;
+                grid[room.y+2][room.x] = t2;
                 break;
             case SOUTH:
-                grid[room.centre.y][room.centre.x] = TileType.ROOM;
-                grid[room.centre.y+1][room.centre.x] = room.stairType;
-                grid[room.centre.y+2][room.centre.x] = t2;
+                grid[room.y+2][room.x] = TileType.ROOM;
+                grid[room.y+1][room.x] = room.stairType;
+                grid[room.y][room.x] = t2;
                 break;
             case EAST:
-                grid[room.centre.y][room.centre.x] = TileType.ROOM;
-                grid[room.centre.y][room.centre.x-1] = room.stairType;
-                grid[room.centre.y][room.centre.x-2] = t2;
+                grid[room.y][room.x] = TileType.ROOM;
+                grid[room.y][room.x+1] = room.stairType;
+                grid[room.y][room.x+2] = t2;
                 break;
             case WEST:
-                grid[room.centre.y][room.centre.x] = TileType.ROOM;
-                grid[room.centre.y][room.centre.x+1] = room.stairType;
-                grid[room.centre.y][room.centre.x+2] = t2;
+                grid[room.y][room.x+2] = TileType.ROOM;
+                grid[room.y][room.x+1] = room.stairType;
+                grid[room.y][room.x] = t2;
                 break;
         }
 
 
-
-
-//        // stair well has no walls
-//        for(int x = 0; x < rw; x++){
-//            for(int y = 0; y < rh; y++){
-//                grid[ry+y][rx+x] = room.stairType;
-//                tileOrientation[ry+y][rx+x] = room.stairsDirection;
-//            }
-//        }
-//        grid[room.centre.y][room.centre.x] = TileType.ROOM;
     }
 
     private void addRoom(Room room){

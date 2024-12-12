@@ -1,5 +1,6 @@
 package com.monstrous.dungeongame;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 
 public class KeyController extends InputAdapter {
@@ -106,12 +107,16 @@ public class KeyController extends InputAdapter {
         // show the room if this is the first time we enter it
         int roomId = world.map.roomCode[y][x];
         if(roomId >= 0) {
+
             Room room = world.map.rooms.get(roomId);
             if (!room.uncovered) {
+                Gdx.app.log("Uncover room", ""+roomId);
                 scenes.buildRoom(world.map, room);
                 scenes.populateRoom(world, room);
             }
         } else if( world.map.getGrid(x,y) == TileType.CORRIDOR){
+            if(!world.map.corridorSeen[y][x])
+                Gdx.app.log("Uncover corridor", " "+x+", "+y);
             scenes.visitCorridorSegment(world.map, x, y);
         }
         if( world.map.getGrid(x,y) == TileType.STAIRS_DOWN){

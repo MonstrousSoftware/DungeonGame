@@ -33,6 +33,7 @@ public class DungeonScenes implements Disposable {
     private SceneAsset sceneAssetWallTsplit;
     private SceneAsset sceneAssetWallCrossing;
     private SceneAsset sceneAssetStairs;
+    private SceneAsset sceneAssetPillar;
 
 
     public DungeonScenes(SceneManager sceneManager) {
@@ -49,6 +50,7 @@ public class DungeonScenes implements Disposable {
         sceneAssetWallTsplit = new GLTFLoader().load(Gdx.files.internal("models/wall_Tsplit.gltf"));
         sceneAssetWallCrossing = new GLTFLoader().load(Gdx.files.internal("models/wall_crossing.gltf"));
         sceneAssetStairs = new GLTFLoader().load(Gdx.files.internal("models/stairs.gltf"));
+        sceneAssetPillar = new GLTFLoader().load(Gdx.files.internal("models/pillar.gltf"));
     }
 
     public void buildMap(DungeonMap map){
@@ -97,10 +99,15 @@ public class DungeonScenes implements Disposable {
                     tile = new Scene(sceneAssetWallCrossing.scene);
                 }
                 else if(cell == TileType.STAIRS_DOWN){
+                    tile = new Scene(sceneAssetWallCrossing.scene);
+                    z = -8;
+                    setTransform(tile.modelInstance.transform, x, y, z, map.tileOrientation[y][x]);
+                    sceneManager.addScene(tile);
                     tile = new Scene(sceneAssetStairs.scene);
                     z = -4;
                 }
                 else if(cell == TileType.STAIRS_DOWN_DEEP){
+
                     tile = new Scene(sceneAssetStairs.scene);
                     z = -8;
                 }
@@ -109,6 +116,9 @@ public class DungeonScenes implements Disposable {
                     z = 0;
                 }
                 else if(cell == TileType.STAIRS_UP_HIGH){
+                    tile = new Scene(sceneAssetWallCrossing.scene);
+                    setTransform(tile.modelInstance.transform, x, y, z, map.tileOrientation[y][x]);
+                    sceneManager.addScene(tile);
                     tile = new Scene(sceneAssetStairs.scene);
                     z = 4;
                 }

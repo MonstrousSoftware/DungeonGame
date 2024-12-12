@@ -7,8 +7,8 @@ package com.monstrous.dungeongame;
 import com.badlogic.gdx.math.MathUtils;
 
 public class World {
-    public final static int MAP_WIDTH = 30;
-    public final static int MAP_HEIGHT = 30;
+    public final static int MAP_WIDTH = 20;
+    public final static int MAP_HEIGHT = 20;
 
     public int seed = 1234;
     public int level = 0;
