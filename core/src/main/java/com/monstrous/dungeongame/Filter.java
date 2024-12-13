@@ -2,6 +2,7 @@ package com.monstrous.dungeongame;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
@@ -42,6 +43,12 @@ public class Filter implements Disposable {
             batch.setShader(null);
             batch.end();
         }
+
+    public void render(Sprite sprite, int x, int y, int w, int h ) {
+        batch.begin();
+        batch.draw(sprite, x, y, w, h);    // draw frame buffer to screen window
+        batch.end();
+    }
 
         public void render(FrameBuffer fbo ) {      // full screen
             render(fbo, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());

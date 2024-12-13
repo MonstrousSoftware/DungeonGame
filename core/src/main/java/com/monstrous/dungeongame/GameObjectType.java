@@ -1,6 +1,8 @@
 package com.monstrous.dungeongame;
 
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import net.mgsx.gltf.scene3d.scene.SceneAsset;
+import com.badlogic.gdx.graphics.Texture;
 
 public class GameObjectType {
     public String name;
@@ -12,6 +14,7 @@ public class GameObjectType {
     public SceneAsset sceneAsset;
     public int initXP;
     public float z;     // height to render at when place on the ground (to avoid some model being inside the floor)
+    public Sprite icon;
 
     public GameObjectType(String name, boolean character, boolean pickup) {
         this.name = name;

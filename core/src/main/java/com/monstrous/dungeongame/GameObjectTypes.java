@@ -1,6 +1,8 @@
 package com.monstrous.dungeongame;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import net.mgsx.gltf.loaders.glb.GLBLoader;
@@ -84,6 +86,16 @@ public class GameObjectTypes implements Disposable {
         shield2.z = 1f;
         types.add(shield2);
 
+        addIcons();
+     }
+
+     private void addIcons(){
+        ShowCase showCase = new ShowCase();
+        for(GameObjectType type : types ){
+        // GameObjectType type = types.first();
+            Sprite icon = showCase.makeIcon(type.sceneAsset, 64, 64, type.isEnemy || type.isPlayer);
+            type.icon = icon;
+        }
      }
 
     @Override
