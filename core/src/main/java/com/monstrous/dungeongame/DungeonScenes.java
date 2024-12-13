@@ -198,19 +198,20 @@ public class DungeonScenes implements Disposable {
         gameObject.scene = item;
     }
 
-    public void placeRogue(World world){
+    public void createRogueModel(World world){
         GameObject rogue = world.rogue;
         addScene(rogue);
         adaptModel(rogue.scene, Equipped.NONE);
+    }
 
-        int roomId = world.map.roomCode[rogue.y][rogue.x];
+    public void placeRogue(World world){
+        int roomId = world.map.roomCode[world.rogue.y][world.rogue.x];
         if(roomId >= 0) {
             Room room = world.map.rooms.get(roomId);
             room.uncovered = true;
         }
         else
-            visitCorridorSegment(world.map, rogue.x, rogue.y);
-
+            visitCorridorSegment(world.map, world.rogue.x, world.rogue.y);
     }
 
 

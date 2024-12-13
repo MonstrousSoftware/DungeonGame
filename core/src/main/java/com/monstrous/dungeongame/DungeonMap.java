@@ -146,9 +146,9 @@ public class DungeonMap implements Disposable {
             stairWell.stairsDirection = Direction.values()[d];
             // offset stairwell one cell compared to the floor above
             switch(stairWell.stairsDirection){
-                case NORTH: stairWell.y++; break;
+                case NORTH: stairWell.y--; break;
                 case EAST: stairWell.x--; break;
-                case SOUTH: stairWell.y--; break;
+                case SOUTH: stairWell.y++; break;
                 case WEST: stairWell.x++; break;
             }
         }

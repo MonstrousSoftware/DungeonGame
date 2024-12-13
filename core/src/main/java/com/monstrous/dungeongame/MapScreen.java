@@ -70,17 +70,22 @@ public class MapScreen extends ScreenAdapter {
 //        }
 //        shapeRenderer.end();
 
-//        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+//
 //
 
         // grid
-//        shapeRenderer.setColor(Color.DARK_GRAY);
-//        for(int x = 0; x <= world.map.mapWidth; x++){
-//            shapeRenderer.line(x+m, m, x+m, world.map.mapHeight+m);
-//        }
-//        for(int y = 0; y <= world.map.mapHeight; y++){
-//            shapeRenderer.line(m, y+m, world.map.mapWidth+m, y+m);
-//        }
+        boolean showGrid = true;
+        if(showGrid) {
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+            shapeRenderer.setColor(Color.DARK_GRAY);
+            for (int x = 0; x <= world.map.mapWidth; x++) {
+                shapeRenderer.line(x + m, m, x + m, world.map.mapHeight + m);
+            }
+            for (int y = 0; y <= world.map.mapHeight; y++) {
+                shapeRenderer.line(m, y + m, world.map.mapWidth + m, y + m);
+            }
+            shapeRenderer.end();
+        }
 
 
 //        shapeRenderer.setColor(Color.GRAY);

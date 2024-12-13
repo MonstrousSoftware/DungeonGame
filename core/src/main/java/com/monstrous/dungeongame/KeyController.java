@@ -100,7 +100,18 @@ public class KeyController extends InputAdapter {
     }
 
     private void tryMoveRogue(int dx, int dy, Direction dir){
-        // todo if on bottom of stairs and moving forward, move down a level
+        // if on bottom of stairs and moving forward, move down a level
+        if(world.map.getGrid(world.rogue.x,world.rogue.y) == TileType.STAIRS_DOWN_DEEP &&
+            dir == world.map.tileOrientation[world.rogue.y][world.rogue.x]){
+            world.levelDown();
+            // continue to make the move off the bottom step
+        }
+        else if(world.map.getGrid(world.rogue.x,world.rogue.y) == TileType.STAIRS_UP_HIGH &&
+            dir == Direction.opposite(world.map.tileOrientation[world.rogue.y][world.rogue.x])){
+            world.levelUp();
+            return;
+            // continue to make the move off the top step
+        }
 
         world.rogue.tryMove(world, scenes, dx, dy, dir);
 
