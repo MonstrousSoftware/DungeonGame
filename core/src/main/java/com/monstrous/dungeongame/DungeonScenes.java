@@ -193,7 +193,7 @@ public class DungeonScenes implements Disposable {
     public void addScene(GameObject gameObject){
 
         Scene item = new Scene(gameObject.type.sceneAsset.scene);
-        setTransform(item.modelInstance.transform, gameObject.x, gameObject.y, gameObject.z, Direction.SOUTH);
+        setTransform(item.modelInstance.transform, gameObject.x, gameObject.y, gameObject.z, gameObject.direction);
         sceneManager.addScene(item);
         gameObject.scene = item;
     }
@@ -201,10 +201,10 @@ public class DungeonScenes implements Disposable {
     public void createRogueModel(World world){
         GameObject rogue = world.rogue;
         addScene(rogue);
-        adaptModel(rogue.scene, Equipped.NONE);
+        adaptModel(rogue.scene, rogue.stats.equipped);
     }
 
-    public void placeRogue(World world){
+    public void liftFog(World world){
         int roomId = world.map.roomCode[world.rogue.y][world.rogue.x];
         if(roomId >= 0) {
             Room room = world.map.rooms.get(roomId);

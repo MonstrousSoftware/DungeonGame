@@ -82,7 +82,7 @@ public class KeyController extends InputAdapter {
     private void restart() {
         world.restart();
         scenes.clear();
-        scenes.placeRogue(world);
+        scenes.liftFog(world);
         int roomId = world.map.roomCode[world.rogue.y][world.rogue.x];
         Room room = world.map.rooms.get(roomId);
         scenes.buildRoom(world.map, room);
@@ -109,7 +109,6 @@ public class KeyController extends InputAdapter {
         else if(world.map.getGrid(world.rogue.x,world.rogue.y) == TileType.STAIRS_UP_HIGH &&
             dir == Direction.opposite(world.map.tileOrientation[world.rogue.y][world.rogue.x])){
             world.levelUp();
-            return;
             // continue to make the move off the top step
         }
 

@@ -31,7 +31,7 @@ public class World {
     }
 
     public void levelUp(){
-        level++;
+        level--;
         map.dispose();
         generateLevel();
     }

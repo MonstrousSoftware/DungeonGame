@@ -47,8 +47,13 @@ public class MapScreen extends ScreenAdapter {
 
     @Override
     public void render(float delta) {
-        if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
+        if(Gdx.input.isKeyJustPressed(Input.Keys.L)){
             world.levelDown();
+            System.out.println("seed: "+world.seed+ " level: "+world.level);
+            map = world.map;
+        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.K)){
+            world.levelUp();
             System.out.println("seed: "+world.seed+ " level: "+world.level);
             map = world.map;
         }

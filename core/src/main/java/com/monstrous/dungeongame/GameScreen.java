@@ -5,21 +5,16 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g3d.environment.SpotLight;
 import com.badlogic.gdx.graphics.g3d.shaders.DepthShader;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.viewport.Viewport;
 import net.mgsx.gltf.scene3d.attributes.PBRCubemapAttribute;
 import net.mgsx.gltf.scene3d.attributes.PBRFloatAttribute;
 import net.mgsx.gltf.scene3d.attributes.PBRTextureAttribute;
 import net.mgsx.gltf.scene3d.lights.DirectionalLightEx;
 import net.mgsx.gltf.scene3d.lights.DirectionalShadowLight;
 import net.mgsx.gltf.scene3d.lights.PointLightEx;
-import net.mgsx.gltf.scene3d.lights.SpotLightEx;
 import net.mgsx.gltf.scene3d.scene.SceneManager;
 
 import net.mgsx.gltf.scene3d.shaders.PBRDepthShaderProvider;
@@ -86,11 +81,6 @@ public class GameScreen extends ScreenAdapter {
 
 
         // setup light
-//        light = new DirectionalLightEx();
-//        light.direction.set(1, -3, 1).nor();
-//        light.color.set(Color.WHITE);
-//        light.intensity = 0.1f;
-//        sceneManager.environment.add(light);
 
         pointLight = new PointLightEx();
         pointLight.color.set(Color.YELLOW);
@@ -126,7 +116,7 @@ public class GameScreen extends ScreenAdapter {
         dungeonScenes = new DungeonScenes(sceneManager);
         world.isRebuilt = false;
         dungeonScenes.createRogueModel( world );
-        dungeonScenes.placeRogue( world );
+        dungeonScenes.liftFog( world );
         dungeonScenes.buildMap( world.map );
         dungeonScenes.buildCorridors( world.map );
         dungeonScenes.populateMap(world);
@@ -157,11 +147,6 @@ public class GameScreen extends ScreenAdapter {
             return;
         }
 
-        // todo do you keep gold on level down?
-        if(Gdx.input.isKeyJustPressed(Input.Keys.L)){
-            world.levelDown();
-            System.out.println("seed: "+world.seed+ " level: "+world.level);
-        }
 
         if(world.isRebuilt){
             world.isRebuilt = false;
@@ -169,7 +154,7 @@ public class GameScreen extends ScreenAdapter {
             // refill scene manager
             sceneManager.getRenderableProviders().clear();
             dungeonScenes.createRogueModel( world );
-            dungeonScenes.placeRogue( world );
+            dungeonScenes.liftFog( world );
             int roomId = world.map.roomCode[world.rogue.y][world.rogue.x];
             Room room = world.map.rooms.get(roomId);
             dungeonScenes.buildRoom( world.map, room );
@@ -177,7 +162,7 @@ public class GameScreen extends ScreenAdapter {
             camController.setTrackedObject( world.rogue.scene.modelInstance );
         }
 
-        camController.setTrackedObject( world.rogue.scene.modelInstance );
+        //camController.setTrackedObject( world.rogue.scene.modelInstance );
         camController.update(deltaTime);
 
         world.rogue.scene.modelInstance.transform.getTranslation(pointLight.position);
