@@ -213,7 +213,8 @@ public class DungeonScenes implements Disposable {
     public void createRogueModel(World world){
         GameObject rogue = world.rogue;
         addScene(rogue);
-        adaptModel(rogue.scene, rogue.stats.equipped);
+        // todo
+        adaptModel(rogue.scene, rogue.stats);
     }
 
     public void liftFog(World world){
@@ -240,27 +241,27 @@ public class DungeonScenes implements Disposable {
         transform.setTranslation(SCALE*x, z, -SCALE*y);
     }
 
-    public void adaptModel(Scene rogue, int equipped){
+    public void adaptModel(Scene rogue, CharacterStats stats){
         ModelInstance instance = rogue.modelInstance;
         for(Node node : instance.nodes){
-            checkNode(1, node, equipped);
+            checkNode(1, node, stats.weaponItem);
         }
     }
 
     // recursive method to enable/disable weapons
-    private void checkNode(int level, Node node, int equipped ){
+    private void checkNode(int level, Node node, GameObject weapon ){
         //Gdx.app.log("Node", "level "+ level + " : "+node.id+ " nodeparts: "+node.parts.size);
         if(node.id.contentEquals("Knife"))
-            setNodeParts(node, (equipped & Equipped.KNIFE) != 0);
+            setNodeParts(node, (weapon != null && weapon.type == GameObjectTypes.knife));
         else if(node.id.contains("Knife_Offhand"))
             setNodeParts(node, false);
         else if(node.id.contains("Crossbow"))
-            setNodeParts(node, (equipped & Equipped.CROSSBOW) != 0);
+            setNodeParts(node, (weapon != null && weapon.type == GameObjectTypes.crossbow));
         else if(node.id.contains("Throwable"))
-            setNodeParts(node, (equipped & Equipped.THROWABLE) != 0);
+            setNodeParts(node, (weapon != null && weapon.type == GameObjectTypes.explosive));
 
         for(Node n : node.getChildren()){
-            checkNode(level+1, n, equipped);
+            checkNode(level+1, n, weapon);
         }
     }
 

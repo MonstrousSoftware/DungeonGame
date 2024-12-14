@@ -11,6 +11,8 @@ public class GameObjectType {
     public boolean isPlayer;
     public boolean isEnemy;
     public boolean isCountable;
+    public boolean isWeapon;
+    public boolean isArmour;
     public SceneAsset sceneAsset;
     public int initXP;
     public float z;     // height to render at when place on the ground (to avoid some model being inside the floor)
@@ -24,5 +26,7 @@ public class GameObjectType {
         this.isCountable = false;
         this.initXP = 1;
         this.z = 0f;
+        this.isWeapon = false;
+        this.isArmour = false;
     }
 }

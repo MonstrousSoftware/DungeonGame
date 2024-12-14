@@ -7,10 +7,12 @@ public class KeyController extends InputAdapter {
 
     private World world;
     private DungeonScenes scenes;
+    private boolean equipMode;
 
     public KeyController(World world, DungeonScenes scenes) {
         this.world = world;
         this.scenes = scenes;
+        equipMode = false;
     }
 
     @Override
@@ -34,6 +36,9 @@ public class KeyController extends InputAdapter {
     }
 
     private boolean processKey(char character) {
+        if(equipMode)
+            return processEquipChoice(character);
+
         switch (character) {
             // left/right keys translate to -x/+x
             // up/down to +y/-y
@@ -50,30 +55,12 @@ public class KeyController extends InputAdapter {
             case 'd':
                 tryMoveRogue(1, 0, Direction.EAST);
                 return true;
-            case 'q':
+            case 'z':
                 turnRogue(false); return true;
-            case 'e':
+            case 'c':
                 turnRogue(true); return true;
-            case '0':
-                equip(Equipped.NONE);
-                return true;
-            case '1':
-                equip(Equipped.KNIFE);
-                return true;
-            case '2':
-                equip(Equipped.THROWABLE);
-                return true;
-            case '3':
-                equip(Equipped.CROSSBOW);
-                return true;
-            case '5':
-                useArmour(null);
-                return true;
-            case '6':
-                useArmour(GameObjectTypes.shield1);
-                return true;
-            case '7':
-                useArmour(GameObjectTypes.shield2);
+            case 'e':
+                equip();
                 return true;
             case 'p':
                 dropGold();
@@ -182,12 +169,37 @@ public class KeyController extends InputAdapter {
         }
     }
 
-    private void equip( int equipped ){
-        world.rogue.stats.equipped = equipped;
-        scenes.adaptModel(world.rogue.scene, equipped);
+    private void equip(){
+        MessageBox.addLine("Equip what? (0-9) or Esc");
+        equipMode = true;
+
     }
 
-    private void useArmour( GameObjectType type ){
-        world.rogue.stats.armourItem = type;
+    private boolean processEquipChoice(int character){
+        equipMode = false;
+        if(character >= '0' && character <= '9'){
+            equipSlot(character - '0');
+            return true;
+        }
+        return false;
+    }
+
+    private void equipSlot(int slotNr ){
+        Inventory.Slot slot = world.rogue.stats.inventory.slots[slotNr];
+        if(slot.isEmpty())
+            return;
+        if(slot.object.type.isArmour){
+            GameObject prev = world.rogue.stats.armourItem;
+            world.rogue.stats.armourItem = slot.removeItem();
+            if(prev != null)
+                world.rogue.stats.inventory.addItem(prev);
+        } else if(slot.object.type.isWeapon){
+            GameObject prev = world.rogue.stats.weaponItem;
+            world.rogue.stats.weaponItem = slot.removeItem();
+            if(prev != null)
+                world.rogue.stats.inventory.addItem(prev);
+        }
+        scenes.adaptModel(world.rogue.scene, world.rogue.stats);
+
     }
 }

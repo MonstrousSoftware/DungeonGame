@@ -41,7 +41,7 @@ public class Inventory {
                 assert count == 0;
                 object = item;
             }
-            count++;
+            count+=item.quantity;
         }
     }
 

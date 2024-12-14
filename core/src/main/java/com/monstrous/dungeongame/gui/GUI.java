@@ -30,8 +30,8 @@ public class GUI implements Disposable {
     private Label message1, message2, message3;
     private StringBuffer sb;
     private World world;
-    private int equipped = -1;
-    private GameObjectType armourType;
+    private GameObject equippedWeapon;
+    private GameObject equippedArmour;
     private InventoryWindow inventoryWindow;
 
     public GUI( World world ) {
@@ -73,13 +73,13 @@ public class GUI implements Disposable {
 
         Table eq = new Table();
         weapon = new Image();
-        TextureRegion region = new TextureRegion(GameObjectTypes.knife.icon.getTexture());
+        TextureRegion region = new TextureRegion(GameObjectTypes.emptyIcon);
         region.flip(false, true);
         weapon.setDrawable(new TextureRegionDrawable(region));
         eq.add(weapon).pad(5).right().top();
 
         armour = new Image();
-        region = new TextureRegion(GameObjectTypes.shield2.icon.getTexture());
+        region = new TextureRegion(GameObjectTypes.emptyIcon);
         region.flip(false, true);
         armour.setDrawable(new TextureRegionDrawable(region));
         eq.add(armour).pad(5).left().top();
@@ -140,20 +140,19 @@ public class GUI implements Disposable {
         message1.setText(MessageBox.lines.get(MessageBox.lines.size-3));
 
         setWeapon();
+        setArmour();
         inventoryWindow.update();
     }
 
     private void setWeapon(){
-        if(world.rogue.stats.equipped != equipped){
-            equipped = world.rogue.stats.equipped;
+        if(world.rogue.stats.weaponItem != equippedWeapon){
+            equippedWeapon = world.rogue.stats.weaponItem;
 
             Sprite icon = null;
-            switch(equipped){
-                case Equipped.NONE: icon = GameObjectTypes.emptyIcon; break;
-                case Equipped.KNIFE: icon = GameObjectTypes.knife.icon; break;
-                case Equipped.CROSSBOW: icon = GameObjectTypes.crossbow.icon; break;
-                case Equipped.THROWABLE: icon = GameObjectTypes.explosive.icon; break;
-            }
+            if(equippedWeapon == null)
+                icon = GameObjectTypes.emptyIcon;
+            else
+                icon = equippedWeapon.type.icon;
 
             TextureRegion region = new TextureRegion(icon.getTexture());
             region.flip(false, true);
@@ -162,20 +161,18 @@ public class GUI implements Disposable {
     }
 
     private void setArmour(){
-        if(world.rogue.stats.equipped != equipped){
-            equipped = world.rogue.stats.equipped;
+        if(world.rogue.stats.armourItem != equippedArmour){
+            equippedArmour = world.rogue.stats.armourItem;
 
             Sprite icon = null;
-            switch(equipped){
-                case Equipped.NONE: icon = GameObjectTypes.emptyIcon; break;
-                case Equipped.KNIFE: icon = GameObjectTypes.knife.icon; break;
-                case Equipped.CROSSBOW: icon = GameObjectTypes.crossbow.icon; break;
-                case Equipped.THROWABLE: icon = GameObjectTypes.explosive.icon; break;
-            }
+            if(equippedArmour == null)
+                icon = GameObjectTypes.emptyIcon;
+            else
+                icon = equippedArmour.type.icon;
 
             TextureRegion region = new TextureRegion(icon.getTexture());
             region.flip(false, true);
-            weapon.setDrawable(new TextureRegionDrawable(region));
+            armour.setDrawable(new TextureRegionDrawable(region));
         }
     }
 

@@ -56,8 +56,9 @@ public class GameObject {
         scenes.turnObject(this, dir, x, y);    // turn towards moving direction
         int tx = x+dx;
         int ty = y+dy;
+        TileType from = world.map.getGrid(x, y);
         TileType cell = world.map.getGrid(tx, ty);
-        if(!TileType.walkable(cell))
+        if(!TileType.walkable(cell, from))
             return;     // don't move to non walkable cell
 
         // what is in the target cell? can be enemy, pickup or nothing
@@ -107,7 +108,7 @@ public class GameObject {
             Sounds.fight();
         int hp = 1;
         String verb = "hits";
-        if(stats.equipped == Equipped.KNIFE) {
+        if(stats.weaponItem != null && stats.weaponItem.type == GameObjectTypes.knife) {
             hp = 2;
             verb = "stabs";
         }

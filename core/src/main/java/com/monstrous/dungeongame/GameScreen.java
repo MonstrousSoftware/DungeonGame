@@ -167,7 +167,7 @@ public class GameScreen extends ScreenAdapter {
         camController.update(deltaTime);
 
         world.rogue.scene.modelInstance.transform.getTranslation(pointLight.position);
-        pointLight.position.y = 3;
+        pointLight.position.y += 3;
         shadowCastingLight.setCenter(pointLight.position);
 
         // render

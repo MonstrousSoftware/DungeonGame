@@ -15,18 +15,21 @@ public enum TileType {
     WALL_CROSSING;
 
 
-    public static boolean walkable(TileType cell){
+    public static boolean walkable(TileType cell, TileType from){
         switch(cell){
             case ROOM:
             case CORRIDOR:
             case DOORWAY:
             case STAIRS_DOWN:
-            case STAIRS_DOWN_DEEP:
             case STAIRS_UP:
-            case STAIRS_UP_HIGH:
                 return true;
             default:
-                return false;
+                break;
         }
+        if(cell == STAIRS_UP_HIGH)
+            return(from == STAIRS_UP);
+        else if(cell == STAIRS_DOWN_DEEP)
+            return(from == STAIRS_DOWN);
+        return false;
     }
 }

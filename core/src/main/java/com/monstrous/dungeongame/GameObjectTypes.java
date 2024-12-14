@@ -69,24 +69,29 @@ public class GameObjectTypes implements Disposable {
 
         knife = new GameObjectType("Knife", false, true);
         knife.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/dagger.gltf"));
+        knife.isWeapon = true;
         types.add(knife);
 
         crossbow = new GameObjectType("Crossbow", false, true);
         crossbow.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/crossbow_1handed.gltf"));
+        crossbow.isWeapon = true;
         types.add(crossbow);
 
         explosive = new GameObjectType("Explosive", false, true);
         explosive.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/smokebomb.gltf"));
+        explosive.isWeapon = true;
         types.add(explosive);
 
         shield1 = new GameObjectType("Round Shield", false, true);
         shield1.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/shield_round.gltf"));
         shield1.z = 1f;
+        shield1.isArmour = true;
         types.add(shield1);
 
         shield2 = new GameObjectType("Square Shield", false, true);
         shield2.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/shield_square.gltf"));
         shield2.z = 1f;
+        shield2.isArmour = true;
         types.add(shield2);
 
         addIcons();
