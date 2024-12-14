@@ -49,8 +49,9 @@ public class World {
     private void generateLevel(){
         isRebuilt = true;
         // map gets bigger at lower levels: keep aspect ratio 3/2
-        int w = MAP_WIDTH+6*level;
-        int h = MAP_HEIGHT+4*level;
+        // todo match up stairs
+        int w = MAP_WIDTH; //+6*level;
+        int h = MAP_HEIGHT; //+4*level;
         map = new DungeonMap(seed, level, w, h);
 
         gameObjects = new GameObjects(w, h);

@@ -135,8 +135,20 @@ public class DungeonScenes implements Disposable {
 
     // show corridor segment if not seen before
     public void visitCorridorSegment(DungeonMap map, int x, int y){
+        unmaskCorridorSegment(map, x, y);
+//        for(int dx = -1; dx <= 1; dx++){
+//            for(int dy = -1; dy <= 1; dy++){
+//                unmaskCorridorSegment(map, x+dx, y+dy);
+//            }
+//        }
+    }
+
+    public void unmaskCorridorSegment(DungeonMap map, int x, int y){
         if(map.corridorSeen[y][x])
             return;
+//        if(map.getGrid(x,y) != TileType.CORRIDOR)
+//            return;
+
         map.corridorSeen[y][x] = true;
 
         TileType cell = map.getGrid(x,y);
