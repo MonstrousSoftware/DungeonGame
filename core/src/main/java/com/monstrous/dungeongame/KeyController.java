@@ -322,9 +322,8 @@ public class KeyController extends InputAdapter {
             MessageBox.addLine("You eat the food.");
             world.rogue.stats.food = CharacterStats.MAX_FOOD;
         } else if(slot.object.type.isPotion) {
-            GameObject item = slot.removeItem();
-            MessageBox.addLine("You drink the potion.");
-
+            GameObject potion = slot.removeItem();
+            drinkPotion(potion);
         } else if(slot.object.type == GameObjectTypes.spellBookClosed) {
             slot.object.type = GameObjectTypes.spellBookOpen;
             readSpell();
@@ -336,28 +335,14 @@ public class KeyController extends InputAdapter {
     }
 
 
-    // testing
-    private void dropGold(){
-        if(world.rogue.stats.gold == 0) {
-            MessageBox.addLine("You have no gold to drop.");
-            return;
-        }
-        GameObject occupant = world.gameObjects.getOccupant(world.rogue.x, world.rogue.y);
-        if(occupant != null && occupant.type == GameObjectTypes.gold) {
-            MessageBox.addLine("You dropped 1 gold.");
-            // if there is already gold, add to it
-            world.rogue.stats.gold--;
-            occupant.quantity++;
-        } else if( occupant != null){
-            MessageBox.addLine("Cannot drop here.");
-        } else {
-            MessageBox.addLine("You dropped 1 gold.");
-            GameObject gold = scenes.placeObject(world.gameObjects, GameObjectTypes.gold, world.rogue.x, world.rogue.y);
-            gold.quantity = 1;
-        }
-    }
+
 
     private void readSpell(){
         MessageBox.addLine("You read the spell book and you feel sad.");
+    }
+
+    private void drinkPotion(GameObject potion){
+        MessageBox.addLine("You drink the "+potion.type.name+".");
+        // todo some effect
     }
 }

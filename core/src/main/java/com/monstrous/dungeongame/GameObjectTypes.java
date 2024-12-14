@@ -118,32 +118,32 @@ public class GameObjectTypes implements Disposable {
         food.isEdible = true;
         types.add(food);
 
-        bottle_A_brown = new GameObjectType("Potion", false, true);
+        bottle_A_brown = new GameObjectType("Amber Potion", false, true);
         bottle_A_brown.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/bottle_A_brown.gltf"));
         bottle_A_brown.isPotion = true;
         types.add(bottle_A_brown);
 
-        bottle_A_green = new GameObjectType("Potion", false, true);
+        bottle_A_green = new GameObjectType("Jade Potion", false, true);
         bottle_A_green.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/bottle_A_green.gltf"));
         bottle_A_green.isPotion = true;
         types.add(bottle_A_green);
 
-        bottle_B_brown = new GameObjectType("Potion", false, true);
+        bottle_B_brown = new GameObjectType("Murky Potion", false, true);
         bottle_B_brown.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/bottle_B_brown.gltf"));
         bottle_B_brown.isPotion = true;
         types.add(bottle_B_brown);
 
-        bottle_B_green = new GameObjectType("Potion", false, true);
+        bottle_B_green = new GameObjectType("Foul-Smelling Potion", false, true);
         bottle_B_green.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/bottle_B_green.gltf"));
         bottle_B_green.isPotion = true;
         types.add(bottle_B_green);
 
-        bottle_C_brown = new GameObjectType("Potion", false, true);
+        bottle_C_brown = new GameObjectType("Bubbly Potion", false, true);
         bottle_C_brown.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/bottle_C_brown.gltf"));
         bottle_C_brown.isPotion = true;
         types.add(bottle_C_brown);
 
-        bottle_C_green = new GameObjectType("Potion", false, true);
+        bottle_C_green = new GameObjectType("Sweet Potion", false, true);
         bottle_C_green.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/bottle_C_green.gltf"));
         bottle_C_green.isPotion = true;
         types.add(bottle_C_green);

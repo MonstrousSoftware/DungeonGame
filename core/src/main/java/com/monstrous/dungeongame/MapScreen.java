@@ -158,7 +158,7 @@ public class MapScreen extends ScreenAdapter {
         }
         shapeRenderer.end();
 
-
+        // Rogue character
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(38/255f, 0.5f, 0, 1f);
         shapeRenderer.circle(world.rogue.x + m+.5f, world.rogue.y + m+.5f, 0.5f);
