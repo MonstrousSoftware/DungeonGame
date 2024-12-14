@@ -7,8 +7,8 @@ package com.monstrous.dungeongame;
 import com.badlogic.gdx.math.MathUtils;
 
 public class World {
-    public final static int MAP_WIDTH = 20;
-    public final static int MAP_HEIGHT = 20;
+    private final static int MAP_WIDTH = 30;
+    private final static int MAP_HEIGHT = 20;
 
     public int seed = 1234;
     public int level = 0;
@@ -39,6 +39,7 @@ public class World {
     public void restart(){
         MessageBox.clear();
         seed = MathUtils.random(1,9999);
+        rogue = null;
         level = 0;
         map.dispose();
         generateLevel();
@@ -47,9 +48,12 @@ public class World {
 
     private void generateLevel(){
         isRebuilt = true;
-        map = new DungeonMap(seed, level, MAP_WIDTH, MAP_HEIGHT);
+        // map gets bigger at lower levels: keep aspect ratio 3/2
+        int w = MAP_WIDTH+6*level;
+        int h = MAP_HEIGHT+4*level;
+        map = new DungeonMap(seed, level, w, h);
 
-        gameObjects = new GameObjects(MAP_WIDTH, MAP_HEIGHT);
+        gameObjects = new GameObjects(w, h);
         enemies = new Enemies(this);
         // add dynamic object to the gameObjects list and its occupants grid
 

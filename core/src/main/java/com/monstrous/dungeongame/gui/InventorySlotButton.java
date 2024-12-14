@@ -22,17 +22,17 @@ public class InventorySlotButton extends Button {
     public static final Color BACKGROUND_COLOUR = Color.DARK_GRAY;
 
     private final Label countLabel;
-    private Inventory.Slot slot;
+    private int slotIndex;
     private Image image;
     private TextureRegionDrawable placeHolder;
     private GameObjectType currentType;
     private int count;
     private World world;
 
-    public InventorySlotButton(String text, Skin skin, final World world, final Inventory.Slot slot) {
+    public InventorySlotButton(String text, Skin skin, final World world, final int slotIndex) {
         super(skin, "slot");
         this.world = world;
-        this.slot = slot;
+        this.slotIndex = slotIndex;
         count = 0;
 
         Table countTable = new Table();
@@ -66,10 +66,13 @@ public class InventorySlotButton extends Button {
     // return true if slot contents has just changed
     public boolean update() {
 
+        Inventory inventory = world.rogue.stats.inventory;
+        Inventory.Slot slot = inventory.slots[slotIndex];
+        
         boolean updated = false;
 
         if(slot.count != this.count) {
-            adjustCountIndicator();
+            adjustCountIndicator(slot);
             this.count = slot.count;
             updated = true;
         }
@@ -88,7 +91,7 @@ public class InventorySlotButton extends Button {
         return updated;
     }
 
-    private void adjustCountIndicator() {
+    private void adjustCountIndicator( Inventory.Slot slot) {
         if(slot.count <= 0)
             countLabel.setText("");         // don't show a zero
         else if(!slot.object.type.isCountable)

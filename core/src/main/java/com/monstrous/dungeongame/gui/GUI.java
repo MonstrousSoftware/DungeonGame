@@ -42,7 +42,7 @@ public class GUI implements Disposable {
 
         // rely on resize() to call rebuild()
 
-        inventoryWindow = new InventoryWindow("Inventory", skin, world, world.rogue.stats.inventory);
+        inventoryWindow = new InventoryWindow("Inventory", skin, world);
 
     }
 
@@ -99,7 +99,7 @@ public class GUI implements Disposable {
         messageBox.row();
         messageBox.add(message3).pad(3).left();
 
-        uiPanel.add(messageBox).top().left().expand();
+        uiPanel.add(messageBox).pad(10).top().left().expand();
         uiPanel.pack();
 
         // Screen is split in 2 columns. Left for 3d view and Right for fixed width ui panel

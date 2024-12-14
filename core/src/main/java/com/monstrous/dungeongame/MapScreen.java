@@ -15,7 +15,7 @@ import static com.monstrous.dungeongame.DungeonMap.*;
 
 
 public class MapScreen extends ScreenAdapter {
-    public final static int MARGIN = 5;
+    //public final static int MARGIN = 5;
 
     private Main game;
     private World world;
@@ -38,7 +38,7 @@ public class MapScreen extends ScreenAdapter {
         map = world.map;
         shapeRenderer = new ShapeRenderer();
         camera = new OrthographicCamera();
-        viewport = new FitViewport(world.map.mapWidth+2*MARGIN, world.map.mapHeight+2*MARGIN, camera);
+        viewport = new FitViewport(world.map.mapWidth, world.map.mapHeight, camera);
         uiViewport = new ScreenViewport();
         batch = new SpriteBatch();
         font = new BitmapFont();
@@ -49,11 +49,15 @@ public class MapScreen extends ScreenAdapter {
     public void render(float delta) {
         if(Gdx.input.isKeyJustPressed(Input.Keys.L)){
             world.levelDown();
+            viewport.setWorldSize(world.map.mapWidth, world.map.mapHeight);
+            viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
             System.out.println("seed: "+world.seed+ " level: "+world.level);
             map = world.map;
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.K)){
             world.levelUp();
+            viewport.setWorldSize(world.map.mapWidth, world.map.mapHeight);
+            viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
             System.out.println("seed: "+world.seed+ " level: "+world.level);
             map = world.map;
         }
@@ -65,7 +69,7 @@ public class MapScreen extends ScreenAdapter {
         ScreenUtils.clear(Color.BLACK);
         shapeRenderer.setProjectionMatrix(camera.combined);
 
-        int m = MARGIN;
+        int m = 0;
 
         // rooms
 //        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
@@ -190,7 +194,7 @@ public class MapScreen extends ScreenAdapter {
         batch.begin();
         font.draw(batch, sb.toString(), 10 ,90 );
 
-        font.draw(batch, "Press SPACE to descend", 10 ,50 );
+        font.draw(batch, "Press M to return", 10 ,50 );
 
         batch.end();
 
