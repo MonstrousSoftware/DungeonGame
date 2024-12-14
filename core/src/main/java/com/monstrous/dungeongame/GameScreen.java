@@ -44,6 +44,7 @@ public class GameScreen extends ScreenAdapter {
     private DirectionalShadowLight shadowCastingLight;
     private FrameBuffer fbo;
     private Filter filter;
+    private Color bgColor;
 
 
     public GameScreen(Main game) {
@@ -136,7 +137,9 @@ public class GameScreen extends ScreenAdapter {
         Gdx.input.setInputProcessor(im);
 
         MessageBox mb = new MessageBox();
-        MessageBox.addLine("Welcome traveller!");
+        //MessageBox.addLine("Welcome traveller!");
+
+        bgColor = new Color(0x3e1323ff);
     }
 
 
@@ -173,7 +176,7 @@ public class GameScreen extends ScreenAdapter {
         // render
         sceneManager.renderShadows();
         fbo.begin();
-        ScreenUtils.clear(Color.BLACK, true);
+        ScreenUtils.clear(bgColor, true);
         sceneManager.update(deltaTime);
         sceneManager.renderColors();
         fbo.end();

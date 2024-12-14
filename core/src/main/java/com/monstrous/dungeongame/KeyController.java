@@ -10,7 +10,6 @@ public class KeyController extends InputAdapter {
     private World world;
     private DungeonScenes scenes;
     private boolean equipMode;
-    private boolean readMode;
     private boolean dropMode;
     private boolean useMode;
     private int frozenTimer;
@@ -74,6 +73,9 @@ public class KeyController extends InputAdapter {
     }
 
     private boolean preAction(){
+        if (world.rogue.stats.hitPoints <= 0) {
+            return false;
+        }
         if(frozenTimer > 0){    // still frozen?
             frozenTimer--;
             return false;

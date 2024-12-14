@@ -13,7 +13,7 @@ public class InventoryWindow extends Window {
     private int numSlots;
 
     public InventoryWindow(String title, Skin skin, World world) {
-        super(title, skin, "grey-canvas");
+        super(title, skin, "default");
         Inventory inventory = world.rogue.stats.inventory;
 
         numSlots = inventory.NUM_SLOTS;

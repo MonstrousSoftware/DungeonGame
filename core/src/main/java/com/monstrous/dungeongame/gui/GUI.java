@@ -18,7 +18,7 @@ import com.monstrous.dungeongame.*;
 
 public class GUI implements Disposable {
 
-    public static final int PANEL_WIDTH = 300;      // width of UI panel
+    public static final int PANEL_WIDTH = 400;      // width of UI panel
 
     public Stage stage;
     private Skin skin;
@@ -36,7 +36,8 @@ public class GUI implements Disposable {
 
     public GUI( World world ) {
         this.world = world;
-        skin = new Skin(Gdx.files.internal("blue-pixel-skin/blue-pixel.json"));
+//        skin = new Skin(Gdx.files.internal("blue-pixel-skin/blue-pixel.json"));
+        skin = new Skin(Gdx.files.internal("skin/d3.json"));
         stage = new Stage(new ScreenViewport());
         sb = new StringBuffer();
 
@@ -57,18 +58,18 @@ public class GUI implements Disposable {
         Table uiPanel = new Table();
 
 
-        level = new Label("LEVEL: 0", skin);
-        gold = new Label("GOLD: 0", skin);
-        hp = new Label("HP: 0", skin);
-        xp = new Label("XP: 0", skin);
+        level = new Label("LEVEL: 0", skin, "small");
+        gold = new Label("GOLD: 0", skin,"small");
+        hp = new Label("HP: 0", skin,"small");
+        xp = new Label("XP: 0", skin,"small");
         //gold.setColor(Color.GOLD);
-        uiPanel.add(level).left().top().expandX();
+        uiPanel.add(level).padLeft(8).padTop(10).left().top().expandX();
         uiPanel.row();
-        uiPanel.add(gold).left().top().expandX();
+        uiPanel.add(gold).padLeft(8).left().top().expandX();
         uiPanel.row();
-        uiPanel.add(hp).left().top().expandX();
+        uiPanel.add(hp).padLeft(8).left().top().expandX();
         uiPanel.row();
-        uiPanel.add(xp).left().top().expandX();
+        uiPanel.add(xp).padLeft(8).left().top().expandX();
         uiPanel.row();
 
         Table eq = new Table();
@@ -88,9 +89,9 @@ public class GUI implements Disposable {
         uiPanel.add(eq).center();
         uiPanel.row();
 
-        message1 = new Label("..", skin, "small");
-        message2 = new Label("..", skin, "small");
-        message3 = new Label("..", skin,"small");
+        message1 = new Label("..", skin, "smaller");
+        message2 = new Label("..", skin, "smaller");
+        message3 = new Label("..", skin,"smaller");
         // message.setColor(Color.BLUE);
         Table messageBox = new Table();
         messageBox.add(message1).pad(3).left();

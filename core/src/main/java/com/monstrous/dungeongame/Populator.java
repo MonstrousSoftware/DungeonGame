@@ -25,7 +25,7 @@ public class Populator {
             if(occupant != null)
                 continue;
 
-            int goodieType = MathUtils.random(0, 13);
+            int goodieType = MathUtils.random(0, 16);
             GameObjectType type = null;
             switch(goodieType){
                 case 0: type = GameObjectTypes.gold; break;
@@ -35,13 +35,17 @@ public class Populator {
                 case 4: type = GameObjectTypes.shield1; break;
                 case 5: type = GameObjectTypes.shield2; break;
                 case 6: type = GameObjectTypes.spellBookClosed; break;
-                case 7: type = GameObjectTypes.food; break;
-                case 8: type = GameObjectTypes.bottle_A_brown; break;
-                case 9: type = GameObjectTypes.bottle_A_green; break;
-                case 10: type = GameObjectTypes.bottle_B_brown; break;
-                case 11: type = GameObjectTypes.bottle_B_green; break;
-                case 12: type = GameObjectTypes.bottle_C_brown; break;
-                case 13: type = GameObjectTypes.bottle_C_green; break;
+                case 7: type = GameObjectTypes.bottle_A_brown; break;
+                case 8: type = GameObjectTypes.bottle_A_green; break;
+                case 9: type = GameObjectTypes.bottle_B_brown; break;
+                case 10: type = GameObjectTypes.bottle_B_green; break;
+                case 11: type = GameObjectTypes.bottle_C_brown; break;
+                case 12: type = GameObjectTypes.bottle_C_green; break;
+                case 13:
+                case 14:
+                case 15:
+                case 16: type = GameObjectTypes.food; break;
+
             }
 
             occupant = new GameObject(type, room.x+rx, room.y+ry, Direction.SOUTH);

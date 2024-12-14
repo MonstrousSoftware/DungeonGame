@@ -117,7 +117,7 @@ public class GameObject {
             verb = "stabs";
         }
         hp += stats.experience /10;     // to tune
-        other.stats.hitPoints -= hp;
+        other.stats.hitPoints = Math.max(0, other.stats.hitPoints-hp);
         MessageBox.addLine(type.name+ " " + verb + " the "+other.type.name+"(HP: "+other.stats.hitPoints+")");
         if(other.stats.hitPoints <= 0){
             defeat(world, scenes, other);
@@ -131,6 +131,7 @@ public class GameObject {
         MessageBox.addLine(type.name+ " defeated the "+enemy.type.name+". (XP +"+enemy.stats.experience+")");
         scenes.remove(enemy.scene);
         world.gameObjects.clearOccupant(enemy.x, enemy.y);
+        world.enemies.remove(enemy);
         stats.experience += enemy.stats.experience;
         if(enemy.stats.gold > 0) {
             MessageBox.addLine(type.name+ " takes their gold. (+"+enemy.stats.gold+")");

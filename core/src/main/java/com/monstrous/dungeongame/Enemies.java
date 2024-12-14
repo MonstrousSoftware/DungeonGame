@@ -19,6 +19,10 @@ public class Enemies {
         enemies.add(enemy);
     }
 
+    public void remove(GameObject enemy){
+        enemies.removeValue(enemy, true);
+    }
+
     public void clear(){
         enemies.clear();
     }
