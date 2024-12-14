@@ -84,11 +84,13 @@ public class GameObject {
             Gdx.app.log("Pickup", occupant.type.name);
             Sounds.pickup();
 
-            // assumes gold
+            String name = type.name;
+            if(type.isPlayer)
+                name = "You";
             if(occupant.type.isCountable)
-                MessageBox.addLine(type.name + " picked up " + occupant.quantity + " " + occupant.type.name);
+                MessageBox.addLine(name + " picked up " + occupant.quantity + " " + occupant.type.name);
             else
-                MessageBox.addLine(type.name + " picked up a " + occupant.type.name);
+                MessageBox.addLine(name + " picked up a " + occupant.type.name);
             if (occupant.scene != null)
                 scenes.remove(occupant.scene);
             world.gameObjects.clearOccupant(x, y);
@@ -131,6 +133,9 @@ public class GameObject {
         if(enemy.stats.gold > 0) {
             MessageBox.addLine(type.name+ " takes their gold. (+"+enemy.stats.gold+")");
             stats.gold += enemy.stats.gold;
+            GameObject gold = new GameObject(GameObjectTypes.gold, 0,0,Direction.NORTH);
+            gold.quantity = enemy.stats.gold;
+            stats.inventory.addItem( gold );
         }
     }
 

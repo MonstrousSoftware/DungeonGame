@@ -7,7 +7,7 @@ public class Populator {
 
     public static void distributeGoodies(DungeonMap map, GameObjects gameObjects ){
 
-        int count = MathUtils.random(10, 105);        // nr of gold drops
+        int count = MathUtils.random(50, 105);        // nr of drops
         int attempts = 0;
         while(true){
             attempts++;
@@ -25,7 +25,7 @@ public class Populator {
             if(occupant != null)
                 continue;
 
-            int goodieType = MathUtils.random(0, 5);
+            int goodieType = MathUtils.random(0, 6);
             GameObjectType type = null;
             switch(goodieType){
                 case 0: type = GameObjectTypes.gold; break;
@@ -34,6 +34,7 @@ public class Populator {
                 case 3: type = GameObjectTypes.explosive; break;
                 case 4: type = GameObjectTypes.shield1; break;
                 case 5: type = GameObjectTypes.shield2; break;
+                case 6: type = GameObjectTypes.spellBookClosed; break;
             }
 
             occupant = new GameObject(type, room.x+rx, room.y+ry, Direction.SOUTH);

@@ -25,6 +25,9 @@ public class GameObjectTypes implements Disposable {
     public static GameObjectType shield1;
     public static GameObjectType shield2;
 
+    public static GameObjectType spellBookOpen;
+    public static GameObjectType spellBookClosed;
+
     public static Array<GameObjectType> types;
     public static Sprite emptyIcon;
 
@@ -93,6 +96,15 @@ public class GameObjectTypes implements Disposable {
         shield2.z = 1f;
         shield2.isArmour = true;
         types.add(shield2);
+
+        spellBookClosed = new GameObjectType("Spellbook", false, true);
+        spellBookClosed.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_closed.gltf"));
+        types.add(spellBookClosed);
+
+        spellBookOpen = new GameObjectType("Spellbook (open)", false, true);
+        spellBookOpen.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_open.gltf"));
+        types.add(spellBookOpen);
+
 
         addIcons();
      }

@@ -1,6 +1,7 @@
 package com.monstrous.dungeongame;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 
 public class KeyController extends InputAdapter {
@@ -8,11 +9,37 @@ public class KeyController extends InputAdapter {
     private World world;
     private DungeonScenes scenes;
     private boolean equipMode;
+    private boolean readMode;
+    private boolean dropMode;
 
     public KeyController(World world, DungeonScenes scenes) {
         this.world = world;
         this.scenes = scenes;
         equipMode = false;
+        readMode = false;
+        dropMode = false;
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        // left/right keys translate to -x/+x
+        // up/down to +y/-y
+        //
+        switch(keycode){
+            case Input.Keys.LEFT:
+                tryMoveRogue(-1, 0, Direction.WEST);
+                return true;
+            case Input.Keys.RIGHT:
+                tryMoveRogue(1, 0, Direction.EAST);
+                return true;
+            case Input.Keys.UP:
+                tryMoveRogue(0, 1, Direction.NORTH);
+                return true;
+            case Input.Keys.DOWN:
+                tryMoveRogue(0, -1, Direction.SOUTH);
+                return true;
+        }
+        return false;
     }
 
     @Override
@@ -38,29 +65,25 @@ public class KeyController extends InputAdapter {
     private boolean processKey(char character) {
         if(equipMode)
             return processEquipChoice(character);
+        if(readMode)
+            return processReadChoice(character);
+        if(dropMode)
+            return processDropChoice(character);
 
         switch (character) {
-            // left/right keys translate to -x/+x
-            // up/down to +y/-y
-            //
-            case 'w':
-                tryMoveRogue(0, 1, Direction.NORTH);
-                return true;
-            case 'a':
-                tryMoveRogue(-1, 0, Direction.WEST);
-                return true;
-            case 's':
-                tryMoveRogue(0, -1, Direction.SOUTH);
-                return true;
-            case 'd':
-                tryMoveRogue(1, 0, Direction.EAST);
-                return true;
+
             case 'z':
                 turnRogue(false); return true;
             case 'c':
                 turnRogue(true); return true;
             case 'e':
                 equip();
+                return true;
+            case 'r':
+                read();
+                return true;
+            case 'd':
+                drop();
                 return true;
             case 'p':
                 dropGold();
@@ -148,26 +171,7 @@ public class KeyController extends InputAdapter {
     }
 
 
-    // testing
-    private void dropGold(){
-        if(world.rogue.stats.gold == 0) {
-            MessageBox.addLine("You have no gold to drop.");
-            return;
-        }
-        GameObject occupant = world.gameObjects.getOccupant(world.rogue.x, world.rogue.y);
-        if(occupant != null && occupant.type == GameObjectTypes.gold) {
-            MessageBox.addLine("You dropped 1 gold.");
-            // if there is already gold, add to it
-            world.rogue.stats.gold--;
-            occupant.quantity++;
-        } else if( occupant != null){
-            MessageBox.addLine("Cannot drop here.");
-        } else {
-            MessageBox.addLine("You dropped 1 gold.");
-            GameObject gold = scenes.placeObject(world.gameObjects, GameObjectTypes.gold, world.rogue.x, world.rogue.y);
-            gold.quantity = 1;
-        }
-    }
+
 
     private void equip(){
         MessageBox.addLine("Equip what? (0-9) or Esc");
@@ -179,6 +183,35 @@ public class KeyController extends InputAdapter {
         equipMode = false;
         if(character >= '0' && character <= '9'){
             equipSlot(character - '0');
+            return true;
+        }
+        return false;
+    }
+
+    private void read(){
+        MessageBox.addLine("Read what? (0-9) or Esc");
+        readMode = true;
+
+    }
+
+    private boolean processReadChoice(int character){
+        readMode = false;
+        if(character >= '0' && character <= '9'){
+            readSlot(character - '0');
+            return true;
+        }
+        return false;
+    }
+
+    private void drop(){
+        MessageBox.addLine("Drop what? (0-9) or Esc");
+        dropMode = true;
+    }
+
+    private boolean processDropChoice(int character){
+        dropMode = false;
+        if(character >= '0' && character <= '9'){
+            dropSlot(character - '0');
             return true;
         }
         return false;
@@ -201,5 +234,53 @@ public class KeyController extends InputAdapter {
         }
         scenes.adaptModel(world.rogue.scene, world.rogue.stats);
 
+    }
+
+    private void readSlot(int slotNr ){
+        Inventory.Slot slot = world.rogue.stats.inventory.slots[slotNr];
+        if(slot.isEmpty())
+            return;
+        if(slot.object.type == GameObjectTypes.spellBookClosed) {
+            slot.object.type = GameObjectTypes.spellBookOpen;
+            readSpell();
+        } else if(slot.object.type == GameObjectTypes.spellBookOpen) {
+            MessageBox.addLine("Can only read spell book once.");
+        } else {
+            MessageBox.addLine("Can't read "+slot.object.type.name+".");
+        }
+    }
+
+    private void dropSlot(int slotNr ){
+        Inventory.Slot slot = world.rogue.stats.inventory.slots[slotNr];
+        if(slot.isEmpty())
+            return;
+        GameObject item = slot.removeItem();
+        MessageBox.addLine("You dropped "+item.type.name+".");
+        scenes.placeObject(world.gameObjects, item.type, world.rogue.x, world.rogue.y);
+    }
+
+    // testing
+    private void dropGold(){
+        if(world.rogue.stats.gold == 0) {
+            MessageBox.addLine("You have no gold to drop.");
+            return;
+        }
+        GameObject occupant = world.gameObjects.getOccupant(world.rogue.x, world.rogue.y);
+        if(occupant != null && occupant.type == GameObjectTypes.gold) {
+            MessageBox.addLine("You dropped 1 gold.");
+            // if there is already gold, add to it
+            world.rogue.stats.gold--;
+            occupant.quantity++;
+        } else if( occupant != null){
+            MessageBox.addLine("Cannot drop here.");
+        } else {
+            MessageBox.addLine("You dropped 1 gold.");
+            GameObject gold = scenes.placeObject(world.gameObjects, GameObjectTypes.gold, world.rogue.x, world.rogue.y);
+            gold.quantity = 1;
+        }
+    }
+
+    private void readSpell(){
+        MessageBox.addLine("You read the spell book and you feel sad.");
     }
 }
