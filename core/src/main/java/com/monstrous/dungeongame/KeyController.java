@@ -66,6 +66,15 @@ public class KeyController extends InputAdapter {
             case '3':
                 equip(Equipped.CROSSBOW);
                 return true;
+            case '5':
+                useArmour(null);
+                return true;
+            case '6':
+                useArmour(GameObjectTypes.shield1);
+                return true;
+            case '7':
+                useArmour(GameObjectTypes.shield2);
+                return true;
             case 'p':
                 dropGold();
                 return true;
@@ -176,5 +185,9 @@ public class KeyController extends InputAdapter {
     private void equip( int equipped ){
         world.rogue.stats.equipped = equipped;
         scenes.adaptModel(world.rogue.scene, equipped);
+    }
+
+    private void useArmour( GameObjectType type ){
+        world.rogue.stats.armourItem = type;
     }
 }

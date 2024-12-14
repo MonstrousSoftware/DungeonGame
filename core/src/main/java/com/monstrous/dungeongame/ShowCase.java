@@ -54,7 +54,7 @@ public class ShowCase implements Disposable {
         camera.near = -500f;
         camera.far = 500;
         camera.position.set(5,5, 5);
-        camera.zoom = 0.03f;
+        camera.zoom = 0.025f;
         camera.up.set(Vector3.Y);
         camera.lookAt( new Vector3(0, 0f, 0));
 
@@ -94,8 +94,12 @@ public class ShowCase implements Disposable {
     }
 
     public Sprite makeIcon(SceneAsset asset, int w, int h, boolean high ){
-        Scene scene = new Scene(asset.scene);
-        sceneManager.addScene(scene);
+        // asset can be null to get an empty icon
+        Scene scene = null;
+        if(asset != null) {
+            scene = new Scene(asset.scene);
+            sceneManager.addScene(scene);
+        }
 
         if(high)
             camera.lookAt( new Vector3(0, 1f, 0));
@@ -111,7 +115,7 @@ public class ShowCase implements Disposable {
         // render
         sceneManager.renderShadows();
         fbo.begin();
-        ScreenUtils.clear(Color.BLUE, true);
+        ScreenUtils.clear(Color.BLACK, true);
         sceneManager.update(0.1f);
         sceneManager.renderColors();
         fbo.end();
@@ -123,8 +127,8 @@ public class ShowCase implements Disposable {
 
         //filter.render(fbo,0,0, w, h);
 
-
-        sceneManager.removeScene(scene);
+        if(scene != null)
+            sceneManager.removeScene(scene);
 
         return sprite;
     }

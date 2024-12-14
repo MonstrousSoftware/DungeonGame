@@ -7,6 +7,8 @@ public class CharacterStats {
     public int armour;
     public int experience;
     public int gold;
+    public GameObjectType armourItem;   // todo object rather than type
+    public Inventory inventory;
 
     public CharacterStats() {
         equipped = 0;
@@ -15,5 +17,7 @@ public class CharacterStats {
         armour = 0;
         experience = 0;
         gold = 0;
+        armourItem = null;
+        inventory = new Inventory();
     }
 }

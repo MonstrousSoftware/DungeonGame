@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g3d.shaders.DepthShader;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.monstrous.dungeongame.gui.GUI;
 import net.mgsx.gltf.scene3d.attributes.PBRCubemapAttribute;
 import net.mgsx.gltf.scene3d.attributes.PBRFloatAttribute;
 import net.mgsx.gltf.scene3d.attributes.PBRTextureAttribute;
@@ -183,9 +184,7 @@ public class GameScreen extends ScreenAdapter {
         // 3d view
         filter.render(fbo,0,0, Gdx.graphics.getWidth() - GUI.PANEL_WIDTH, Gdx.graphics.getHeight());
 
-        for(int i = 0; i < 11; i++) {
-            filter.render(GameObjectTypes.types.get(i).icon, i*80, 0, 64, 64);
-        }
+
         gui.render(deltaTime);
     }
 

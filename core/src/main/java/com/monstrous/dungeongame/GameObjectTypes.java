@@ -9,6 +9,8 @@ import net.mgsx.gltf.loaders.glb.GLBLoader;
 import net.mgsx.gltf.loaders.gltf.GLTFLoader;
 
 public class GameObjectTypes implements Disposable {
+    public static final int ICON_SIZE = 64;
+
     public static GameObjectType rogue;
 
     public static GameObjectType warrior;
@@ -24,6 +26,7 @@ public class GameObjectTypes implements Disposable {
     public static GameObjectType shield2;
 
     public static Array<GameObjectType> types;
+    public static Sprite emptyIcon;
 
 
     public GameObjectTypes() {
@@ -89,11 +92,12 @@ public class GameObjectTypes implements Disposable {
         addIcons();
      }
 
+     // generate icons for each type
      private void addIcons(){
         ShowCase showCase = new ShowCase();
+        emptyIcon = showCase.makeIcon(null, ICON_SIZE, ICON_SIZE, false);
         for(GameObjectType type : types ){
-        // GameObjectType type = types.first();
-            Sprite icon = showCase.makeIcon(type.sceneAsset, 64, 64, type.isEnemy || type.isPlayer);
+            Sprite icon = showCase.makeIcon(type.sceneAsset, ICON_SIZE, ICON_SIZE, type.isEnemy || type.isPlayer);
             type.icon = icon;
         }
      }

@@ -94,6 +94,7 @@ public class GameObject {
             if (occupant.type == GameObjectTypes.gold) {
                 stats.gold += occupant.quantity;
             }
+            stats.inventory.addItem(occupant);
         }
         if(!type.isPlayer) {
             world.gameObjects.setOccupant(x, y, this);

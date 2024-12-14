@@ -1,14 +1,20 @@
-package com.monstrous.dungeongame;
+package com.monstrous.dungeongame.gui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.monstrous.dungeongame.*;
 
 public class GUI implements Disposable {
 
@@ -20,9 +26,13 @@ public class GUI implements Disposable {
     private Label gold;
     private Label hp;
     private Label xp;
+    private Image weapon, armour;
     private Label message1, message2, message3;
     private StringBuffer sb;
     private World world;
+    private int equipped = -1;
+    private GameObjectType armourType;
+    private InventoryWindow inventoryWindow;
 
     public GUI( World world ) {
         this.world = world;
@@ -31,13 +41,16 @@ public class GUI implements Disposable {
         sb = new StringBuffer();
 
         // rely on resize() to call rebuild()
+
+        inventoryWindow = new InventoryWindow("Inventory", skin, world, world.rogue.stats.inventory);
+
     }
 
     private void rebuild(){
         Gdx.app.log("GUI", "rebuild");
         stage.clear();
 
-
+        stage.addActor(inventoryWindow);
 
 
 
@@ -57,6 +70,24 @@ public class GUI implements Disposable {
         uiPanel.row();
         uiPanel.add(xp).left().top().expandX();
         uiPanel.row();
+
+        Table eq = new Table();
+        weapon = new Image();
+        TextureRegion region = new TextureRegion(GameObjectTypes.knife.icon.getTexture());
+        region.flip(false, true);
+        weapon.setDrawable(new TextureRegionDrawable(region));
+        eq.add(weapon).pad(5).right().top();
+
+        armour = new Image();
+        region = new TextureRegion(GameObjectTypes.shield2.icon.getTexture());
+        region.flip(false, true);
+        armour.setDrawable(new TextureRegionDrawable(region));
+        eq.add(armour).pad(5).left().top();
+        eq.pack();
+
+        uiPanel.add(eq).center();
+        uiPanel.row();
+
         message1 = new Label("..", skin, "small");
         message2 = new Label("..", skin, "small");
         message3 = new Label("..", skin,"small");
@@ -107,6 +138,45 @@ public class GUI implements Disposable {
         message3.setText(MessageBox.lines.get(MessageBox.lines.size-1));
         message2.setText(MessageBox.lines.get(MessageBox.lines.size-2));
         message1.setText(MessageBox.lines.get(MessageBox.lines.size-3));
+
+        setWeapon();
+        inventoryWindow.update();
+    }
+
+    private void setWeapon(){
+        if(world.rogue.stats.equipped != equipped){
+            equipped = world.rogue.stats.equipped;
+
+            Sprite icon = null;
+            switch(equipped){
+                case Equipped.NONE: icon = GameObjectTypes.emptyIcon; break;
+                case Equipped.KNIFE: icon = GameObjectTypes.knife.icon; break;
+                case Equipped.CROSSBOW: icon = GameObjectTypes.crossbow.icon; break;
+                case Equipped.THROWABLE: icon = GameObjectTypes.explosive.icon; break;
+            }
+
+            TextureRegion region = new TextureRegion(icon.getTexture());
+            region.flip(false, true);
+            weapon.setDrawable(new TextureRegionDrawable(region));
+        }
+    }
+
+    private void setArmour(){
+        if(world.rogue.stats.equipped != equipped){
+            equipped = world.rogue.stats.equipped;
+
+            Sprite icon = null;
+            switch(equipped){
+                case Equipped.NONE: icon = GameObjectTypes.emptyIcon; break;
+                case Equipped.KNIFE: icon = GameObjectTypes.knife.icon; break;
+                case Equipped.CROSSBOW: icon = GameObjectTypes.crossbow.icon; break;
+                case Equipped.THROWABLE: icon = GameObjectTypes.explosive.icon; break;
+            }
+
+            TextureRegion region = new TextureRegion(icon.getTexture());
+            region.flip(false, true);
+            weapon.setDrawable(new TextureRegionDrawable(region));
+        }
     }
 
 
