@@ -7,8 +7,10 @@ package com.monstrous.dungeongame;
 import com.badlogic.gdx.math.MathUtils;
 
 public class World {
-    private final static int MAP_WIDTH = 45;
-    private final static int MAP_HEIGHT = 30;
+    private final static int MAP_WIDTH = 30;
+    private final static int MAP_HEIGHT = 20;
+    public final static int DELTA_WIDTH = 6;
+    public final static int DELTA_HEIGHT = 4;
 
     public int seed = 1234;
     public int level = 0;
@@ -50,8 +52,8 @@ public class World {
         isRebuilt = true;
         // map gets bigger at lower levels: keep aspect ratio 3/2
         // todo match up stairs
-        int w = MAP_WIDTH; //+6*level;
-        int h = MAP_HEIGHT; //+4*level;
+        int w = MAP_WIDTH+DELTA_WIDTH*level;
+        int h = MAP_HEIGHT+DELTA_HEIGHT*level;
         map = new DungeonMap(seed, level, w, h);
 
         gameObjects = new GameObjects(w, h);

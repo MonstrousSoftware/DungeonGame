@@ -6,12 +6,12 @@ import com.badlogic.gdx.InputAdapter;
 
 public class KeyController extends InputAdapter {
 
-
     private World world;
     private DungeonScenes scenes;
     private boolean equipMode;
     private boolean dropMode;
     private boolean useMode;
+    private boolean confirmMode;
     private int frozenTimer;
 
     public KeyController(World world, DungeonScenes scenes) {
@@ -113,6 +113,8 @@ public class KeyController extends InputAdapter {
             return processDropChoice(character);
         if(useMode)
             return processUseChoice(character);
+        if(confirmMode)
+            return processConfirmation(character);
 
         switch (character) {
 
@@ -120,7 +122,7 @@ public class KeyController extends InputAdapter {
                 turnRogue(false); return true;
             case 'c':
                 turnRogue(true); return true;
-            case 'w':
+            case 'e':
                 equip();
                 return true;
             case 'd':
@@ -129,8 +131,9 @@ public class KeyController extends InputAdapter {
             case 'u':
                 use();
                 return true;
-            case 'R':
-                restart();
+            case 'r':
+                confirmMode = true;
+                MessageBox.addLine("Confirm with Y to restart.");
                 return true;
             case ' ':
                 return true;        // do nothing
@@ -217,7 +220,6 @@ public class KeyController extends InputAdapter {
     private void equip(){
         MessageBox.addLine("Equip what? (0-9) or Esc");
         equipMode = true;
-
     }
 
     private boolean processEquipChoice(int character){
@@ -225,6 +227,15 @@ public class KeyController extends InputAdapter {
         if(character >= '0' && character <= '9'){
             equipSlot(character - '0');
             return true;
+        }
+        return false;
+    }
+
+    private boolean processConfirmation(int character){
+        confirmMode = false;
+
+        if(character ==  'y' ||  character == 'Y'){
+            restart();
         }
         return false;
     }

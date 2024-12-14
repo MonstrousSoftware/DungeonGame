@@ -86,13 +86,14 @@ public class GameObject {
             if(stats.inventory.addItem(occupant)){
                 Sounds.pickup();
 
-                String name = type.name;
-                if(type.isPlayer)
-                    name = "You";
-                if(occupant.type.isCountable)
-                    MessageBox.addLine(name + " picked up " + occupant.quantity + " " + occupant.type.name);
-                else
-                    MessageBox.addLine(name + " picked up a " + occupant.type.name);
+                //String name = type.name;
+                if(type.isPlayer) {
+                    String name = "You";
+                    if (occupant.type.isCountable)
+                        MessageBox.addLine(name + " picked up " + occupant.quantity + " " + occupant.type.name);
+                    else
+                        MessageBox.addLine(name + " picked up a " + occupant.type.name);
+                }
                 if (occupant.scene != null)
                     scenes.remove(occupant.scene);
                 world.gameObjects.clearOccupant(x, y);

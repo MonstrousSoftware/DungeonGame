@@ -19,7 +19,7 @@ public class MapScreen extends ScreenAdapter {
 
     private Main game;
     private World world;
-    private DungeonMap map;
+    //private DungeonMap map;
     private ShapeRenderer shapeRenderer;
     private OrthographicCamera camera;
     private FitViewport viewport;
@@ -35,7 +35,6 @@ public class MapScreen extends ScreenAdapter {
 
     @Override
     public void show() {
-        map = world.map;
         shapeRenderer = new ShapeRenderer();
         camera = new OrthographicCamera();
         viewport = new FitViewport(world.map.mapWidth, world.map.mapHeight, camera);
@@ -52,21 +51,21 @@ public class MapScreen extends ScreenAdapter {
             return;
         }
 
-        if(Gdx.input.isKeyJustPressed(Input.Keys.L)){
-            world.levelDown();
-            viewport.setWorldSize(world.map.mapWidth, world.map.mapHeight);
-            viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
-            System.out.println("seed: "+world.seed+ " level: "+world.level);
-            map = world.map;
-        }
-        if(Gdx.input.isKeyJustPressed(Input.Keys.K)){
-            world.levelUp();
-            viewport.setWorldSize(world.map.mapWidth, world.map.mapHeight);
-            viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
-            System.out.println("seed: "+world.seed+ " level: "+world.level);
-            map = world.map;
-        }
+//        if(Gdx.input.isKeyJustPressed(Input.Keys.L)){
+//            world.levelDown();
+//            viewport.setWorldSize(world.map.mapWidth, world.map.mapHeight);
+//            viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
+//            System.out.println("seed: "+world.seed+ " level: "+world.level);
+//        }
+//        if(Gdx.input.isKeyJustPressed(Input.Keys.K)){
+//            world.levelUp();
+//            viewport.setWorldSize(world.map.mapWidth, world.map.mapHeight);
+//            viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
+//            System.out.println("seed: "+world.seed+ " level: "+world.level);
+//        }
 
+        viewport.setWorldSize(world.map.mapWidth, world.map.mapHeight);
+        viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
 
         ScreenUtils.clear(Color.BLACK);
         shapeRenderer.setProjectionMatrix(camera.combined);
@@ -121,7 +120,7 @@ public class MapScreen extends ScreenAdapter {
 
         for(int x = 0; x < world.map.mapWidth; x++){
             for(int y = 0; y < world.map.mapHeight; y++) {
-                TileType cell = map.getGrid(x,y);
+                TileType cell = world.map.getGrid(x,y);
                 if(cell == TileType.ROOM) {
                     shapeRenderer.setColor(Color.GREEN);
                     shapeRenderer.rect(x + m, y + m, 1, 1);

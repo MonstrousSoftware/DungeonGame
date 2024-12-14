@@ -54,13 +54,13 @@ public class DungeonMap implements Disposable {
         if (levelNr > 0) {    // is there a floor above?
             // use the higher level's seed to generate the stairs from above
             MathUtils.random.setSeed(getLevelSeed(mapSeed, levelNr - 1));
-            generateStairWells(TileType.STAIRS_UP);  // stairs coming down
+            generateStairWells(TileType.STAIRS_UP, mapWidth-World.DELTA_WIDTH, mapHeight-World.DELTA_HEIGHT);  // stairs coming down
         }
 
         MathUtils.random.setSeed(getLevelSeed(mapSeed, levelNr));
 
         // generate stairs to the level below
-        generateStairWells(TileType.STAIRS_DOWN);    // stairs going down
+        generateStairWells(TileType.STAIRS_DOWN, mapWidth, mapHeight);    // stairs going down
 
         generateRooms(rooms);
 
@@ -116,10 +116,10 @@ public class DungeonMap implements Disposable {
     }
 
     // place some stair wells going down
-    private void generateStairWells(TileType stairType){
+    private void generateStairWells(TileType stairType, int mapW, int mapH){
         int count = MathUtils.random(1, 2); // how many stair wells to generate?
         for(int i = 0; i < count; i++){
-            Room stairWell = generateStairWell(roomId, stairType);
+            Room stairWell = generateStairWell(roomId, stairType, mapW, mapH);
             stairWell.stairType = stairType;
             boolean overlap = checkOverlap(stairWell, rooms);
             if(!overlap) {
@@ -130,14 +130,14 @@ public class DungeonMap implements Disposable {
     }
 
     // a stair well is a special type of room of fixed size with stair tiles inside.
-    private Room generateStairWell(int id, TileType stairType){
+    private Room generateStairWell(int id, TileType stairType, int mapW, int mapH){
         int d = MathUtils.random(0, 3); // random direction NESW
         Direction direction = Direction.values()[d];
 
         // place horizontal or vertical
         int w = (direction == Direction.EAST || direction == Direction.WEST) ? 3 : 1;
         int h = (direction == Direction.EAST || direction == Direction.WEST) ? 1 : 3;
-        Room stairWell = placeRoom(id, w, h);
+        Room stairWell = placeRoom(id, w, h, mapW, mapH);
         stairWell.stairsDirection = direction;
 
 
@@ -151,6 +151,8 @@ public class DungeonMap implements Disposable {
                 case SOUTH: stairWell.y++; break;
                 case WEST: stairWell.x++; break;
             }
+//            stairWell.x += World.DELTA_WIDTH/2;
+//            stairWell.y += World.DELTA_HEIGHT/2;
         }
         switch(stairWell.stairsDirection) {
             case NORTH:
@@ -169,9 +171,13 @@ public class DungeonMap implements Disposable {
     }
 
     private Room placeRoom(int id, int w, int h){
+        return placeRoom(id, w, h, mapWidth, mapHeight);
+    }
+
+    private Room placeRoom(int id, int w, int h, int mapW, int mapH){
         // leave three cell margin from the edge of the map for the walls to go and to allow for corridors on the outside with a wall of its own
-        int x = MathUtils.random(3, mapWidth - (w+4));
-        int y = MathUtils.random(3, mapHeight - (h+4));
+        int x = MathUtils.random(3, mapW - (w+4));
+        int y = MathUtils.random(3, mapH - (h+4));
         return new Room(id, x, y, w, h);
     }
 
