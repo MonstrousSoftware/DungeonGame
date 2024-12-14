@@ -82,22 +82,24 @@ public class GameObject {
 
         if(occupant != null && occupant.type.pickup) {
             Gdx.app.log("Pickup", occupant.type.name);
-            Sounds.pickup();
 
-            String name = type.name;
-            if(type.isPlayer)
-                name = "You";
-            if(occupant.type.isCountable)
-                MessageBox.addLine(name + " picked up " + occupant.quantity + " " + occupant.type.name);
-            else
-                MessageBox.addLine(name + " picked up a " + occupant.type.name);
-            if (occupant.scene != null)
-                scenes.remove(occupant.scene);
-            world.gameObjects.clearOccupant(x, y);
-            if (occupant.type == GameObjectTypes.gold) {
-                stats.gold += occupant.quantity;
+            if(stats.inventory.addItem(occupant)){
+                Sounds.pickup();
+
+                String name = type.name;
+                if(type.isPlayer)
+                    name = "You";
+                if(occupant.type.isCountable)
+                    MessageBox.addLine(name + " picked up " + occupant.quantity + " " + occupant.type.name);
+                else
+                    MessageBox.addLine(name + " picked up a " + occupant.type.name);
+                if (occupant.scene != null)
+                    scenes.remove(occupant.scene);
+                world.gameObjects.clearOccupant(x, y);
+                if (occupant.type == GameObjectTypes.gold) {
+                    stats.gold += occupant.quantity;
+                }
             }
-            stats.inventory.addItem(occupant);
         }
         if(!type.isPlayer) {
             world.gameObjects.setOccupant(x, y, this);

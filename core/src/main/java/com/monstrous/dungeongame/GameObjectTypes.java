@@ -27,6 +27,14 @@ public class GameObjectTypes implements Disposable {
 
     public static GameObjectType spellBookOpen;
     public static GameObjectType spellBookClosed;
+    public static GameObjectType food;
+
+    public static GameObjectType bottle_A_brown;
+    public static GameObjectType bottle_A_green;
+    public static GameObjectType bottle_B_brown;
+    public static GameObjectType bottle_B_green;
+    public static GameObjectType bottle_C_brown;
+    public static GameObjectType bottle_C_green;
 
     public static Array<GameObjectType> types;
     public static Sprite emptyIcon;
@@ -104,6 +112,44 @@ public class GameObjectTypes implements Disposable {
         spellBookOpen = new GameObjectType("Spellbook (open)", false, true);
         spellBookOpen.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_open.gltf"));
         types.add(spellBookOpen);
+
+        food = new GameObjectType("Spellbook (open)", false, true);
+        food.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/plate_food_B.gltf"));
+        food.isEdible = true;
+        types.add(food);
+
+        bottle_A_brown = new GameObjectType("Potion", false, true);
+        bottle_A_brown.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/bottle_A_brown.gltf"));
+        bottle_A_brown.isPotion = true;
+        types.add(bottle_A_brown);
+
+        bottle_A_green = new GameObjectType("Potion", false, true);
+        bottle_A_green.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/bottle_A_green.gltf"));
+        bottle_A_green.isPotion = true;
+        types.add(bottle_A_green);
+
+        bottle_B_brown = new GameObjectType("Potion", false, true);
+        bottle_B_brown.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/bottle_B_brown.gltf"));
+        bottle_B_brown.isPotion = true;
+        types.add(bottle_B_brown);
+
+        bottle_B_green = new GameObjectType("Potion", false, true);
+        bottle_B_green.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/bottle_B_green.gltf"));
+        bottle_B_green.isPotion = true;
+        types.add(bottle_B_green);
+
+        bottle_C_brown = new GameObjectType("Potion", false, true);
+        bottle_C_brown.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/bottle_C_brown.gltf"));
+        bottle_C_brown.isPotion = true;
+        types.add(bottle_C_brown);
+
+        bottle_C_green = new GameObjectType("Potion", false, true);
+        bottle_C_green.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/bottle_C_green.gltf"));
+        bottle_C_green.isPotion = true;
+        types.add(bottle_C_green);
+
+
+
 
 
         addIcons();

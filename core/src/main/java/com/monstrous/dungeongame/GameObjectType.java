@@ -13,6 +13,8 @@ public class GameObjectType {
     public boolean isCountable;
     public boolean isWeapon;
     public boolean isArmour;
+    public boolean isEdible;
+    public boolean isPotion;
     public SceneAsset sceneAsset;
     public int initXP;
     public float z;     // height to render at when place on the ground (to avoid some model being inside the floor)
@@ -28,5 +30,7 @@ public class GameObjectType {
         this.z = 0f;
         this.isWeapon = false;
         this.isArmour = false;
+        this.isEdible = false;
+        this.isPotion = false;
     }
 }

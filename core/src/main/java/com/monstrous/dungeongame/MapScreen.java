@@ -47,6 +47,11 @@ public class MapScreen extends ScreenAdapter {
 
     @Override
     public void render(float delta) {
+        if(Gdx.input.isKeyJustPressed(Input.Keys.M)){
+            game.setScreen( new GameScreen(game) );
+            return;
+        }
+
         if(Gdx.input.isKeyJustPressed(Input.Keys.L)){
             world.levelDown();
             viewport.setWorldSize(world.map.mapWidth, world.map.mapHeight);
@@ -61,10 +66,7 @@ public class MapScreen extends ScreenAdapter {
             System.out.println("seed: "+world.seed+ " level: "+world.level);
             map = world.map;
         }
-        if(Gdx.input.isKeyJustPressed(Input.Keys.M)){
-            game.setScreen( new GameScreen(game) );
-            return;
-        }
+
 
         ScreenUtils.clear(Color.BLACK);
         shapeRenderer.setProjectionMatrix(camera.combined);
@@ -158,21 +160,8 @@ public class MapScreen extends ScreenAdapter {
 
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-
-        for(int x = 0; x < world.map.mapWidth; x++){
-            for(int y = 0; y < world.map.mapHeight; y++) {
-                GameObject occupant = world.gameObjects.getOccupant(x,y);
-                if(occupant != null && occupant.type == GameObjectTypes.gold){
-                    shapeRenderer.setColor(Color.GOLD);
-                    shapeRenderer.circle(x + m+.5f, y + m+.5f, 0.5f);
-                }
-                if(occupant != null && occupant.type == GameObjectTypes.rogue){
-                    shapeRenderer.setColor(Color.WHITE);
-                    shapeRenderer.circle(x + m+.5f, y + m+.5f, 0.7f);
-                }
-
-            }
-        }
+        shapeRenderer.setColor(38/255f, 0.5f, 0, 1f);
+        shapeRenderer.circle(world.rogue.x + m+.5f, world.rogue.y + m+.5f, 0.5f);
         shapeRenderer.end();
 
         // minimum spanning tree

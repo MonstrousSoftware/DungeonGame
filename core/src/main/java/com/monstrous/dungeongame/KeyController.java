@@ -6,18 +6,21 @@ import com.badlogic.gdx.InputAdapter;
 
 public class KeyController extends InputAdapter {
 
+
     private World world;
     private DungeonScenes scenes;
     private boolean equipMode;
     private boolean readMode;
     private boolean dropMode;
+    private boolean useMode;
+    private int frozenTimer;
 
     public KeyController(World world, DungeonScenes scenes) {
         this.world = world;
         this.scenes = scenes;
         equipMode = false;
-        readMode = false;
         dropMode = false;
+        useMode = false;
     }
 
     @Override
@@ -25,21 +28,30 @@ public class KeyController extends InputAdapter {
         // left/right keys translate to -x/+x
         // up/down to +y/-y
         //
+        if(!preAction())
+            return true;
+        boolean done = false;
         switch(keycode){
             case Input.Keys.LEFT:
                 tryMoveRogue(-1, 0, Direction.WEST);
-                return true;
+                done = true;
+                break;
             case Input.Keys.RIGHT:
                 tryMoveRogue(1, 0, Direction.EAST);
-                return true;
+                done = true;
+                break;
             case Input.Keys.UP:
                 tryMoveRogue(0, 1, Direction.NORTH);
-                return true;
+                done = true;
+                break;
             case Input.Keys.DOWN:
                 tryMoveRogue(0, -1, Direction.SOUTH);
-                return true;
+                done = true;
+                break;
         }
-        return false;
+        if(done)
+            wrapUp();
+        return done;
     }
 
     @Override
@@ -51,24 +63,54 @@ public class KeyController extends InputAdapter {
             }
             return false;
         }
+        if(!preAction())
+            return true;
 
         boolean handled = processKey(character);
         if (handled)
-            world.enemies.step(scenes);
+            wrapUp();
+
+        return handled;
+    }
+
+    private boolean preAction(){
+        if(frozenTimer > 0){    // still frozen?
+            frozenTimer--;
+            return false;
+        }
+        return true;
+    }
+
+    // arrive here after having made a move
+    private void wrapUp(){
+        world.enemies.step(scenes);     // move enemies
+        digestFood();
         if (world.rogue.stats.hitPoints <= 0) {
             MessageBox.addLine("You are dead. Press Shift-R to restart.");
         }
+    }
 
-        return handled;
+    private void digestFood(){
+        System.out.println("food: "+world.rogue.stats.food);
+        world.rogue.stats.food -= 2;
+        if(world.rogue.stats.food == 20)
+            MessageBox.addLine("You feel hungry.");
+        else if(world.rogue.stats.food == 6)
+            MessageBox.addLine("You're so hungry you feel faint.");
+        else if(world.rogue.stats.food == 0){
+            MessageBox.addLine("You're so faint you can't move.");
+            frozenTimer = 5;
+            world.rogue.stats.food = 30;
+        }
     }
 
     private boolean processKey(char character) {
         if(equipMode)
             return processEquipChoice(character);
-        if(readMode)
-            return processReadChoice(character);
         if(dropMode)
             return processDropChoice(character);
+        if(useMode)
+            return processUseChoice(character);
 
         switch (character) {
 
@@ -76,17 +118,14 @@ public class KeyController extends InputAdapter {
                 turnRogue(false); return true;
             case 'c':
                 turnRogue(true); return true;
-            case 'e':
+            case 'w':
                 equip();
-                return true;
-            case 'r':
-                read();
                 return true;
             case 'd':
                 drop();
                 return true;
-            case 'p':
-                dropGold();
+            case 'u':
+                use();
                 return true;
             case 'R':
                 restart();
@@ -188,20 +227,20 @@ public class KeyController extends InputAdapter {
         return false;
     }
 
-    private void read(){
-        MessageBox.addLine("Read what? (0-9) or Esc");
-        readMode = true;
-
-    }
-
-    private boolean processReadChoice(int character){
-        readMode = false;
-        if(character >= '0' && character <= '9'){
-            readSlot(character - '0');
-            return true;
-        }
-        return false;
-    }
+//    private void read(){
+//        MessageBox.addLine("Read what? (0-9) or Esc");
+//        readMode = true;
+//
+//    }
+//
+//    private boolean processReadChoice(int character){
+//        readMode = false;
+//        if(character >= '0' && character <= '9'){
+//            readSlot(character - '0');
+//            return true;
+//        }
+//        return false;
+//    }
 
     private void drop(){
         MessageBox.addLine("Drop what? (0-9) or Esc");
@@ -212,6 +251,20 @@ public class KeyController extends InputAdapter {
         dropMode = false;
         if(character >= '0' && character <= '9'){
             dropSlot(character - '0');
+            return true;
+        }
+        return false;
+    }
+
+    private void use(){
+        MessageBox.addLine("Use what? (0-9) or Esc");
+        useMode = true;
+    }
+
+    private boolean processUseChoice(int character){
+        useMode = false;
+        if(character >= '0' && character <= '9'){
+            useSlot(character - '0');
             return true;
         }
         return false;
@@ -236,19 +289,19 @@ public class KeyController extends InputAdapter {
 
     }
 
-    private void readSlot(int slotNr ){
-        Inventory.Slot slot = world.rogue.stats.inventory.slots[slotNr];
-        if(slot.isEmpty())
-            return;
-        if(slot.object.type == GameObjectTypes.spellBookClosed) {
-            slot.object.type = GameObjectTypes.spellBookOpen;
-            readSpell();
-        } else if(slot.object.type == GameObjectTypes.spellBookOpen) {
-            MessageBox.addLine("Can only read spell book once.");
-        } else {
-            MessageBox.addLine("Can't read "+slot.object.type.name+".");
-        }
-    }
+//    private void readSlot(int slotNr ){
+//        Inventory.Slot slot = world.rogue.stats.inventory.slots[slotNr];
+//        if(slot.isEmpty())
+//            return;
+//        if(slot.object.type == GameObjectTypes.spellBookClosed) {
+//            slot.object.type = GameObjectTypes.spellBookOpen;
+//            readSpell();
+//        } else if(slot.object.type == GameObjectTypes.spellBookOpen) {
+//            MessageBox.addLine("Can only read spell book once.");
+//        } else {
+//            MessageBox.addLine("Can't read "+slot.object.type.name+".");
+//        }
+//    }
 
     private void dropSlot(int slotNr ){
         Inventory.Slot slot = world.rogue.stats.inventory.slots[slotNr];
@@ -258,6 +311,30 @@ public class KeyController extends InputAdapter {
         MessageBox.addLine("You dropped "+item.type.name+".");
         scenes.placeObject(world.gameObjects, item.type, world.rogue.x, world.rogue.y);
     }
+
+
+    private void useSlot(int slotNr ){
+        Inventory.Slot slot = world.rogue.stats.inventory.slots[slotNr];
+        if(slot.isEmpty())
+            return;
+        if(slot.object.type.isEdible) {
+            GameObject item = slot.removeItem();
+            MessageBox.addLine("You eat the food.");
+            world.rogue.stats.food = CharacterStats.MAX_FOOD;
+        } else if(slot.object.type.isPotion) {
+            GameObject item = slot.removeItem();
+            MessageBox.addLine("You drink the potion.");
+
+        } else if(slot.object.type == GameObjectTypes.spellBookClosed) {
+            slot.object.type = GameObjectTypes.spellBookOpen;
+            readSpell();
+        } else if(slot.object.type == GameObjectTypes.spellBookOpen) {
+            MessageBox.addLine("Can only read spell book once.");
+        } else {
+            MessageBox.addLine("Can't use "+slot.object.type.name+".");
+        }
+    }
+
 
     // testing
     private void dropGold(){
