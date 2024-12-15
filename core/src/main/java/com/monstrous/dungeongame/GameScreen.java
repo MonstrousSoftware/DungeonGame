@@ -147,7 +147,14 @@ public class GameScreen extends ScreenAdapter {
     @Override
     public void render(float deltaTime) {
         if(Gdx.input.isKeyJustPressed(Input.Keys.M)){
-            game.setScreen( new MapScreen(game) );
+            if(world.rogue.stats.haveBookOfMaps) {
+                game.setScreen(new MapScreen(game));
+                return;
+            }
+            MessageBox.addLine("You need the Book of Maps.");
+        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.H)){
+            game.setScreen( new HelpScreen(game) );
             return;
         }
 

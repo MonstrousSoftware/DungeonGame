@@ -1,7 +1,6 @@
 package com.monstrous.dungeongame;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
@@ -27,6 +26,12 @@ public class GameObjectTypes implements Disposable {
 
     public static GameObjectType spellBookOpen;
     public static GameObjectType spellBookClosed;
+    public static GameObjectType spellBookOpenB;
+    public static GameObjectType spellBookClosedB;
+    public static GameObjectType spellBookOpenC;
+    public static GameObjectType spellBookClosedC;
+    public static GameObjectType spellBookOpenD;
+    public static GameObjectType spellBookClosedD;
     public static GameObjectType food;
 
     public static GameObjectType bottle_A_brown;
@@ -107,11 +112,43 @@ public class GameObjectTypes implements Disposable {
 
         spellBookClosed = new GameObjectType("Spellbook", false, true);
         spellBookClosed.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_closed.gltf"));
+        spellBookClosed.isSpellBook = true;
         types.add(spellBookClosed);
 
         spellBookOpen = new GameObjectType("Spellbook (open)", false, true);
         spellBookOpen.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_open.gltf"));
         types.add(spellBookOpen);
+        spellBookClosed.openedType = spellBookOpen;
+
+        spellBookClosedB = new GameObjectType("Spellbook", false, true);
+        spellBookClosedB.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_closed_B.gltf"));
+        spellBookClosedB.isSpellBook = true;
+        types.add(spellBookClosedB);
+
+        spellBookOpenB = new GameObjectType("Spellbook (open)", false, true);
+        spellBookOpenB.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_open_B.gltf"));
+        types.add(spellBookOpenB);
+        spellBookClosedB.openedType = spellBookOpenB;
+
+        spellBookClosedC = new GameObjectType("Spellbook", false, true);
+        spellBookClosedC.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_closed_C.gltf"));
+        spellBookClosedC.isSpellBook = true;
+        types.add(spellBookClosedC);
+
+        spellBookOpenC = new GameObjectType("Spellbook (open)", false, true);
+        spellBookOpenC.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_open_C.gltf"));
+        types.add(spellBookOpenC);
+        spellBookClosedC.openedType = spellBookOpenC;
+
+        spellBookClosedD = new GameObjectType("Spellbook", false, true);
+        spellBookClosedD.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_closed_D.gltf"));
+        spellBookClosedD.isSpellBook = true;
+        types.add(spellBookClosedD);
+
+        spellBookOpenD = new GameObjectType("Spellbook (open)", false, true);
+        spellBookOpenD.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_open_D.gltf"));
+        types.add(spellBookOpenD);
+        spellBookClosedD.openedType = spellBookOpenD;
 
         food = new GameObjectType("Spellbook (open)", false, true);
         food.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/plate_food_B.gltf"));

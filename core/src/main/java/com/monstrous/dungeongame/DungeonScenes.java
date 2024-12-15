@@ -18,8 +18,6 @@ import net.mgsx.gltf.scene3d.scene.SceneManager;
 public class DungeonScenes implements Disposable {
     private final static float SCALE = 4f;
 
-    //public GameObject rogue;
-
     private SceneManager sceneManager;
 
     private SceneAsset sceneAssetFloor;
@@ -135,19 +133,19 @@ public class DungeonScenes implements Disposable {
 
     // show corridor segment if not seen before
     public void visitCorridorSegment(World world, int x, int y){
-        unmaskCorridorSegment(world, x, y);
-//        for(int dx = -1; dx <= 1; dx++){
-//            for(int dy = -1; dy <= 1; dy++){
-//                unmaskCorridorSegment(map, x+dx, y+dy);
-//            }
-//        }
+        //unmaskCorridorSegment(world, x, y);
+        for(int dx = -1; dx <= 1; dx++){
+            for(int dy = -1; dy <= 1; dy++){
+                unmaskCorridorSegment(world, x+dx, y+dy);
+            }
+        }
     }
 
     public void unmaskCorridorSegment(World world, int x, int y){
         if(world.map.corridorSeen[y][x])
             return;
-//        if(map.getGrid(x,y) != TileType.CORRIDOR)
-//            return;
+        if(world.map.getGrid(x,y) != TileType.CORRIDOR && world.map.getGrid(x,y) != TileType.DOORWAY)
+            return;
 
         world.map.corridorSeen[y][x] = true;
 
@@ -197,6 +195,7 @@ public class DungeonScenes implements Disposable {
 
     public GameObject placeObject(GameObjects gameObjects, GameObjectType type, int x, int y){
         GameObject go = new GameObject(type, x, y, Direction.SOUTH);
+        go.z = type.z;
 
         addScene(go);
         gameObjects.add(go);

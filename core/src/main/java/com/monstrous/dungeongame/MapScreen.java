@@ -84,7 +84,7 @@ public class MapScreen extends ScreenAdapter {
 //
 
         // grid
-        boolean showGrid = true;
+        boolean showGrid = false;
         if(showGrid) {
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
             shapeRenderer.setColor(Color.DARK_GRAY);

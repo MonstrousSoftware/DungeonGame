@@ -101,6 +101,9 @@ public class GUI implements Disposable {
         messageBox.add(message3).pad(3).left();
 
         uiPanel.add(messageBox).pad(10).top().left().expand();
+        uiPanel.row();
+
+        uiPanel.add(new Label("Press H for help", skin, "smaller")).pad(30).bottom().expandY();
         uiPanel.pack();
 
         // Screen is split in 2 columns. Left for 3d view and Right for fixed width ui panel
@@ -108,7 +111,7 @@ public class GUI implements Disposable {
         screenTable.setFillParent(true);
 
         screenTable.add().expand();         // empty column
-        screenTable.add(uiPanel).width(PANEL_WIDTH).top().left();
+        screenTable.add(uiPanel).width(PANEL_WIDTH).top();
         screenTable.pack();
 
         stage.addActor(screenTable);

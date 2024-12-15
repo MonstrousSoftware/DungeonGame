@@ -2,7 +2,6 @@ package com.monstrous.dungeongame;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import net.mgsx.gltf.scene3d.scene.SceneAsset;
-import com.badlogic.gdx.graphics.Texture;
 
 public class GameObjectType {
     public String name;
@@ -15,6 +14,8 @@ public class GameObjectType {
     public boolean isArmour;
     public boolean isEdible;
     public boolean isPotion;
+    public boolean isSpellBook;
+    public GameObjectType openedType;
     public SceneAsset sceneAsset;
     public int initXP;
     public float z;     // height to render at when place on the ground (to avoid some model being inside the floor)
@@ -27,10 +28,11 @@ public class GameObjectType {
         this.isPlayer = false;
         this.isCountable = false;
         this.initXP = 1;
-        this.z = 0f;
+        this.z = 1f;
         this.isWeapon = false;
         this.isArmour = false;
         this.isEdible = false;
         this.isPotion = false;
+        this.isSpellBook = false;
     }
 }

@@ -25,7 +25,7 @@ public class Populator {
             if(occupant != null)
                 continue;
 
-            int goodieType = MathUtils.random(0, 16);
+            int goodieType = MathUtils.random(0, 19);
             GameObjectType type = null;
             switch(goodieType){
                 case 0: type = GameObjectTypes.gold; break;
@@ -45,6 +45,9 @@ public class Populator {
                 case 14:
                 case 15:
                 case 16: type = GameObjectTypes.food; break;
+                case 17: type = GameObjectTypes.spellBookClosedB; break;
+                case 18: type = GameObjectTypes.spellBookClosedC; break;
+                case 19: type = GameObjectTypes.spellBookClosedD; break;
 
             }
 

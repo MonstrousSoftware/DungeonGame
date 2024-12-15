@@ -15,7 +15,6 @@ public class KeyController extends InputAdapter {
     private int frozenTimer;
     private int regenTimer;
 
-
     public KeyController(World world, DungeonScenes scenes) {
         this.world = world;
         this.scenes = scenes;
@@ -346,9 +345,10 @@ public class KeyController extends InputAdapter {
         } else if(slot.object.type.isPotion) {
             GameObject potion = slot.removeItem();
             drinkPotion(potion);
-        } else if(slot.object.type == GameObjectTypes.spellBookClosed) {
-            slot.object.type = GameObjectTypes.spellBookOpen;
-            readSpell();
+        } else if(slot.object.type.isSpellBook) {
+            readSpell(slot.object.type);
+            slot.object.type = slot.object.type.openedType;
+
         } else if(slot.object.type == GameObjectTypes.spellBookOpen) {
             MessageBox.addLine("Can only read spell book once.");
         } else {
@@ -359,8 +359,18 @@ public class KeyController extends InputAdapter {
 
 
 
-    private void readSpell(){
-        MessageBox.addLine("You read the spell book and you feel sad.");
+    private void readSpell(GameObjectType type){
+        MessageBox.addLine("You read the spell book.");
+        if(type == GameObjectTypes.spellBookClosed) {
+            MessageBox.addLine("The paper makes you feel sad.");
+        } else if(type == GameObjectTypes.spellBookClosedB) {
+            MessageBox.addLine("It is a book of maps.");
+            world.rogue.stats.haveBookOfMaps = true;
+        } else if(type == GameObjectTypes.spellBookClosedC) {
+            MessageBox.addLine("It has no effect.");
+        } else if(type == GameObjectTypes.spellBookClosedD) {
+            MessageBox.addLine("It has no effect.");
+        }
     }
 
     private void drinkPotion(GameObject potion){
@@ -368,6 +378,8 @@ public class KeyController extends InputAdapter {
         if(potion.type == GameObjectTypes.bottle_A_brown){
             world.rogue.stats.increasedAwareness = 100;
             MessageBox.addLine("Your awareness is increased");
+        } else {
+            MessageBox.addLine("It has no effect.");
         }
         // todo some effect
     }

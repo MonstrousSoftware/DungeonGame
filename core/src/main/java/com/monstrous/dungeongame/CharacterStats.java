@@ -15,6 +15,7 @@ public class CharacterStats {
     public GameObject weaponItem;
     public Inventory inventory;
     public int increasedAwareness;  // reports on off-screen events if > 0, wears off
+    public boolean haveBookOfMaps;
 
     public CharacterStats() {
         hitPoints = 5;
@@ -27,5 +28,6 @@ public class CharacterStats {
         armourItem = null;
         inventory = new Inventory();
         increasedAwareness = 0;
+        haveBookOfMaps = true; // todo false;
     }
 }
