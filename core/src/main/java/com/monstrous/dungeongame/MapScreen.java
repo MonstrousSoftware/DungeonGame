@@ -176,7 +176,7 @@ public class MapScreen extends ScreenAdapter {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.ORANGE);
         for(GameObject item : world.gameObjects.gameObjects) {
-            if(!item.type.isEnemy)
+            if(!item.type.isEnemy  && !item.type.isPlayer)
                 shapeRenderer.circle(item.x + m + .5f, item.y + m + .5f, 0.3f);
         }
         shapeRenderer.end();

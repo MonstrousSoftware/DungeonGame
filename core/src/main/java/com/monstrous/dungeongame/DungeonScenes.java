@@ -186,7 +186,8 @@ public class DungeonScenes implements Disposable {
         for(int x = room.x; x < room.x+room.width; x++){
             for(int y = room.y; y < room.y + room.height; y++){
                 GameObject occupant = world.gameObjects.getOccupant(x,y);
-                if(occupant != null){
+                if(occupant != null && occupant.scene == null){
+                    // note monsters could be seen before outside this room
                     addScene(occupant);
                 }
             }

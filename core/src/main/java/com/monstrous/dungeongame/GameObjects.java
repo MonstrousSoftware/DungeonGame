@@ -20,6 +20,10 @@ public class GameObjects {
         gameObjects.add(go);
     }
 
+    public void remove(GameObject go){
+        gameObjects.removeValue(go, true);
+    }
+
     // may be null
     public GameObject getOccupant(int x, int y){
         return occupant[y][x];

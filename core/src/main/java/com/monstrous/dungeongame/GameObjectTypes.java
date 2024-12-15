@@ -41,6 +41,8 @@ public class GameObjectTypes implements Disposable {
     public static GameObjectType bottle_C_brown;
     public static GameObjectType bottle_C_green;
 
+    public static GameObjectType bigSword;
+
     public static Array<GameObjectType> types;
     public static Sprite emptyIcon;
 
@@ -185,8 +187,9 @@ public class GameObjectTypes implements Disposable {
         bottle_C_green.isPotion = true;
         types.add(bottle_C_green);
 
-
-
+        bigSword = new GameObjectType("the Sword of Yobled", false, true);
+        bigSword.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/sword_2handed_color.gltf"));
+        types.add(bigSword);
 
 
         addIcons();

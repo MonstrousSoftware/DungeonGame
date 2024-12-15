@@ -9,11 +9,14 @@ public class Main extends Game {
 
     public World world;
     public Music music;
+    private MessageBox mb = new MessageBox();
 
 
     @Override
     public void create() {
         world = new World();
+
+        MessageBox.addLine("Welcome traveller!");
 
         music = Gdx.audio.newMusic(Gdx.files.internal("music/the-cave-220274.mp3"));
         music.setLooping(true);

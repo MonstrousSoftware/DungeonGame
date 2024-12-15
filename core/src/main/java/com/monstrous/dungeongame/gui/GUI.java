@@ -112,6 +112,8 @@ public class GUI implements Disposable {
 
         screenTable.add().expand();         // empty column
         screenTable.add(uiPanel).width(PANEL_WIDTH).top();
+        screenTable.row();
+
         screenTable.pack();
 
         stage.addActor(screenTable);

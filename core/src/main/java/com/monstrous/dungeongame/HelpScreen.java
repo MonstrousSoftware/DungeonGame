@@ -19,6 +19,8 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class HelpScreen  extends ScreenAdapter {
 
+    public final static String VERSION = "version 0.1 15/12/2024";
+
     private Main game;
     private Skin skin;
     private Stage stage;
@@ -37,13 +39,23 @@ public class HelpScreen  extends ScreenAdapter {
         screenTable.setFillParent(true);
 
         Label title = new Label("Desperately Dangerous Dungeons", skin);
-        screenTable.add(title).pad(30).center();
+        screenTable.add(title).pad(20).center();
         screenTable.row();
+        Label version = new Label(VERSION, skin, "smaller");
+        screenTable.add(version).pad(10).center();
+        screenTable.row();
+
+        Label storyLabel = new Label("", skin, "small");
+        storyLabel.setText("As the final task of your apprenticeship\nto become a professional Rogue,\nyou have been sent into "+
+        "these dangerous dungeons\nto retrieve the Sword of Yobled.\n");
+        screenTable.add(storyLabel).pad(20).center();
+        screenTable.row();
+
 
 
         Label keyLabel = new Label("Keys:", skin, "small");
         keyLabel.setText("KEYS:\n  Arrow keys to move\n  SPACE : rest\n  U + digit : use\n  D + digit : drop\n  E + digit : equip\n  Z, C : turn\n  M : map\n  R : restart\n");
-        screenTable.add(keyLabel).center();
+        screenTable.add(keyLabel).pad(20).center();
         screenTable.row();
 
         screenTable.add(new Label("Press H to return", skin, "small")).pad(20).center();

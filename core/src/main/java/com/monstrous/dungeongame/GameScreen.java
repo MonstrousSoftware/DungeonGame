@@ -136,8 +136,6 @@ public class GameScreen extends ScreenAdapter {
         im.addProcessor(gui.stage);
         Gdx.input.setInputProcessor(im);
 
-        MessageBox mb = new MessageBox();
-        //MessageBox.addLine("Welcome traveller!");
 
         bgColor = new Color(0x3e1323ff);
     }

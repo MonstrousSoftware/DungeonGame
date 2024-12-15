@@ -109,7 +109,7 @@ public class KeyController extends InputAdapter {
         world.enemies.step(scenes);     // move enemies
         digestFood();
         if (world.rogue.stats.hitPoints <= 0) {
-            MessageBox.addLine("You are dead. Press Shift-R to restart.");
+            MessageBox.addLine("You are dead. Press R to restart.");
         }
     }
 
@@ -247,6 +247,7 @@ public class KeyController extends InputAdapter {
         equipMode = false;
         if(character >= '0' && character <= '9'){
             equipSlot(slotNumber(character));
+            return true;
         }
         return false;
     }
@@ -284,6 +285,7 @@ public class KeyController extends InputAdapter {
         dropMode = false;
         if(character >= '0' && character <= '9'){
             dropSlot(slotNumber(character));
+            return true;
         }
         return false;
     }
@@ -297,6 +299,7 @@ public class KeyController extends InputAdapter {
         useMode = false;
         if(character >= '0' && character <= '9'){
             useSlot(slotNumber(character));
+            return true;
         }
         return false;
     }
@@ -375,18 +378,20 @@ public class KeyController extends InputAdapter {
 
     private void drinkPotion(GameObject potion){
         MessageBox.addLine("You drink the "+potion.type.name+".");
-        if(potion.type == GameObjectTypes.bottle_A_brown){
-            world.rogue.stats.increasedAwareness = 100;
-            MessageBox.addLine("Your awareness is increased.");
-        } else if(potion.type == GameObjectTypes.bottle_C_green){
-            world.rogue.stats.hitPoints = Math.max(0, world.rogue.stats.hitPoints-50);
-            MessageBox.addLine("It is poison. You lose health.");
-        } else if(potion.type == GameObjectTypes.bottle_B_green){
-            world.rogue.stats.hitPoints = Math.max(CharacterStats.MAX_HITPOINTS, world.rogue.stats.hitPoints+3);
-            MessageBox.addLine("You feel invigorated.");
-        } else {
-            MessageBox.addLine("It has no effect.");
-        }
+        world.rogue.stats.hitPoints = Math.max(0, world.rogue.stats.hitPoints-50);
+        MessageBox.addLine("It is poison. You lose health.");
+//        if(potion.type == GameObjectTypes.bottle_A_brown){
+//            world.rogue.stats.increasedAwareness = 100;
+//            MessageBox.addLine("Your awareness is increased.");
+//        } else if(potion.type == GameObjectTypes.bottle_C_green){
+//            world.rogue.stats.hitPoints = Math.max(0, world.rogue.stats.hitPoints-50);
+//            MessageBox.addLine("It is poison. You lose health.");
+//        } else if(potion.type == GameObjectTypes.bottle_B_green){
+//            world.rogue.stats.hitPoints = Math.max(CharacterStats.MAX_HITPOINTS, world.rogue.stats.hitPoints+3);
+//            MessageBox.addLine("You feel invigorated.");
+//        } else {
+//            MessageBox.addLine("It has no effect.");
+//        }
         // todo some effect
     }
 }
