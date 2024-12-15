@@ -118,7 +118,10 @@ public class KeyController extends InputAdapter {
                 world.rogue.stats.hitPoints++;
         }
         world.enemies.step(scenes);     // move enemies
+
         digestFood();
+
+        // check for death
         if (world.rogue.stats.hitPoints <= 0) {
             MessageBox.addLine("You are dead. Press R to restart.");
         }
@@ -158,20 +161,20 @@ public class KeyController extends InputAdapter {
                 turnRogue(true); return true;
             case 'e':
                 equip();
-                return true;
+                return false;
             case 'd':
                 drop();
-                return true;
+                return false;
             case 'u':
                 use();
-                return true;
+                return false;
             case 't':
                 throwItem();
-                return true;
+                return false;       // return false because it's not enemy's move yet
             case 'r':
                 confirmMode = true;
                 MessageBox.addLine("Confirm with Y to restart.");
-                return true;
+                return false;
             case ' ':
                 return true;        // do nothing
             default:
@@ -316,17 +319,15 @@ public class KeyController extends InputAdapter {
         throwMode = false;
         if(character >= '0' && character <= '9'){
             throwSlot = slotNumber(character);
-            askDirection();
-            return true;
+            // ask direction
+            MessageBox.addLine("Which direction? (arrow keys)");
+            throwDirectionMode = true;
+            return false;       // return false because it's not the enemy's move yet
         }
         return false;
     }
 
-    private void askDirection(){
-        MessageBox.addLine("Which direction? (arrow keys)");
-        throwDirectionMode = true;
-    }
-
+    // after t + item + direction
     private boolean processThrowDirectionChoice(int keycode){
         throwDirectionMode = false;
         switch(keycode){
@@ -356,17 +357,28 @@ public class KeyController extends InputAdapter {
         scenes.turnObject(world.rogue, dir, world.rogue.x, world.rogue.y);
         GameObject item = slot.removeItem();
         MessageBox.addLine("You throw "+item.type.name+".");
+        if(item.type.isGold)
+            world.rogue.stats.gold -= item.quantity;
         int tx = world.rogue.x;
         int ty = world.rogue.y;
         while(true) {
+            // next tile
             int nx = tx + dx;
             int ny = ty + dy;
             if(nx < 0 || nx > world.map.mapWidth || ny < 0 || ny > world.map.mapHeight)
                 return true;
+
+            GameObject occupant = world.gameObjects.getOccupant(nx, ny);
+            if(occupant != null && occupant.type.isEnemy){
+                MessageBox.addLine("You hit "+occupant.type.name+".");
+                item.hits(world, scenes, world.rogue, occupant);
+                return true;
+            }
             // move as long as we are over floor or corridor
-            // i.e. don't go through walls
+            // i.e. don't go through walls, but you can throw through doorways
             TileType tile = world.map.getGrid(nx, ny);
-            if(tile != TileType.ROOM && tile != TileType.CORRIDOR) {
+            if(!TileType.walkable(tile,  world.map.getGrid(tx, ty))) {
+                // drop item short of the wall
                 scenes.placeObject(world.gameObjects, item.type, tx, ty);
                 return true;
             }
@@ -403,6 +415,8 @@ public class KeyController extends InputAdapter {
         if(slot.isEmpty())
             return;
         GameObject item = slot.removeItem();
+        if(item.type.isGold)
+            world.rogue.stats.gold -= item.quantity;
         MessageBox.addLine("You dropped "+item.type.name+".");
         scenes.placeObject(world.gameObjects, item.type, world.rogue.x, world.rogue.y);
     }
@@ -453,7 +467,7 @@ public class KeyController extends InputAdapter {
             world.rogue.stats.increasedAwareness = 100;
             MessageBox.addLine("Your awareness is increased.");
         } else if(potion.type == GameObjectTypes.bottle_C_green){
-            world.rogue.stats.hitPoints = Math.max(0, world.rogue.stats.hitPoints-50);
+            world.rogue.stats.hitPoints = Math.max(0, world.rogue.stats.hitPoints-3);
             MessageBox.addLine("It is poison. You lose health.");
         } else if(potion.type == GameObjectTypes.bottle_B_green){
             world.rogue.stats.hitPoints = Math.max(CharacterStats.MAX_HITPOINTS, world.rogue.stats.hitPoints+3);

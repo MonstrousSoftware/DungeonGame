@@ -83,6 +83,7 @@ public class GameObjectTypes implements Disposable {
         gold = new GameObjectType("Gold", false, true);
         gold.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/coin_stack_small.gltf"));
         gold.isCountable = true;
+        gold.isGold = true;
         types.add(gold);
 
         knife = new GameObjectType("a Knife", false, true);

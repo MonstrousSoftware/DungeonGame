@@ -14,6 +14,7 @@ public class GameObjectType {
     public boolean isArmour;
     public boolean isEdible;
     public boolean isPotion;
+    public boolean isGold;
     public boolean isSpellBook;
     public GameObjectType openedType;
     public SceneAsset sceneAsset;
@@ -33,6 +34,7 @@ public class GameObjectType {
         this.isArmour = false;
         this.isEdible = false;
         this.isPotion = false;
+        this.isGold = false;
         this.isSpellBook = false;
     }
 }

@@ -89,6 +89,10 @@ public class GameObject {
             if(scene != null && !world.map.tileSeen[y][x]){
                 scenes.removeScene( this );
             }
+            // and vice versa
+            if(scene == null && world.map.tileSeen[y][x]){
+                scenes.addScene( this );
+            }
         }
     }
 
@@ -146,6 +150,29 @@ public class GameObject {
         }
     }
 
+    public void hits(World world, DungeonScenes scenes, GameObject thrower, GameObject target){
+        Sounds.fight();
+
+        int hp = 1;
+
+        if(type == GameObjectTypes.knife)
+            hp = 3;
+        else if(type == GameObjectTypes.bottle_C_green){
+            hp = 3;     // poison
+        } else if(type == GameObjectTypes.bottle_B_green) {
+            hp = -3;        // invigorating
+        }
+
+        target.stats.hitPoints = Math.max(0, target.stats.hitPoints-hp);
+        // with increased awareness player is informed of all events
+        if(target.type.isPlayer || thrower.type.isPlayer || world.rogue.stats.increasedAwareness > 0) {
+            MessageBox.addLine(type.name + " hits  the " + target.type.name + "(HP: " + target.stats.hitPoints + ")");
+        }
+        if(target.stats.hitPoints <= 0){
+            thrower.defeat(world, scenes, target);
+        }
+    }
+
 
     private void defeat(World world, DungeonScenes scenes, GameObject enemy){
         if(type.isPlayer || enemy.type.isPlayer )
@@ -156,11 +183,11 @@ public class GameObject {
         world.enemies.remove(enemy);
         stats.experience += enemy.stats.experience;
         if(enemy.stats.gold > 0) {
-            MessageBox.addLine(type.name+ " takes their gold. (+"+enemy.stats.gold+")");
-            stats.gold += enemy.stats.gold;
             GameObject gold = new GameObject(GameObjectTypes.gold, 0,0,Direction.NORTH);
             gold.quantity = enemy.stats.gold;
-            stats.inventory.addItem( gold );
+            scenes.placeObject(world.gameObjects, GameObjectTypes.gold, enemy.x, enemy.y);
+
+            MessageBox.addLine(enemy.type.name+ " drops their gold. (+"+enemy.stats.gold+")");
         }
     }
 

@@ -22,6 +22,7 @@ public enum TileType {
             case DOORWAY:
             case STAIRS_DOWN:
             case STAIRS_UP:
+
                 return true;
             default:
                 break;
@@ -31,5 +32,17 @@ public enum TileType {
         else if(cell == STAIRS_DOWN_DEEP)
             return(from == STAIRS_DOWN);
         return false;
+    }
+
+    public static boolean hasFloor(TileType cell){
+        switch(cell){
+            case VOID:
+            case STAIRS_DOWN:
+            case STAIRS_DOWN_DEEP:
+                return false;
+            default:
+                break;
+        }
+        return true;
     }
 }

@@ -146,7 +146,7 @@ public class DungeonScenes implements Disposable {
     public void unmaskCorridorSegment(World world, int x, int y){
         if(world.map.tileSeen[y][x])
             return;
-        if(world.map.getGrid(x,y) != TileType.CORRIDOR && world.map.getGrid(x,y) != TileType.DOORWAY)
+        if( !TileType.hasFloor(world.map.getGrid(x,y)))
             return;
 
         world.map.tileSeen[y][x] = true;
@@ -179,6 +179,9 @@ public class DungeonScenes implements Disposable {
     }
 
     public void populateMap(World world){
+        for(GameObject enemy: world.enemies.enemies)
+            enemy.scene = null;
+
         for(Room room: world.map.rooms)
             if(room.uncovered)
                 populateRoom(world, room);
@@ -198,14 +201,18 @@ public class DungeonScenes implements Disposable {
 
     public GameObject placeObject(GameObjects gameObjects, GameObjectType type, int x, int y){
         GameObject go = new GameObject(type, x, y, Direction.SOUTH);
-        go.z = type.z;
+        return placeObject(gameObjects, go, x, y);
+    }
 
-        addScene(go);
-        gameObjects.add(go);
-        if(!type.isPlayer)
-            gameObjects.setOccupant(x, y, go);
+    public GameObject placeObject(GameObjects gameObjects, GameObject item, int x, int y){
+        item.z = item.type.z;
+
+        addScene(item);
+        gameObjects.add(item);
+        if(!item.type.isPlayer)
+            gameObjects.setOccupant(x, y, item);
         // how to handle enemies walking over gold etc.
-        return go;
+        return item;
     }
 
     public void addScene(GameObject gameObject){
