@@ -134,8 +134,8 @@ public class DungeonScenes implements Disposable {
 
 
     // show corridor segment if not seen before
-    public void visitCorridorSegment(DungeonMap map, int x, int y){
-        unmaskCorridorSegment(map, x, y);
+    public void visitCorridorSegment(World world, int x, int y){
+        unmaskCorridorSegment(world, x, y);
 //        for(int dx = -1; dx <= 1; dx++){
 //            for(int dy = -1; dy <= 1; dy++){
 //                unmaskCorridorSegment(map, x+dx, y+dy);
@@ -143,19 +143,23 @@ public class DungeonScenes implements Disposable {
 //        }
     }
 
-    public void unmaskCorridorSegment(DungeonMap map, int x, int y){
-        if(map.corridorSeen[y][x])
+    public void unmaskCorridorSegment(World world, int x, int y){
+        if(world.map.corridorSeen[y][x])
             return;
 //        if(map.getGrid(x,y) != TileType.CORRIDOR)
 //            return;
 
-        map.corridorSeen[y][x] = true;
+        world.map.corridorSeen[y][x] = true;
 
-        TileType cell = map.getGrid(x,y);
+        TileType cell = world.map.getGrid(x,y);
         if(cell != TileType.VOID){
             Scene tile = new Scene(sceneAssetFloor.scene);
             setTransform(tile.modelInstance.transform, x, y, 0, Direction.NORTH);
             sceneManager.addScene(tile);
+        }
+        GameObject occupant = world.gameObjects.getOccupant(x,y);
+        if(occupant != null){
+            addScene(occupant);
         }
     }
 
@@ -213,7 +217,6 @@ public class DungeonScenes implements Disposable {
     public void createRogueModel(World world){
         GameObject rogue = world.rogue;
         addScene(rogue);
-        // todo
         adaptModel(rogue.scene, rogue.stats);
     }
 
@@ -224,7 +227,7 @@ public class DungeonScenes implements Disposable {
             room.uncovered = true;
         }
         else
-            visitCorridorSegment(world.map, world.rogue.x, world.rogue.y);
+            visitCorridorSegment(world, world.rogue.x, world.rogue.y);
     }
 
 

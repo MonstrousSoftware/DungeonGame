@@ -97,6 +97,11 @@ public class KeyController extends InputAdapter {
 
     // arrive here after having made a move
     private void wrapUp(){
+        if(world.rogue.stats.increasedAwareness > 0){
+            world.rogue.stats.increasedAwareness--;
+            if(world.rogue.stats.increasedAwareness == 0)
+                MessageBox.addLine("Your increased awareness wore off.");
+        }
         if(--regenTimer <= 0){
             regenTimer = Math.max(20-world.level, 3);
             if(world.rogue.stats.hitPoints < CharacterStats.MAX_HITPOINTS)
@@ -211,7 +216,7 @@ public class KeyController extends InputAdapter {
         } else if( world.map.getGrid(x,y) == TileType.CORRIDOR){
             if(!world.map.corridorSeen[y][x])
                 Gdx.app.log("Uncover corridor", " "+x+", "+y);
-            scenes.visitCorridorSegment(world.map, x, y);
+            scenes.visitCorridorSegment(world, x, y);
         }
         if( world.map.getGrid(x,y) == TileType.STAIRS_DOWN){
             world.rogue.z = -2;
@@ -360,6 +365,10 @@ public class KeyController extends InputAdapter {
 
     private void drinkPotion(GameObject potion){
         MessageBox.addLine("You drink the "+potion.type.name+".");
+        if(potion.type == GameObjectTypes.bottle_A_brown){
+            world.rogue.stats.increasedAwareness = 100;
+            MessageBox.addLine("Your awareness is increased");
+        }
         // todo some effect
     }
 }

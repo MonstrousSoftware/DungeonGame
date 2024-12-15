@@ -86,9 +86,12 @@ public class GameObject {
             if(stats.inventory.addItem(occupant)){  // if there is room in the inventory
                 Sounds.pickup();
 
-                //String name = type.name;
-                if(type.isPlayer) {
-                    String name = "You";
+                String name = type.name;
+                if(type.isPlayer)
+                    name = "You";
+
+                // with increased awareness player is informed of all events
+                if(type.isPlayer || world.rogue.stats.increasedAwareness > 0) {
                     if (occupant.type.isCountable)
                         MessageBox.addLine(name + " picked up " + occupant.quantity + " " + occupant.type.name);
                     else
@@ -119,7 +122,10 @@ public class GameObject {
         }
         hp += stats.experience /10;     // to tune
         other.stats.hitPoints = Math.max(0, other.stats.hitPoints-hp);
-        MessageBox.addLine(type.name+ " " + verb + " the "+other.type.name+"(HP: "+other.stats.hitPoints+")");
+        // with increased awareness player is informed of all events
+        if(type.isPlayer || world.rogue.stats.increasedAwareness > 0) {
+            MessageBox.addLine(type.name + " " + verb + " the " + other.type.name + "(HP: " + other.stats.hitPoints + ")");
+        }
         if(other.stats.hitPoints <= 0){
             defeat(world, scenes, other);
         }

@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 
 public class Enemies {
-    private Array<GameObject> enemies;
+    public Array<GameObject> enemies;
     private World world;
     private DungeonScenes scenes;
 

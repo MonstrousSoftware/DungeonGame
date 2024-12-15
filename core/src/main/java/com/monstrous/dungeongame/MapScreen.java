@@ -163,6 +163,14 @@ public class MapScreen extends ScreenAdapter {
         shapeRenderer.circle(world.rogue.x + m+.5f, world.rogue.y + m+.5f, 0.5f);
         shapeRenderer.end();
 
+        // enemies
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(200/255f, 0.2f, 0.2f, 1f);
+        for(GameObject enemy : world.enemies.enemies) {
+            shapeRenderer.circle(enemy.x + m + .5f, enemy.y + m + .5f, 0.5f);
+        }
+        shapeRenderer.end();
+
         // minimum spanning tree
 //        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 //        shapeRenderer.setColor(Color.RED);
