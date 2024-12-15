@@ -85,109 +85,109 @@ public class GameObjectTypes implements Disposable {
         gold.isCountable = true;
         types.add(gold);
 
-        knife = new GameObjectType("Knife", false, true);
+        knife = new GameObjectType("a Knife", false, true);
         knife.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/dagger.gltf"));
         knife.isWeapon = true;
         types.add(knife);
 
-        crossbow = new GameObjectType("Crossbow", false, true);
+        crossbow = new GameObjectType("a Crossbow", false, true);
         crossbow.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/crossbow_1handed.gltf"));
         crossbow.isWeapon = true;
         types.add(crossbow);
 
-        explosive = new GameObjectType("Explosive", false, true);
+        explosive = new GameObjectType("an Explosive", false, true);
         explosive.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/smokebomb.gltf"));
         explosive.isWeapon = true;
         types.add(explosive);
 
-        shield1 = new GameObjectType("Round Shield", false, true);
+        shield1 = new GameObjectType("a Round Shield", false, true);
         shield1.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/shield_round.gltf"));
         shield1.z = 1f;
         shield1.isArmour = true;
         types.add(shield1);
 
-        shield2 = new GameObjectType("Square Shield", false, true);
+        shield2 = new GameObjectType("a Square Shield", false, true);
         shield2.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/shield_square.gltf"));
         shield2.z = 1f;
         shield2.isArmour = true;
         types.add(shield2);
 
-        spellBookClosed = new GameObjectType("Spellbook", false, true);
+        spellBookClosed = new GameObjectType("a Spellbook", false, true);
         spellBookClosed.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_closed.gltf"));
         spellBookClosed.isSpellBook = true;
         types.add(spellBookClosed);
 
-        spellBookOpen = new GameObjectType("Spellbook (open)", false, true);
+        spellBookOpen = new GameObjectType("a Spellbook (open)", false, true);
         spellBookOpen.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_open.gltf"));
         types.add(spellBookOpen);
         spellBookClosed.openedType = spellBookOpen;
 
-        spellBookClosedB = new GameObjectType("Spellbook", false, true);
+        spellBookClosedB = new GameObjectType("a Spellbook", false, true);
         spellBookClosedB.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_closed_B.gltf"));
         spellBookClosedB.isSpellBook = true;
         types.add(spellBookClosedB);
 
-        spellBookOpenB = new GameObjectType("Spellbook (open)", false, true);
+        spellBookOpenB = new GameObjectType("a Spellbook (open)", false, true);
         spellBookOpenB.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_open_B.gltf"));
         types.add(spellBookOpenB);
         spellBookClosedB.openedType = spellBookOpenB;
 
-        spellBookClosedC = new GameObjectType("Spellbook", false, true);
+        spellBookClosedC = new GameObjectType("a Spellbook", false, true);
         spellBookClosedC.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_closed_C.gltf"));
         spellBookClosedC.isSpellBook = true;
         types.add(spellBookClosedC);
 
-        spellBookOpenC = new GameObjectType("Spellbook (open)", false, true);
+        spellBookOpenC = new GameObjectType("a Spellbook (open)", false, true);
         spellBookOpenC.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_open_C.gltf"));
         types.add(spellBookOpenC);
         spellBookClosedC.openedType = spellBookOpenC;
 
-        spellBookClosedD = new GameObjectType("Spellbook", false, true);
+        spellBookClosedD = new GameObjectType("a Spellbook", false, true);
         spellBookClosedD.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_closed_D.gltf"));
         spellBookClosedD.isSpellBook = true;
         types.add(spellBookClosedD);
 
-        spellBookOpenD = new GameObjectType("Spellbook (open)", false, true);
+        spellBookOpenD = new GameObjectType("a Spellbook (open)", false, true);
         spellBookOpenD.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_open_D.gltf"));
         types.add(spellBookOpenD);
         spellBookClosedD.openedType = spellBookOpenD;
 
-        food = new GameObjectType("Spellbook (open)", false, true);
+        food = new GameObjectType("a plate of food", false, true);
         food.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/plate_food_B.gltf"));
         food.isEdible = true;
         types.add(food);
 
-        bottle_A_brown = new GameObjectType("Amber Potion", false, true);
+        bottle_A_brown = new GameObjectType("an Amber Potion", false, true);
         bottle_A_brown.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/bottle_A_brown.gltf"));
         bottle_A_brown.isPotion = true;
         types.add(bottle_A_brown);
 
-        bottle_A_green = new GameObjectType("Jade Potion", false, true);
+        bottle_A_green = new GameObjectType("a Jade Potion", false, true);
         bottle_A_green.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/bottle_A_green.gltf"));
         bottle_A_green.isPotion = true;
         types.add(bottle_A_green);
 
-        bottle_B_brown = new GameObjectType("Murky Potion", false, true);
+        bottle_B_brown = new GameObjectType("a Murky Potion", false, true);
         bottle_B_brown.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/bottle_B_brown.gltf"));
         bottle_B_brown.isPotion = true;
         types.add(bottle_B_brown);
 
-        bottle_B_green = new GameObjectType("Foul-Smelling Potion", false, true);
+        bottle_B_green = new GameObjectType("a Foul-Smelling Potion", false, true);
         bottle_B_green.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/bottle_B_green.gltf"));
         bottle_B_green.isPotion = true;
         types.add(bottle_B_green);
 
-        bottle_C_brown = new GameObjectType("Bubbly Potion", false, true);
+        bottle_C_brown = new GameObjectType("a Bubbly Potion", false, true);
         bottle_C_brown.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/bottle_C_brown.gltf"));
         bottle_C_brown.isPotion = true;
         types.add(bottle_C_brown);
 
-        bottle_C_green = new GameObjectType("Sweet Potion", false, true);
+        bottle_C_green = new GameObjectType("a Sweet Potion", false, true);
         bottle_C_green.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/bottle_C_green.gltf"));
         bottle_C_green.isPotion = true;
         types.add(bottle_C_green);
 
-        bigSword = new GameObjectType("the Sword of Yobled", false, true);
+        bigSword = new GameObjectType("the Sword of Yobled!", false, true);
         bigSword.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/sword_2handed_color.gltf"));
         types.add(bigSword);
 

@@ -130,7 +130,7 @@ public class GameObject {
                 if (item.type.isCountable)
                     MessageBox.addLine(name + " picked up " + item.quantity + " " + item.type.name);
                 else
-                    MessageBox.addLine(name + " picked up a " + item.type.name);
+                    MessageBox.addLine(name + " picked up " + item.type.name);
             }
             if (item.scene != null)
                 scenes.remove(item.scene);

@@ -46,8 +46,8 @@ public class HelpScreen  extends ScreenAdapter {
         screenTable.row();
 
         Label storyLabel = new Label("", skin, "small");
-        storyLabel.setText("As the final task of your apprenticeship\nto become a professional Rogue,\nyou have been sent into "+
-        "these dangerous dungeons\nto retrieve the Sword of Yobled.\n");
+        storyLabel.setText("As the final task of your apprenticeship to become\na professional Rogue, you have been sent into "+
+        "these\ndangerous dungeons to retrieve the Sword of Yobled.\nIt is rumoured to be at least five levels below ground level.\n");
         screenTable.add(storyLabel).pad(20).center();
         screenTable.row();
 

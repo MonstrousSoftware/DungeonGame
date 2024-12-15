@@ -14,6 +14,7 @@ public class World {
 
     public int seed = 1234;
     public int level = 0;
+    public int swordLevel;
 
     public DungeonMap map;
     public GameObjects gameObjects;
@@ -23,6 +24,7 @@ public class World {
 
     public World() {
         GameObjectTypes gameObjectTypes = new GameObjectTypes();
+        randomizeSwordLevel();
         generateLevel();
     }
 
@@ -44,8 +46,16 @@ public class World {
         rogue = null;
         level = 0;
         map.dispose();
+        randomizeSwordLevel();
         generateLevel();
         MessageBox.addLine("World seed: "+seed);
+    }
+
+    private void randomizeSwordLevel(){
+        MathUtils.random.setSeed(seed);
+        // set level where the sword can be found
+        swordLevel = 5 + MathUtils.random(0,2);
+        swordLevel = 0;
     }
 
     private void generateLevel(){
@@ -63,6 +73,8 @@ public class World {
         if(rogue == null)   // don't create new rogue when changing level
             rogue = Populator.placeRogue(map, gameObjects);
 
+        if(level == swordLevel)
+            Populator.placeSword(map, gameObjects);
         Populator.distributeGoodies(map, gameObjects);
         Populator.distributeEnemies(map, gameObjects, enemies);
 
