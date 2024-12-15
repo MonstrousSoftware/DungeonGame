@@ -8,10 +8,13 @@ public class KeyController extends InputAdapter {
 
     private World world;
     private DungeonScenes scenes;
-    private boolean equipMode;
-    private boolean dropMode;
-    private boolean useMode;
-    private boolean confirmMode;
+    private boolean equipMode;  // after e
+    private boolean dropMode;   // after d
+    private boolean useMode;    // after u
+    private boolean confirmMode;        // after reset
+    private boolean throwMode;  // after t
+    private boolean throwDirectionMode; // after t + item
+    private int throwSlot;
     private int frozenTimer;
     private int regenTimer;
 
@@ -21,6 +24,9 @@ public class KeyController extends InputAdapter {
         equipMode = false;
         dropMode = false;
         useMode = false;
+        confirmMode = false;
+        throwMode = false;
+        throwDirectionMode = false;
         regenTimer = 10;
     }
 
@@ -30,6 +36,9 @@ public class KeyController extends InputAdapter {
         // left/right keys translate to -x/+x
         // up/down to +y/-y
         //
+
+        if(throwDirectionMode)
+            processThrowDirectionChoice(keycode);
 
         boolean done = false;
         switch(keycode){
@@ -136,6 +145,8 @@ public class KeyController extends InputAdapter {
             return processUseChoice(character);
         if(confirmMode)
             return processConfirmation(character);
+        if(throwMode)
+            return processThrowChoice(character);
 
         switch (character) {
 
@@ -151,6 +162,9 @@ public class KeyController extends InputAdapter {
                 return true;
             case 'u':
                 use();
+                return true;
+            case 't':
+                throwItem();
                 return true;
             case 'r':
                 confirmMode = true;
@@ -169,7 +183,7 @@ public class KeyController extends InputAdapter {
         scenes.liftFog(world);
         int roomId = world.map.roomCode[world.rogue.y][world.rogue.x];
         Room room = world.map.rooms.get(roomId);
-        scenes.buildRoom(world.map, room);
+        scenes.showRoom(world.map, room);
         scenes.populateRoom(world, room);
     }
 
@@ -209,11 +223,11 @@ public class KeyController extends InputAdapter {
             Room room = world.map.rooms.get(roomId);
             if (!room.uncovered) {
                 Gdx.app.log("Uncover room", ""+roomId);
-                scenes.buildRoom(world.map, room);
+                scenes.showRoom(world.map, room);
                 scenes.populateRoom(world, room);
             }
         } else if( world.map.getGrid(x,y) == TileType.CORRIDOR){
-            if(!world.map.corridorSeen[y][x])
+            if(!world.map.tileSeen[y][x])
                 Gdx.app.log("Uncover corridor", " "+x+", "+y);
             scenes.visitCorridorSegment(world, x, y);
         }
@@ -261,21 +275,6 @@ public class KeyController extends InputAdapter {
         return false;
     }
 
-//    private void read(){
-//        MessageBox.addLine("Read what? (0-9) or Esc");
-//        readMode = true;
-//
-//    }
-//
-//    private boolean processReadChoice(int character){
-//        readMode = false;
-//        if(character >= '0' && character <= '9'){
-//            readSlot(character - '0');
-//            return true;
-//        }
-//        return false;
-//    }
-
     private void drop(){
         MessageBox.addLine("Drop what? (0-9) or Esc");
         dropMode = true;
@@ -302,6 +301,52 @@ public class KeyController extends InputAdapter {
             return true;
         }
         return false;
+    }
+
+
+
+    private void throwItem(){
+        MessageBox.addLine("Throw what? (0-9) or Esc");
+        throwMode = true;
+    }
+
+    private boolean processThrowChoice(int character){
+        throwMode = false;
+        if(character >= '0' && character <= '9'){
+            throwSlot = slotNumber(character);
+            askDirection();
+            return true;
+        }
+        return false;
+    }
+
+    private void askDirection(){
+        MessageBox.addLine("Which direction? (arrow keys)");
+        throwDirectionMode = true;
+    }
+
+    private boolean processThrowDirectionChoice(int keycode){
+        throwDirectionMode = false;
+        switch(keycode){
+            case Input.Keys.LEFT:
+                throwIt(throwSlot, -1, 0, Direction.WEST);
+                break;
+            case Input.Keys.RIGHT:
+                throwIt(throwSlot, 1, 0, Direction.EAST);
+                break;
+            case Input.Keys.UP:
+                throwIt(throwSlot, 0, 1, Direction.NORTH);
+                break;
+            case Input.Keys.DOWN:
+                throwIt(throwSlot, 0, -1, Direction.SOUTH);
+                break;
+        }
+        return false;
+    }
+
+    private boolean throwIt(int slotNr, int dx, int dy, Direction dir){
+        System.out.println("Throw "+slotNr+" to dx:"+dx+", dy:"+dy);
+        return true;
     }
 
     private int slotNumber(int k){

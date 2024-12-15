@@ -54,15 +54,17 @@ public class DungeonScenes implements Disposable {
     public void buildMap(DungeonMap map){
         for(Room room: map.rooms)
             if(room.uncovered)
-                buildRoom(map, room);
+                showRoom(map, room);
 
     }
 
-    public void buildRoom(DungeonMap map, Room room){
+    public void showRoom(DungeonMap map, Room room){
         room.uncovered = true;
 
         for(int x = room.x; x <= room.x + room.width; x++){
             for(int y = room.y; y <= room.y + room.height; y++){
+                map.tileSeen[y][x] = true;
+
                 Scene tile;
                 TileType cell = map.getGrid(x,y);
                 if(cell!= TileType.VOID && cell != TileType.STAIRS_DOWN && cell != TileType.STAIRS_DOWN_DEEP){
@@ -142,12 +144,12 @@ public class DungeonScenes implements Disposable {
     }
 
     public void unmaskCorridorSegment(World world, int x, int y){
-        if(world.map.corridorSeen[y][x])
+        if(world.map.tileSeen[y][x])
             return;
         if(world.map.getGrid(x,y) != TileType.CORRIDOR && world.map.getGrid(x,y) != TileType.DOORWAY)
             return;
 
-        world.map.corridorSeen[y][x] = true;
+        world.map.tileSeen[y][x] = true;
 
         TileType cell = world.map.getGrid(x,y);
         if(cell != TileType.VOID){
@@ -156,7 +158,7 @@ public class DungeonScenes implements Disposable {
             sceneManager.addScene(tile);
         }
         GameObject occupant = world.gameObjects.getOccupant(x,y);
-        if(occupant != null){
+        if(occupant != null && occupant.scene == null){
             addScene(occupant);
         }
     }
@@ -164,7 +166,7 @@ public class DungeonScenes implements Disposable {
     public void buildCorridors(DungeonMap map){
         for(int x = 0; x < map.mapWidth; x++){
             for(int y = 0; y < map.mapHeight; y++){
-                if(map.corridorSeen[y][x]){
+                if(map.tileSeen[y][x]){
                     TileType cell = map.getGrid(x,y);
                     if(cell != TileType.VOID){
                         Scene tile = new Scene(sceneAssetFloor.scene);
@@ -212,6 +214,12 @@ public class DungeonScenes implements Disposable {
         setTransform(item.modelInstance.transform, gameObject.x, gameObject.y, gameObject.z, gameObject.direction);
         sceneManager.addScene(item);
         gameObject.scene = item;
+    }
+
+
+    public void removeScene(GameObject gameObject){
+        sceneManager.removeScene(gameObject.scene);
+        gameObject.scene = null;
     }
 
     public void createRogueModel(World world){

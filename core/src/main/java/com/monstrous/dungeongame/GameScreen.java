@@ -166,7 +166,7 @@ public class GameScreen extends ScreenAdapter {
             dungeonScenes.liftFog( world );
             int roomId = world.map.roomCode[world.rogue.y][world.rogue.x];
             Room room = world.map.rooms.get(roomId);
-            dungeonScenes.buildRoom( world.map, room );
+            dungeonScenes.showRoom( world.map, room );
             dungeonScenes.populateRoom(world, room);
             camController.setTrackedObject( world.rogue.scene.modelInstance );
         }

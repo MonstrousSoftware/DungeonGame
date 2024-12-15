@@ -1,7 +1,6 @@
 package com.monstrous.dungeongame;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.MathUtils;
 import net.mgsx.gltf.scene3d.scene.Scene;
 
@@ -82,33 +81,14 @@ public class GameObject {
 
         if(occupant != null && occupant.type.pickup) {
             pickUp(world, scenes, occupant);
-//            Gdx.app.log("Pickup", occupant.type.name);
-//
-//            if(stats.inventory.addItem(occupant)){  // if there is room in the inventory
-//                pickUp(world, occupant);
-//                Sounds.pickup();
-//
-//                String name = type.name;
-//                if(type.isPlayer)
-//                    name = "You";
-//
-//                // with increased awareness player is informed of all events
-//                if(type.isPlayer || world.rogue.stats.increasedAwareness > 0) {
-//                    if (occupant.type.isCountable)
-//                        MessageBox.addLine(name + " picked up " + occupant.quantity + " " + occupant.type.name);
-//                    else
-//                        MessageBox.addLine(name + " picked up a " + occupant.type.name);
-//                }
-//                if (occupant.scene != null)
-//                    scenes.remove(occupant.scene);
-//                world.gameObjects.clearOccupant(x, y);
-//                if (occupant.type == GameObjectTypes.gold) {
-//                    stats.gold += occupant.quantity;
-//                }
-//            }
         }
         if(!type.isPlayer) {
             world.gameObjects.setOccupant(x, y, this);
+
+            // if enemy goes into fog of war, hide it
+            if(scene != null && !world.map.tileSeen[y][x]){
+                scenes.removeScene( this );
+            }
         }
     }
 
