@@ -1,7 +1,8 @@
 package com.monstrous.dungeongame;
 
 public class CharacterStats {
-    public final static int MAX_FOOD = 300;
+    public final static int MAX_FOOD = 1000;
+    public final static int REPLENISH_FOOD = 100;   // after a faint
 
 
     //public int equipped;

@@ -58,7 +58,7 @@ public class GUI implements Disposable {
         Table uiPanel = new Table();
 
 
-        level = new Label("LEVEL: 0", skin, "small");
+        level = new Label("DUNGEON LEVEL: 0", skin, "small");
         gold = new Label("GOLD: 0", skin,"small");
         hp = new Label("HP: 0", skin,"small");
         xp = new Label("XP: 0", skin,"small");
@@ -117,7 +117,7 @@ public class GUI implements Disposable {
 
     private void update(){
         sb.setLength(0);
-        sb.append("LEVEL: ");
+        sb.append("DUNGEON LEVEL: ");
         sb.append(world.level);
         level.setText(sb.toString());
 

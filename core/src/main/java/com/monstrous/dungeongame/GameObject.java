@@ -23,7 +23,7 @@ public class GameObject {
         this.x = x;
         this.y = y;
         this.direction = direction;
-        this.quantity = 0;
+        this.quantity = 1;
         this.attackedBy = null;
     }
 
@@ -83,7 +83,7 @@ public class GameObject {
         if(occupant != null && occupant.type.pickup) {
             Gdx.app.log("Pickup", occupant.type.name);
 
-            if(stats.inventory.addItem(occupant)){
+            if(stats.inventory.addItem(occupant)){  // if there is room in the inventory
                 Sounds.pickup();
 
                 //String name = type.name;

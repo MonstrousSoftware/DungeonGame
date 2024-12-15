@@ -30,7 +30,7 @@ public class InventoryWindow extends Window {
         }
         gridTable.row();
         for(int x = 0; x < numSlots; x++) {
-            gridTable.add(new Label(""+x, skin, "small"));
+            gridTable.add(new Label(""+(x+1)%10, skin, "small"));
         }
         add(gridTable);
         pack();

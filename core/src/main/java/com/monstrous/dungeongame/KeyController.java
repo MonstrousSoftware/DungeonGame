@@ -24,26 +24,34 @@ public class KeyController extends InputAdapter {
 
     @Override
     public boolean keyDown(int keycode) {
+        System.out.println("keydown: "+keycode);
         // left/right keys translate to -x/+x
         // up/down to +y/-y
         //
-        if(!preAction())
-            return true;
+
         boolean done = false;
         switch(keycode){
             case Input.Keys.LEFT:
+                if(!preAction())
+                    return true;
                 tryMoveRogue(-1, 0, Direction.WEST);
                 done = true;
                 break;
             case Input.Keys.RIGHT:
+                if(!preAction())
+                    return true;
                 tryMoveRogue(1, 0, Direction.EAST);
                 done = true;
                 break;
             case Input.Keys.UP:
+                if(!preAction())
+                    return true;
                 tryMoveRogue(0, 1, Direction.NORTH);
                 done = true;
                 break;
             case Input.Keys.DOWN:
+                if(!preAction())
+                    return true;
                 tryMoveRogue(0, -1, Direction.SOUTH);
                 done = true;
                 break;
@@ -55,8 +63,9 @@ public class KeyController extends InputAdapter {
 
     @Override
     public boolean keyTyped(char character) {
+        System.out.println("keytyped: "+character);
         if (world.rogue.stats.hitPoints <= 0) {
-            if (character == 'R') {
+            if (character == 'r') {
                 restart();
                 return true;
             }
@@ -94,7 +103,7 @@ public class KeyController extends InputAdapter {
 
     private void digestFood(){
         System.out.println("food: "+world.rogue.stats.food);
-        world.rogue.stats.food -= 2;
+        world.rogue.stats.food --;
         if(world.rogue.stats.food == 20)
             MessageBox.addLine("You feel hungry.");
         else if(world.rogue.stats.food == 6)
@@ -102,7 +111,7 @@ public class KeyController extends InputAdapter {
         else if(world.rogue.stats.food == 0){
             MessageBox.addLine("You're so faint you can't move.");
             frozenTimer = 5;
-            world.rogue.stats.food = 30;
+            world.rogue.stats.food = CharacterStats.REPLENISH_FOOD;
         }
     }
 
@@ -225,8 +234,7 @@ public class KeyController extends InputAdapter {
     private boolean processEquipChoice(int character){
         equipMode = false;
         if(character >= '0' && character <= '9'){
-            equipSlot(character - '0');
-            return true;
+            equipSlot(slotNumber(character));
         }
         return false;
     }
@@ -263,8 +271,7 @@ public class KeyController extends InputAdapter {
     private boolean processDropChoice(int character){
         dropMode = false;
         if(character >= '0' && character <= '9'){
-            dropSlot(character - '0');
-            return true;
+            dropSlot(slotNumber(character));
         }
         return false;
     }
@@ -277,10 +284,13 @@ public class KeyController extends InputAdapter {
     private boolean processUseChoice(int character){
         useMode = false;
         if(character >= '0' && character <= '9'){
-            useSlot(character - '0');
-            return true;
+            useSlot(slotNumber(character));
         }
         return false;
+    }
+
+    private int slotNumber(int k){
+        return ((k-'0')+9) % 10;    // '1', '2', '3' maps to 0,1,2
     }
 
     private void equipSlot(int slotNr ){
@@ -301,20 +311,6 @@ public class KeyController extends InputAdapter {
         scenes.adaptModel(world.rogue.scene, world.rogue.stats);
 
     }
-
-//    private void readSlot(int slotNr ){
-//        Inventory.Slot slot = world.rogue.stats.inventory.slots[slotNr];
-//        if(slot.isEmpty())
-//            return;
-//        if(slot.object.type == GameObjectTypes.spellBookClosed) {
-//            slot.object.type = GameObjectTypes.spellBookOpen;
-//            readSpell();
-//        } else if(slot.object.type == GameObjectTypes.spellBookOpen) {
-//            MessageBox.addLine("Can only read spell book once.");
-//        } else {
-//            MessageBox.addLine("Can't read "+slot.object.type.name+".");
-//        }
-//    }
 
     private void dropSlot(int slotNr ){
         Inventory.Slot slot = world.rogue.stats.inventory.slots[slotNr];
