@@ -13,6 +13,8 @@ public class KeyController extends InputAdapter {
     private boolean useMode;
     private boolean confirmMode;
     private int frozenTimer;
+    private int regenTimer;
+
 
     public KeyController(World world, DungeonScenes scenes) {
         this.world = world;
@@ -20,6 +22,7 @@ public class KeyController extends InputAdapter {
         equipMode = false;
         dropMode = false;
         useMode = false;
+        regenTimer = 10;
     }
 
     @Override
@@ -94,6 +97,11 @@ public class KeyController extends InputAdapter {
 
     // arrive here after having made a move
     private void wrapUp(){
+        if(--regenTimer <= 0){
+            regenTimer = Math.max(20-world.level, 3);
+            if(world.rogue.stats.hitPoints < CharacterStats.MAX_HITPOINTS)
+                world.rogue.stats.hitPoints++;
+        }
         world.enemies.step(scenes);     // move enemies
         digestFood();
         if (world.rogue.stats.hitPoints <= 0) {
