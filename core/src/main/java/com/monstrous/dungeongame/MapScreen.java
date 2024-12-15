@@ -51,18 +51,18 @@ public class MapScreen extends ScreenAdapter {
             return;
         }
 
-//        if(Gdx.input.isKeyJustPressed(Input.Keys.L)){
-//            world.levelDown();
-//            viewport.setWorldSize(world.map.mapWidth, world.map.mapHeight);
-//            viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
-//            System.out.println("seed: "+world.seed+ " level: "+world.level);
-//        }
-//        if(Gdx.input.isKeyJustPressed(Input.Keys.K)){
-//            world.levelUp();
-//            viewport.setWorldSize(world.map.mapWidth, world.map.mapHeight);
-//            viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
-//            System.out.println("seed: "+world.seed+ " level: "+world.level);
-//        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.L)){
+            world.levelDown();
+            viewport.setWorldSize(world.map.mapWidth, world.map.mapHeight);
+            viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
+            System.out.println("seed: "+world.seed+ " level: "+world.level);
+        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.K)){
+            world.levelUp();
+            viewport.setWorldSize(world.map.mapWidth, world.map.mapHeight);
+            viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
+            System.out.println("seed: "+world.seed+ " level: "+world.level);
+        }
 
         viewport.setWorldSize(world.map.mapWidth, world.map.mapHeight);
         viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
@@ -129,7 +129,8 @@ public class MapScreen extends ScreenAdapter {
                     shapeRenderer.setColor(Color.BLUE);
                     shapeRenderer.rect(x + m, y + m, 1, 1);
                 }
-                if(cell == TileType.WALL || cell == TileType.WALL_T_SPLIT || cell == TileType.WALL_CORNER ) {
+                if(cell == TileType.WALL || cell == TileType.WALL_T_SPLIT || cell == TileType.WALL_CORNER ||
+                    cell == TileType.WALL_CROSSING) {
                     shapeRenderer.setColor(Color.DARK_GRAY);
                     shapeRenderer.rect(x + m, y + m, 1, 1);
                 }
@@ -171,10 +172,19 @@ public class MapScreen extends ScreenAdapter {
         }
         shapeRenderer.end();
 
+        // goodies
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(Color.ORANGE);
+        for(GameObject item : world.gameObjects.gameObjects) {
+            if(!item.type.isEnemy)
+                shapeRenderer.circle(item.x + m + .5f, item.y + m + .5f, 0.3f);
+        }
+        shapeRenderer.end();
+
         // minimum spanning tree
 //        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 //        shapeRenderer.setColor(Color.RED);
-//        for(Room room: map.rooms){
+//        for(Room room: world.map.rooms){
 //            for(Room nbor : room.closeNeighbours) {
 //                shapeRenderer.line(room.centre.x + m, room.centre.y + m, nbor.centre.x + m, nbor.centre.y + m);
 //            }

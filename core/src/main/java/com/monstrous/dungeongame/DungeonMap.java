@@ -554,12 +554,18 @@ public class DungeonMap implements Disposable {
                 switch(grid[ny][nx]){
                     case VOID:     cost += 5; break;
                     case ROOM:      cost += 10; break;
-                    case CORRIDOR:  cost += 1; break;
+                    case CORRIDOR:  cost += 1; break;       // preferred
                     case WALL:      cost += 20; break;
-                    case WALL_CORNER:    cost += 500; break;
-                    case STAIRS_DOWN:    cost += 500; break;        // never path via a staircase
-                    case STAIRS_DOWN_DEEP:    cost += 500; break;        // never path via a staircase
-                    case STAIRS_UP:      cost += 500; break;
+
+                    // never path through the following tiles:
+                    case WALL_CORNER:
+                    case WALL_T_SPLIT:
+                    case WALL_CROSSING:
+                    case STAIRS_DOWN:
+                    case STAIRS_DOWN_DEEP:
+                    case STAIRS_UP:
+                    case STAIRS_UP_HIGH:
+                        cost += 500; break;
                 }
                 Node nbor = null;
                 for(Node n : fringe){

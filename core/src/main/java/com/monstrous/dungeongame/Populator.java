@@ -7,7 +7,8 @@ public class Populator {
 
     public static void distributeGoodies(DungeonMap map, GameObjects gameObjects ){
 
-        int count = MathUtils.random(50, 105);        // nr of drops
+        int numRooms = map.rooms.size;
+        int count = MathUtils.random(numRooms/2, numRooms);        // nr of drops depends on nr of rooms
         int attempts = 0;
         while(true){
             attempts++;
@@ -19,8 +20,8 @@ public class Populator {
             if(room.isStairWell)
                 continue;
             // find a point inside the room (edges are walls)
-            int rx = MathUtils.random(1, room.width-3);
-            int ry = MathUtils.random(1, room.height-3);
+            int rx = MathUtils.random(1, room.width-1);
+            int ry = MathUtils.random(1, room.height-1);
             GameObject occupant = gameObjects.getOccupant(room.x+rx, room.y+ry);
             if(occupant != null)
                 continue;
@@ -71,7 +72,8 @@ public class Populator {
     public static void distributeEnemies(DungeonMap map, GameObjects gameObjects, Enemies enemies ){
 
         enemies.clear();
-        int count = MathUtils.random(2, 10);        //nr of drops
+        int numRooms = map.rooms.size;
+        int count = MathUtils.random(numRooms/4, numRooms*numRooms/4);        // nr of drops depends on nr of rooms
         int attempts = 0;
         while(true){
             attempts++;
@@ -83,8 +85,8 @@ public class Populator {
             if(room.isStairWell)
                 continue;
             // find a point inside the room (edges are walls)
-            int rx = MathUtils.random(1, room.width-3);
-            int ry = MathUtils.random(1, room.height-3);
+            int rx = MathUtils.random(1, room.width-1);
+            int ry = MathUtils.random(1, room.height-1);
 
             GameObject occupant = gameObjects.getOccupant(room.x+rx, room.y+ry);
             if(occupant != null)

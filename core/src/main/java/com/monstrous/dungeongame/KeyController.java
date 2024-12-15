@@ -377,7 +377,13 @@ public class KeyController extends InputAdapter {
         MessageBox.addLine("You drink the "+potion.type.name+".");
         if(potion.type == GameObjectTypes.bottle_A_brown){
             world.rogue.stats.increasedAwareness = 100;
-            MessageBox.addLine("Your awareness is increased");
+            MessageBox.addLine("Your awareness is increased.");
+        } else if(potion.type == GameObjectTypes.bottle_C_green){
+            world.rogue.stats.hitPoints = Math.max(0, world.rogue.stats.hitPoints-50);
+            MessageBox.addLine("It is poison. You lose health.");
+        } else if(potion.type == GameObjectTypes.bottle_B_green){
+            world.rogue.stats.hitPoints = Math.max(CharacterStats.MAX_HITPOINTS, world.rogue.stats.hitPoints+3);
+            MessageBox.addLine("You feel invigorated.");
         } else {
             MessageBox.addLine("It has no effect.");
         }
