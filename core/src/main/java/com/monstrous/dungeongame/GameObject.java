@@ -139,6 +139,10 @@ public class GameObject {
             if (item.type == GameObjectTypes.gold) {
                 stats.gold += item.quantity;
             }
+            if (item.type == GameObjectTypes.bigSword) {
+                MessageBox.addLine("This is what you came for!");
+                MessageBox.addLine("Now return it to the surface.");
+            }
         }
     }
 

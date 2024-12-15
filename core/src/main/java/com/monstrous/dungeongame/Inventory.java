@@ -82,4 +82,12 @@ public class Inventory {
         assert slot >= 0 && slot < NUM_SLOTS;
         return slots[slot].removeItem();
     }
+
+    public boolean contains( GameObjectType type ){
+        for(int i = 0; i < NUM_SLOTS; i++) {
+            if(!slots[i].isEmpty() && slots[i].object.type == type)
+                return true;
+        }
+        return false;
+    }
 }

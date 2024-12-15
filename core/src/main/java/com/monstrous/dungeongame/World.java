@@ -38,6 +38,12 @@ public class World {
         level--;
         map.dispose();
         generateLevel();
+        if(level == 0 && rogue.stats.inventory.contains(GameObjectTypes.bigSword)) {
+            MessageBox.addLine("Congratulations!");
+            MessageBox.addLine("The Sword of Yobled was recovered.");
+            MessageBox.addLine("You have finished the game!");
+            // todo more fanfare
+        }
     }
 
     public void restart(){
@@ -55,7 +61,7 @@ public class World {
         MathUtils.random.setSeed(seed);
         // set level where the sword can be found
         swordLevel = 5 + MathUtils.random(0,2);
-        swordLevel = 0;
+        //swordLevel = 1;
     }
 
     private void generateLevel(){
