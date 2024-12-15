@@ -37,8 +37,10 @@ public class KeyController extends InputAdapter {
         // up/down to +y/-y
         //
 
-        if(throwDirectionMode)
+        if(throwDirectionMode) {
             processThrowDirectionChoice(keycode);
+            return true;
+        }
 
         boolean done = false;
         switch(keycode){
@@ -346,7 +348,31 @@ public class KeyController extends InputAdapter {
 
     private boolean throwIt(int slotNr, int dx, int dy, Direction dir){
         System.out.println("Throw "+slotNr+" to dx:"+dx+", dy:"+dy);
-        return true;
+
+        Inventory.Slot slot = world.rogue.stats.inventory.slots[slotNr];
+        if(slot.isEmpty())
+            return true;
+        // turn rogue in direction of throw
+        scenes.turnObject(world.rogue, dir, world.rogue.x, world.rogue.y);
+        GameObject item = slot.removeItem();
+        MessageBox.addLine("You throw "+item.type.name+".");
+        int tx = world.rogue.x;
+        int ty = world.rogue.y;
+        while(true) {
+            int nx = tx + dx;
+            int ny = ty + dy;
+            if(nx < 0 || nx > world.map.mapWidth || ny < 0 || ny > world.map.mapHeight)
+                return true;
+            // move as long as we are over floor or corridor
+            // i.e. don't go through walls
+            TileType tile = world.map.getGrid(nx, ny);
+            if(tile != TileType.ROOM && tile != TileType.CORRIDOR) {
+                scenes.placeObject(world.gameObjects, item.type, tx, ty);
+                return true;
+            }
+            tx = nx;
+            ty = ny;
+        }
     }
 
     private int slotNumber(int k){
@@ -423,20 +449,18 @@ public class KeyController extends InputAdapter {
 
     private void drinkPotion(GameObject potion){
         MessageBox.addLine("You drink the "+potion.type.name+".");
-        world.rogue.stats.hitPoints = Math.max(0, world.rogue.stats.hitPoints-50);
-        MessageBox.addLine("It is poison. You lose health.");
-//        if(potion.type == GameObjectTypes.bottle_A_brown){
-//            world.rogue.stats.increasedAwareness = 100;
-//            MessageBox.addLine("Your awareness is increased.");
-//        } else if(potion.type == GameObjectTypes.bottle_C_green){
-//            world.rogue.stats.hitPoints = Math.max(0, world.rogue.stats.hitPoints-50);
-//            MessageBox.addLine("It is poison. You lose health.");
-//        } else if(potion.type == GameObjectTypes.bottle_B_green){
-//            world.rogue.stats.hitPoints = Math.max(CharacterStats.MAX_HITPOINTS, world.rogue.stats.hitPoints+3);
-//            MessageBox.addLine("You feel invigorated.");
-//        } else {
-//            MessageBox.addLine("It has no effect.");
-//        }
+        if(potion.type == GameObjectTypes.bottle_A_brown){
+            world.rogue.stats.increasedAwareness = 100;
+            MessageBox.addLine("Your awareness is increased.");
+        } else if(potion.type == GameObjectTypes.bottle_C_green){
+            world.rogue.stats.hitPoints = Math.max(0, world.rogue.stats.hitPoints-50);
+            MessageBox.addLine("It is poison. You lose health.");
+        } else if(potion.type == GameObjectTypes.bottle_B_green){
+            world.rogue.stats.hitPoints = Math.max(CharacterStats.MAX_HITPOINTS, world.rogue.stats.hitPoints+3);
+            MessageBox.addLine("You feel invigorated.");
+        } else {
+            MessageBox.addLine("It has no effect.");
+        }
         // todo some effect
     }
 }
