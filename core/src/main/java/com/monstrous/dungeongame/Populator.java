@@ -67,6 +67,7 @@ public class Populator {
 
     public static void distributeEnemies(DungeonMap map, GameObjects gameObjects, Enemies enemies ){
 
+        enemies.clear();
         int count = MathUtils.random(2, 10);        //nr of drops
         int attempts = 0;
         while(true){
