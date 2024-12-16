@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 
 
 // Filter class for post-processing shader effects
@@ -21,7 +22,11 @@ public class Filter implements Disposable {
         public Filter() {
             batch = new SpriteBatch();
             bufferCam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-            shader = null;      // set a shader in derived classes
+            shader = new ShaderProgram(
+                    Gdx.files.internal("shaders\\vignette.vertex.glsl"),
+                    Gdx.files.internal("shaders\\vignette.fragment.glsl"));
+             if (!shader.isCompiled())
+                    throw new GdxRuntimeException(shader.getLog());
         }
 
         public void resize(int width, int height ) {
