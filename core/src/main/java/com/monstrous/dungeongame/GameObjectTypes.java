@@ -24,6 +24,7 @@ public class GameObjectTypes implements Disposable {
     public static GameObjectType shield1;
     public static GameObjectType shield2;
     public static GameObjectType arrows;
+    public static GameObjectType arrow;
 
     public static GameObjectType spellBookOpen;
     public static GameObjectType spellBookClosed;
@@ -118,7 +119,17 @@ public class GameObjectTypes implements Disposable {
         arrows.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/arrow_bundle.gltf"));
         arrows.z = 1f;
         arrows.isCountable = true;
+        arrows.isArrow = true;
         types.add(arrows);
+
+        arrow = new GameObjectType("an arrow", false, true);
+        arrow.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/arrow.gltf"));
+        arrow.z = 1f;
+        arrow.isCountable = true;
+        arrow.isArrow = true;
+        types.add(arrow);
+        arrows.alternative = arrow; // to change model as quantity drops to 1
+        arrow.alternative = arrows;
 
         spellBookClosed = new GameObjectType("a Spellbook", false, true);
         spellBookClosed.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_closed.gltf"));
@@ -128,7 +139,7 @@ public class GameObjectTypes implements Disposable {
         spellBookOpen = new GameObjectType("a Spellbook (open)", false, true);
         spellBookOpen.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_open.gltf"));
         types.add(spellBookOpen);
-        spellBookClosed.openedType = spellBookOpen;
+        spellBookClosed.alternative = spellBookOpen;
 
         spellBookClosedB = new GameObjectType("a Spellbook", false, true);
         spellBookClosedB.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_closed_B.gltf"));
@@ -138,7 +149,7 @@ public class GameObjectTypes implements Disposable {
         spellBookOpenB = new GameObjectType("a Spellbook (open)", false, true);
         spellBookOpenB.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_open_B.gltf"));
         types.add(spellBookOpenB);
-        spellBookClosedB.openedType = spellBookOpenB;
+        spellBookClosedB.alternative = spellBookOpenB;
 
         spellBookClosedC = new GameObjectType("a Spellbook", false, true);
         spellBookClosedC.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_closed_C.gltf"));
@@ -148,7 +159,7 @@ public class GameObjectTypes implements Disposable {
         spellBookOpenC = new GameObjectType("a Spellbook (open)", false, true);
         spellBookOpenC.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_open_C.gltf"));
         types.add(spellBookOpenC);
-        spellBookClosedC.openedType = spellBookOpenC;
+        spellBookClosedC.alternative = spellBookOpenC;
 
         spellBookClosedD = new GameObjectType("a Spellbook", false, true);
         spellBookClosedD.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_closed_D.gltf"));
@@ -158,7 +169,7 @@ public class GameObjectTypes implements Disposable {
         spellBookOpenD = new GameObjectType("a Spellbook (open)", false, true);
         spellBookOpenD.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_open_D.gltf"));
         types.add(spellBookOpenD);
-        spellBookClosedD.openedType = spellBookOpenD;
+        spellBookClosedD.alternative = spellBookOpenD;
 
         food = new GameObjectType("a plate of food", false, true);
         food.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/plate_food_B.gltf"));

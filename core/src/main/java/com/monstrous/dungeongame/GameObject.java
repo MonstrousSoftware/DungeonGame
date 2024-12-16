@@ -168,9 +168,9 @@ public class GameObject {
         else if(type == GameObjectTypes.explosive) {
             hp = 10;
         }
-        else if(type == GameObjectTypes.arrows) {
+        else if(type == GameObjectTypes.arrow) {
             // if crossbow is equipped arrows do more damage
-            if(thrower.stats.weaponItem.type == GameObjectTypes.crossbow)
+            if(thrower.stats.weaponItem != null && thrower.stats.weaponItem.type == GameObjectTypes.crossbow)
                 hp = 10;
             else
                 hp = 3;

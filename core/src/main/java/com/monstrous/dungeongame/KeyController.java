@@ -128,7 +128,7 @@ public class KeyController extends InputAdapter {
     }
 
     private void digestFood(){
-        System.out.println("food: "+world.rogue.stats.food);
+        //System.out.println("food: "+world.rogue.stats.food);
         world.rogue.stats.food --;
         if(world.rogue.stats.food == 20)
             MessageBox.addLine("You feel hungry.");
@@ -355,6 +355,7 @@ public class KeyController extends InputAdapter {
             return true;
         // turn rogue in direction of throw
         scenes.turnObject(world.rogue, dir, world.rogue.x, world.rogue.y);
+        // take item from inventory slot
         GameObject item = slot.removeItem();
         MessageBox.addLine("You throw "+item.type.name+".");
         if(item.type.isGold)
@@ -379,7 +380,7 @@ public class KeyController extends InputAdapter {
             TileType tile = world.map.getGrid(nx, ny);
             if(!TileType.walkable(tile,  world.map.getGrid(tx, ty))) {
                 // drop item short of the wall
-                scenes.placeObject(world.gameObjects, item.type, tx, ty);
+                scenes.dropObject(world.map, world.gameObjects, item, tx, ty);
                 return true;
             }
             tx = nx;
@@ -418,7 +419,7 @@ public class KeyController extends InputAdapter {
         if(item.type.isGold)
             world.rogue.stats.gold -= item.quantity;
         MessageBox.addLine("You dropped "+item.type.name+".");
-        scenes.placeObject(world.gameObjects, item.type, world.rogue.x, world.rogue.y);
+        scenes.dropObject(world.map, world.gameObjects, item, world.rogue.x, world.rogue.y);
     }
 
 
@@ -435,7 +436,7 @@ public class KeyController extends InputAdapter {
             drinkPotion(potion);
         } else if(slot.object.type.isSpellBook) {
             readSpell(slot.object.type);
-            slot.object.type = slot.object.type.openedType;
+            slot.object.type = slot.object.type.alternative;
 
         } else if(slot.object.type == GameObjectTypes.spellBookOpen) {
             MessageBox.addLine("Can only read spell book once.");

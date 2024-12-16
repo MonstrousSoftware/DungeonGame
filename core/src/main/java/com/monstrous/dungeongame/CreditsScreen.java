@@ -31,6 +31,7 @@ public class CreditsScreen extends ScreenAdapter {
         screenTable.setFillParent(true);
 
         Label title = new Label("About Desperately Dangerous Dungeons", skin);
+        title.setColor(Color.GOLD);
         screenTable.add(title).pad(20).center();
         screenTable.row();
 

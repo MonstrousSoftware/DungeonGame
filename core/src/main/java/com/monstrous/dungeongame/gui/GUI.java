@@ -36,7 +36,6 @@ public class GUI implements Disposable {
 
     public GUI( World world ) {
         this.world = world;
-//        skin = new Skin(Gdx.files.internal("blue-pixel-skin/blue-pixel.json"));
         skin = new Skin(Gdx.files.internal("skin/d3.json"));
         stage = new Stage(new ScreenViewport());
         sb = new StringBuffer();
@@ -62,14 +61,18 @@ public class GUI implements Disposable {
         gold = new Label("GOLD: 0", skin,"small");
         hp = new Label("HP: 0", skin,"small");
         xp = new Label("XP: 0", skin,"small");
-        //gold.setColor(Color.GOLD);
-        uiPanel.add(level).padLeft(8).padTop(10).left().top().expandX();
+        level.setColor(Color.LIGHT_GRAY);
+        gold.setColor(Color.GOLD);
+        hp.setColor(Color.GREEN);
+        xp.setColor(Color.PURPLE);
+
+        uiPanel.add(level).pad(30, 40, 10, 10).left().top().expandX();
         uiPanel.row();
-        uiPanel.add(gold).padLeft(8).left().top().expandX();
+        uiPanel.add(gold).pad(10, 40, 5, 10).left().top().expandX();
         uiPanel.row();
-        uiPanel.add(hp).padLeft(8).left().top().expandX();
+        uiPanel.add(hp).pad(10, 40, 5, 10).left().top().expandX();
         uiPanel.row();
-        uiPanel.add(xp).padLeft(8).left().top().expandX();
+        uiPanel.add(xp).pad(10, 40, 5, 10).left().top().expandX();
         uiPanel.row();
 
         Table eq = new Table();
@@ -86,6 +89,7 @@ public class GUI implements Disposable {
         eq.add(armour).pad(5).left().top();
         eq.pack();
 
+        uiPanel.setHeight(stage.getHeight());
         uiPanel.add(eq).center();
         uiPanel.row();
 
@@ -103,7 +107,9 @@ public class GUI implements Disposable {
         uiPanel.add(messageBox).pad(10).top().left().expand();
         uiPanel.row();
 
-        uiPanel.add(new Label("Press H for help", skin, "smaller")).pad(30).bottom().expandY();
+        Label helpLabel = new Label("Press H for help", skin, "smaller");
+        helpLabel.setColor(Color.GRAY);
+        uiPanel.add(helpLabel).pad(30).bottom().right();
         uiPanel.pack();
 
         // Screen is split in 2 columns. Left for 3d view and Right for fixed width ui panel
@@ -111,7 +117,7 @@ public class GUI implements Disposable {
         screenTable.setFillParent(true);
 
         screenTable.add().expand();         // empty column
-        screenTable.add(uiPanel).width(PANEL_WIDTH).top();
+        screenTable.add(uiPanel).width(PANEL_WIDTH).height(stage.getHeight()).top();
         screenTable.row();
 
         screenTable.pack();

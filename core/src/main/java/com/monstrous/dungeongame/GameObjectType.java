@@ -15,8 +15,9 @@ public class GameObjectType {
     public boolean isEdible;
     public boolean isPotion;
     public boolean isGold;
+    public boolean isArrow;
     public boolean isSpellBook;
-    public GameObjectType openedType;
+    public GameObjectType alternative;
     public SceneAsset sceneAsset;
     public int initXP;
     public float z;     // height to render at when place on the ground (to avoid some model being inside the floor)
@@ -35,6 +36,7 @@ public class GameObjectType {
         this.isEdible = false;
         this.isPotion = false;
         this.isGold = false;
+        this.isArrow = false;
         this.isSpellBook = false;
     }
 }

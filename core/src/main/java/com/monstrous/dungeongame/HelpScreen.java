@@ -39,6 +39,7 @@ public class HelpScreen  extends ScreenAdapter {
         screenTable.setFillParent(true);
 
         Label title = new Label("Desperately Dangerous Dungeons", skin);
+        title.setColor(Color.GOLD);
         screenTable.add(title).pad(20).center();
         screenTable.row();
         Label version = new Label(VERSION, skin, "smaller");
@@ -54,11 +55,13 @@ public class HelpScreen  extends ScreenAdapter {
 
 
         Label keyLabel = new Label("Keys:", skin, "small");
+        keyLabel.setColor(Color.CYAN);
         keyLabel.setText("KEYS:\n  Arrow keys to move\n  SPACE : rest\n  U + digit : use\n  D + digit : drop\n  E + digit : equip\n  T+digit+arrow : throw\n  Z, C : turn\n  M : map\n  R : restart\n");
         screenTable.add(keyLabel).pad(20).center();
         screenTable.row();
 
-        screenTable.add(new Label("Press C for Credits", skin, "small")).pad(20).center();
+        screenTable.add(new Label("Press C for Credits", skin, "small")).pad(10).center();
+        screenTable.row();
         screenTable.add(new Label("Press H to return", skin, "small")).pad(20).center();
         screenTable.pack();
 

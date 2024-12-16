@@ -19,16 +19,24 @@ public class Inventory {
 
         // may return null if slot was empty
         public GameObject removeItem() {
-            if(count <= 0)
-                 return null;
+            if (count <= 0)
+                return null;
             count--;
             GameObject item;
-            if(count == 0) {
-                item = object;
+            if (count == 0) {
+                item = object;      // return object from the slot
+                item.quantity = 1;
                 object = null;
+            } else {
+                // return new object of same type as in the slot
+                GameObjectType type = object.type;
+                if (object.type == GameObjectTypes.arrows) {
+                    type = type.alternative; // extract a single arrow
+                    if(count == 1)
+                        object.type = object.type.alternative;            // change slot icon to singular arrow
+                }
+                item = new GameObject(type, 0, 0, Direction.NORTH);
             }
-            else
-                item = new GameObject(object.type, 0, 0, Direction.NORTH);
             return item;
         }
 
@@ -42,6 +50,9 @@ public class Inventory {
                 object = item;
             }
             count+=item.quantity;
+
+            if(object.type.isArrow && count > 1)
+                object.type = GameObjectTypes.arrows;  // bundle of arrows
         }
     }
 
@@ -60,6 +71,11 @@ public class Inventory {
         if(type.isCountable) {
             for (int i = 0; i < NUM_SLOTS; i++) {
                 if (!slots[i].isEmpty() && slots[i].object.type == type) {
+                    slots[i].addItem(item);
+                    Gdx.app.log("Inventory", "slot " + i + " type: " + type.name + " count:" + slots[i].count);
+                    return true;
+                }
+                if (!slots[i].isEmpty() && slots[i].object.type.isArrow && item.type.isArrow) {
                     slots[i].addItem(item);
                     Gdx.app.log("Inventory", "slot " + i + " type: " + type.name + " count:" + slots[i].count);
                     return true;

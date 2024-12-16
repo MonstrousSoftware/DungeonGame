@@ -34,6 +34,21 @@ public enum TileType {
         return false;
     }
 
+    public static boolean droppable(TileType cell){
+        switch(cell){
+            case ROOM:
+            case CORRIDOR:
+            case DOORWAY:
+            case STAIRS_DOWN:
+            case STAIRS_UP:
+
+                return true;
+            default:
+                break;
+        }
+        return false;
+    }
+
     public static boolean hasFloor(TileType cell){
         switch(cell){
             case VOID:
