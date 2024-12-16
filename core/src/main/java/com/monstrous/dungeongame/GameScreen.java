@@ -36,7 +36,6 @@ public class GameScreen extends ScreenAdapter {
     private Cubemap environmentCubemap;
     private Cubemap specularCubemap;
     private Texture brdfLUT;
-    private DirectionalLightEx light;
     private DungeonScenes dungeonScenes;
     private OrthoCamController camController;
     private KeyController keyController;
@@ -153,6 +152,10 @@ public class GameScreen extends ScreenAdapter {
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.H)){
             game.setScreen( new HelpScreen(game) );
+            return;
+        }
+        else if(Gdx.input.isKeyJustPressed(Input.Keys.SLASH)){
+            game.setScreen( new CreditsScreen(game) );
             return;
         }
 

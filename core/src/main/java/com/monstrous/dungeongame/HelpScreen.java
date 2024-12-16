@@ -19,7 +19,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class HelpScreen  extends ScreenAdapter {
 
-    public final static String VERSION = "version 0.1 15/12/2024";
+    public final static String VERSION = "version 1.0 16/12/2024";
 
     private Main game;
     private Skin skin;
@@ -54,10 +54,11 @@ public class HelpScreen  extends ScreenAdapter {
 
 
         Label keyLabel = new Label("Keys:", skin, "small");
-        keyLabel.setText("KEYS:\n  Arrow keys to move\n  SPACE : rest\n  U + digit : use\n  D + digit : drop\n  E + digit : equip\n  T+digit+arrow : throw\nZ, C : turn\n  M : map\n  R : restart\n");
+        keyLabel.setText("KEYS:\n  Arrow keys to move\n  SPACE : rest\n  U + digit : use\n  D + digit : drop\n  E + digit : equip\n  T+digit+arrow : throw\n  Z, C : turn\n  M : map\n  R : restart\n");
         screenTable.add(keyLabel).pad(20).center();
         screenTable.row();
 
+        screenTable.add(new Label("Press C for Credits", skin, "small")).pad(20).center();
         screenTable.add(new Label("Press H to return", skin, "small")).pad(20).center();
         screenTable.pack();
 
@@ -69,6 +70,10 @@ public class HelpScreen  extends ScreenAdapter {
 
     @Override
     public void render(float deltaTime) {
+        if(Gdx.input.isKeyJustPressed(Input.Keys.C)){
+            game.setScreen( new CreditsScreen(game) );
+            return;
+        }
         if(Gdx.input.isKeyJustPressed(Input.Keys.H)){
             game.setScreen( new GameScreen(game) );
             return;
