@@ -23,6 +23,7 @@ public class GameObjectTypes implements Disposable {
     public static GameObjectType explosive;
     public static GameObjectType shield1;
     public static GameObjectType shield2;
+    public static GameObjectType arrows;
 
     public static GameObjectType spellBookOpen;
     public static GameObjectType spellBookClosed;
@@ -112,6 +113,12 @@ public class GameObjectTypes implements Disposable {
         shield2.z = 1f;
         shield2.isArmour = true;
         types.add(shield2);
+
+        arrows = new GameObjectType("arrows", false, true);
+        arrows.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/arrow_bundle.gltf"));
+        arrows.z = 1f;
+        arrows.isCountable = true;
+        types.add(arrows);
 
         spellBookClosed = new GameObjectType("a Spellbook", false, true);
         spellBookClosed.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_closed.gltf"));

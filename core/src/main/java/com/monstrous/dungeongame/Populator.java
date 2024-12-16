@@ -28,7 +28,7 @@ public class Populator {
 
             GameObjectType type = null;
 
-                int goodieType = MathUtils.random(0, 19);
+                int goodieType = MathUtils.random(0, 21);
                 switch (goodieType) {
                     case 0:
                         type = GameObjectTypes.gold;
@@ -84,6 +84,10 @@ public class Populator {
                     case 19:
                         type = GameObjectTypes.spellBookClosedD;
                         break;
+                    case 20:
+                    case 21:
+                        type = GameObjectTypes.arrows;
+                        break;
                 }
 
 
@@ -97,6 +101,8 @@ public class Populator {
             occupant.quantity = 1;
             if(type == GameObjectTypes.gold)
                 occupant.quantity = MathUtils.random(1,20);
+            else if(type == GameObjectTypes.arrows)
+                occupant.quantity = MathUtils.random(5,10);
 
             count--;
             if(count == 0)
@@ -138,6 +144,7 @@ public class Populator {
             GameObject enemy = new GameObject(type, room.x+rx, room.y+ry, Direction.SOUTH);
             gameObjects.setOccupant(room.x+rx, room.y+ry, enemy);
             enemy.stats = new CharacterStats();
+            assert type != null;
             enemy.stats.experience = type.initXP;
             enemy.stats.gold = MathUtils.random(0,5);
             gameObjects.add(enemy);

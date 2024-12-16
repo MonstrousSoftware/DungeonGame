@@ -54,7 +54,7 @@ public class HelpScreen  extends ScreenAdapter {
 
 
         Label keyLabel = new Label("Keys:", skin, "small");
-        keyLabel.setText("KEYS:\n  Arrow keys to move\n  SPACE : rest\n  U + digit : use\n  D + digit : drop\n  E + digit : equip\n  Z, C : turn\n  M : map\n  R : restart\n");
+        keyLabel.setText("KEYS:\n  Arrow keys to move\n  SPACE : rest\n  U + digit : use\n  D + digit : drop\n  E + digit : equip\n  T+digit+arrow : throw\nZ, C : turn\n  M : map\n  R : restart\n");
         screenTable.add(keyLabel).pad(20).center();
         screenTable.row();
 

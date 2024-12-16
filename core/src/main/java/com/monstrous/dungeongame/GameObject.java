@@ -96,12 +96,19 @@ public class GameObject {
         }
     }
 
+//    private void steal(World world, DungeonScenes scenes, GameObject character ){
+//        if(character.stats.gold > 0){
+//            character.stats.inventory.takeAllGold();
+//
+//        }
+//
+//    }
+
 
     private void pickUp(World world, DungeonScenes scenes, GameObject item ){
         Gdx.app.log("Pickup", item.type.name);
 
         if(stats.inventory.addItem(item)){  // if there is room in the inventory
-            Sounds.pickup();
 
             String name = type.name;
             if(type.isPlayer)
@@ -111,6 +118,7 @@ public class GameObject {
             // otherwise report only on player actions
             //
             if(type.isPlayer || world.rogue.stats.increasedAwareness > 0) {
+                Sounds.pickup();
                 if (item.type.isCountable)
                     MessageBox.addLine(name + " picked up " + item.quantity + " " + item.type.name);
                 else
@@ -157,6 +165,16 @@ public class GameObject {
 
         if(type == GameObjectTypes.knife)
             hp = 3;
+        else if(type == GameObjectTypes.explosive) {
+            hp = 10;
+        }
+        else if(type == GameObjectTypes.arrows) {
+            // if crossbow is equipped arrows do more damage
+            if(thrower.stats.weaponItem.type == GameObjectTypes.crossbow)
+                hp = 10;
+            else
+                hp = 3;
+        }
         else if(type == GameObjectTypes.bottle_C_green){
             hp = 3;     // poison
         } else if(type == GameObjectTypes.bottle_B_green) {

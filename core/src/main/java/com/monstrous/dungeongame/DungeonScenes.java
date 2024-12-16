@@ -168,7 +168,7 @@ public class DungeonScenes implements Disposable {
             for(int y = 0; y < map.mapHeight; y++){
                 if(map.tileSeen[y][x]){
                     TileType cell = map.getGrid(x,y);
-                    if(cell != TileType.VOID){
+                    if(TileType.hasFloor(cell)){
                         Scene tile = new Scene(sceneAssetFloor.scene);
                         setTransform(tile.modelInstance.transform, x, y, 0, Direction.NORTH);
                         sceneManager.addScene(tile);
