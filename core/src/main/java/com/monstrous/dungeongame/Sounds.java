@@ -7,6 +7,7 @@ public class Sounds {
     private static Sound pickupSound;
     private static Sound fightSound;
     private static Sound monsterDeathSound;
+    private static Sound stomachRumbleSound;
 
 
     public static void pickup(){
@@ -25,6 +26,12 @@ public class Sounds {
         if(monsterDeathSound == null)
             monsterDeathSound = Gdx.audio.newSound(Gdx.files.internal("sounds/monster-death-grunt-131480.mp3"));
         monsterDeathSound.play();
+    }
+
+    public static void stomachRumble(){
+        if(stomachRumbleSound == null)
+            stomachRumbleSound = Gdx.audio.newSound(Gdx.files.internal("sounds/stomach-rumble-98381.mp3"));
+        stomachRumbleSound.play();
     }
 
 

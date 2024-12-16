@@ -37,37 +37,40 @@ public class KeyController extends InputAdapter {
         // up/down to +y/-y
         //
 
+        if (world.rogue.stats.hitPoints <= 0) { // player is dead
+            return false;
+        }
+
         if(throwDirectionMode) {
             processThrowDirectionChoice(keycode);
             return true;
         }
 
-        boolean done = false;
-        switch(keycode){
-            case Input.Keys.LEFT:
-                if(!preAction())
-                    return true;
-                tryMoveRogue(-1, 0, Direction.WEST);
-                done = true;
-                break;
-            case Input.Keys.RIGHT:
-                if(!preAction())
-                    return true;
-                tryMoveRogue(1, 0, Direction.EAST);
-                done = true;
-                break;
-            case Input.Keys.UP:
-                if(!preAction())
-                    return true;
-                tryMoveRogue(0, 1, Direction.NORTH);
-                done = true;
-                break;
-            case Input.Keys.DOWN:
-                if(!preAction())
-                    return true;
-                tryMoveRogue(0, -1, Direction.SOUTH);
-                done = true;
-                break;
+
+        boolean done = true;
+        if(frozenTimer > 0){    // still frozen?
+            frozenTimer--;
+        }
+        else {
+            done = false;
+            switch (keycode) {
+                case Input.Keys.LEFT:
+                    tryMoveRogue(-1, 0, Direction.WEST);
+                    done = true;
+                    break;
+                case Input.Keys.RIGHT:
+                    tryMoveRogue(1, 0, Direction.EAST);
+                    done = true;
+                    break;
+                case Input.Keys.UP:
+                    tryMoveRogue(0, 1, Direction.NORTH);
+                    done = true;
+                    break;
+                case Input.Keys.DOWN:
+                    tryMoveRogue(0, -1, Direction.SOUTH);
+                    done = true;
+                    break;
+            }
         }
         if(done)
             wrapUp();
@@ -76,7 +79,8 @@ public class KeyController extends InputAdapter {
 
     @Override
     public boolean keyTyped(char character) {
-        System.out.println("keytyped: "+character);
+        //System.out.println("keytyped: "+character);
+        // if player is dead, only accept restart command
         if (world.rogue.stats.hitPoints <= 0) {
             if (character == 'r') {
                 restart();
@@ -84,28 +88,22 @@ public class KeyController extends InputAdapter {
             }
             return false;
         }
-        if(!preAction())
-            return true;
 
-        boolean handled = processKey(character);
+        boolean handled = true;
+        if(frozenTimer > 0){    // still frozen?
+            frozenTimer--;
+        }
+        else {
+            handled = processKey(character);
+        }
         if (handled)
             wrapUp();
 
         return handled;
     }
 
-    private boolean preAction(){
-        if (world.rogue.stats.hitPoints <= 0) {
-            return false;
-        }
-        if(frozenTimer > 0){    // still frozen?
-            frozenTimer--;
-            return false;
-        }
-        return true;
-    }
 
-    // arrive here after having made a move
+    // arrive here after having made a move or skipping a turn
     private void wrapUp(){
         if(world.rogue.stats.increasedAwareness > 0){
             world.rogue.stats.increasedAwareness--;
@@ -130,11 +128,16 @@ public class KeyController extends InputAdapter {
     private void digestFood(){
         //System.out.println("food: "+world.rogue.stats.food);
         world.rogue.stats.food --;
-        if(world.rogue.stats.food == 20)
+        if(world.rogue.stats.food == 20) {
+            Sounds.stomachRumble();
             MessageBox.addLine("You feel hungry.");
-        else if(world.rogue.stats.food == 6)
+        }
+        else if(world.rogue.stats.food == 6) {
+            Sounds.stomachRumble();
             MessageBox.addLine("You're so hungry you feel faint.");
+        }
         else if(world.rogue.stats.food == 0){
+            Sounds.stomachRumble();
             MessageBox.addLine("You're so faint you can't move.");
             frozenTimer = 5;
             world.rogue.stats.food = CharacterStats.REPLENISH_FOOD;

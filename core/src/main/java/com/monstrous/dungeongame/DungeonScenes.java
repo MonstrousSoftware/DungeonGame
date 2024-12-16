@@ -151,12 +151,17 @@ public class DungeonScenes implements Disposable {
 
         world.map.tileSeen[y][x] = true;
 
+        Scene tile = new Scene(sceneAssetFloor.scene);
+        setTransform(tile.modelInstance.transform, x, y, 0, Direction.NORTH);
+        sceneManager.addScene(tile);
+
         TileType cell = world.map.getGrid(x,y);
-        if(cell != TileType.VOID){
-            Scene tile = new Scene(sceneAssetFloor.scene);
-            setTransform(tile.modelInstance.transform, x, y, 0, Direction.NORTH);
-            sceneManager.addScene(tile);
+        if(cell == TileType.DOORWAY){
+            Scene doorway = new Scene(sceneAssetDoorWay.scene);
+            setTransform(doorway.modelInstance.transform, x, y, 0, world.map.tileOrientation[y][x]);
+            sceneManager.addScene(doorway);
         }
+
         GameObject occupant = world.gameObjects.getOccupant(x,y);
         if(occupant != null && occupant.scene == null){
             addScene(occupant);
@@ -199,8 +204,8 @@ public class DungeonScenes implements Disposable {
         }
     }
 
-    private int[] dx = { 0, -1, 1, 0, 0 };
-    private int[] dy = { 0, 0, 0, -1, 1 };
+    private int[] dx = { 0, -1, 1, 0, 0, -1, -1, 1, 1 };
+    private int[] dy = { 0, 0, 0, -1, 1, 1, -1, 1, -1 };
 
     // drop item at location x,y
     // if there is already something there of the same type, add it to the pile
@@ -208,7 +213,7 @@ public class DungeonScenes implements Disposable {
     //
     public void dropObject(DungeonMap map, GameObjects gameObjects, GameObject item, int x, int y){
 
-        for(int offset = 0; offset < 5; offset++){
+        for(int offset = 0; offset < 9; offset++){
             int tx = x+dx[offset];
             int ty = y+dy[offset];
             TileType tile = map.getGrid(tx, ty);

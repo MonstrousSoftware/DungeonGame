@@ -23,7 +23,7 @@ public class CharacterStats {
         armour = 0;
         experience = 0;
         gold = 0;
-        food = MAX_FOOD;
+        food = 30;
         weaponItem = null;
         armourItem = null;
         inventory = new Inventory();

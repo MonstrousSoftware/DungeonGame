@@ -51,13 +51,13 @@ public enum TileType {
 
     public static boolean hasFloor(TileType cell){
         switch(cell){
-            case VOID:
-            case STAIRS_DOWN:
-            case STAIRS_DOWN_DEEP:
-                return false;
+            case ROOM:
+            case CORRIDOR:
+            case DOORWAY:
+                return true;
             default:
                 break;
         }
-        return true;
+        return false;
     }
 }
