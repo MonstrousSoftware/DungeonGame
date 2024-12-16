@@ -7,7 +7,7 @@ public class CharacterStats {
 
     public int hitPoints;
     public int strength;
-    public int armour;
+    //public int armour;
     public int experience;
     public int gold;
     public int food;
@@ -20,10 +20,10 @@ public class CharacterStats {
     public CharacterStats() {
         hitPoints = 5;
         strength = 10;
-        armour = 0;
+        //armour = 0;
         experience = 0;
         gold = 0;
-        food = 30;
+        food = MAX_FOOD;
         weaponItem = null;
         armourItem = null;
         inventory = new Inventory();

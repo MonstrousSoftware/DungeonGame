@@ -22,23 +22,29 @@ public class InventorySlotButton extends Button {
     public static final Color BACKGROUND_COLOUR = Color.DARK_GRAY;
 
     private final Label countLabel;
-    private int slotIndex;
+    private final Label buffLabel;
+    private Inventory.Slot slot;
     private Image image;
     private TextureRegionDrawable placeHolder;
     private GameObjectType currentType;
     private int count;
     private World world;
 
-    public InventorySlotButton(String text, Skin skin, final World world, final int slotIndex) {
+    public InventorySlotButton(Skin skin, final World world, Inventory.Slot slot) {
         super(skin, "slot");
         this.world = world;
-        this.slotIndex = slotIndex;
+        this.slot = slot;
         count = 0;
 
         Table countTable = new Table();
         countLabel = new Label("", skin, "small");
         countTable.add(countLabel).right().bottom().expandX().expandY();    // small number in bottom right hand side, we use the table to position the label
         countTable.pack();
+
+        Table buffTable = new Table();
+        buffLabel = new Label("", skin, "smaller");
+        buffTable.add(buffLabel).left().top().expandX().expandY();    //
+        buffTable.pack();
 
         currentType = null;
         placeHolder = makePlaceHolder();        // for empty slot
@@ -49,26 +55,15 @@ public class InventorySlotButton extends Button {
         Stack stack = new Stack();
         stack.add(image);
         stack.add(countTable);
+        stack.add(buffTable);
         add(stack).pad(3);
 
-//        addListener(new ClickListener() {
-//            @Override
-//            public void clicked(InputEvent event, float x, float y) {
-//                super.clicked(event, x, y);
-//                GameObjectType type = slot.removeItem();
-//                world.takeFromInventory(type);
-//                adjustCountIndicator();
-//            }
-//        });
     }
 
 
     // return true if slot contents has just changed
     public boolean update() {
 
-        Inventory inventory = world.rogue.stats.inventory;
-        Inventory.Slot slot = inventory.slots[slotIndex];
-        
         boolean updated = false;
 
         if(slot.count != this.count) {
@@ -76,6 +71,8 @@ public class InventorySlotButton extends Button {
             this.count = slot.count;
             updated = true;
         }
+
+        adjustBuffIndicator(slot);      // todo update only when changed
 
         // has the type changed? (type null means empty slot)
         if(slot.count == 0 && this.currentType != null){
@@ -98,6 +95,17 @@ public class InventorySlotButton extends Button {
             countLabel.setText("");         // don't show a 1 for uncountables
         else
             countLabel.setText(slot.count);
+    }
+
+    private void adjustBuffIndicator( Inventory.Slot slot) {
+        if(slot.count <= 0)
+            buffLabel.setText("");         // don't show a zero
+        if(count == 1){
+            if(slot.object.type.isArmour)
+                buffLabel.setText(slot.object.protection);
+        }
+        else
+            buffLabel.setText("");
     }
 
     private TextureRegionDrawable makePlaceHolder() {

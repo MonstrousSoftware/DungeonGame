@@ -28,7 +28,7 @@ public class Populator {
 
             GameObjectType type = null;
 
-                int goodieType = MathUtils.random(0, 21);
+                int goodieType = MathUtils.random(0, 5);
                 switch (goodieType) {
                     case 0:
                         type = GameObjectTypes.gold;
@@ -103,6 +103,8 @@ public class Populator {
                 occupant.quantity = MathUtils.random(1,20);
             else if(type == GameObjectTypes.arrows)
                 occupant.quantity = MathUtils.random(5,10);
+            else if(type.isArmour)
+                occupant.protection = type.initProtection + MathUtils.random(-2, 2);
 
             count--;
             if(count == 0)

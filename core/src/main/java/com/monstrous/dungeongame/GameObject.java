@@ -14,6 +14,7 @@ public class GameObject {
     public CharacterStats stats;        // only for rogue and enemies
     public int quantity;            // e.g. amount of gold for a gold object
     public GameObject attackedBy;       // normally null
+    public int protection;              // for armour
 
 
 
@@ -24,6 +25,7 @@ public class GameObject {
         this.direction = direction;
         this.quantity = 1;
         this.attackedBy = null;
+        this.protection = 0;
     }
 
     // NPC step
@@ -148,16 +150,25 @@ public class GameObject {
             verb = "stabs";
         }
         hp += stats.experience /10;     // to tune
-        other.stats.hitPoints = Math.max(0, other.stats.hitPoints-hp);
-        // with increased awareness player is informed of all events
-        if(type.isPlayer || world.rogue.stats.increasedAwareness > 0) {
-            MessageBox.addLine(type.name + " " + verb + " the " + other.type.name + "(HP: " + other.stats.hitPoints + ")");
+        if(other.stats.armourItem != null && other.stats.armourItem.protection > hp){
+            MessageBox.addLine("The " + other.type.name + " blocks the attack");
+            if(hp > 0) {
+                other.stats.armourItem.protection--;        // armour takes damage
+                MessageBox.addLine("The " + other.stats.armourItem.type.name + " takes damage.");
+            }
+        } else {
+            other.stats.hitPoints = Math.max(0, other.stats.hitPoints - hp);
+            // with increased awareness player is informed of all events
+            if (type.isPlayer || world.rogue.stats.increasedAwareness > 0) {
+                MessageBox.addLine(type.name + " " + verb + " the " + other.type.name + "(HP: " + other.stats.hitPoints + ")");
+            }
         }
         if(other.stats.hitPoints <= 0){
             defeat(world, scenes, other);
         }
     }
 
+    // something was thrown at the target
     public void hits(World world, DungeonScenes scenes, GameObject thrower, GameObject target){
         Sounds.fight();
 

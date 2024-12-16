@@ -63,17 +63,19 @@ public class GameObjectTypes implements Disposable {
         warrior = new GameObjectType("Warrior", true, false);
         warrior.sceneAsset = new GLBLoader().load(Gdx.files.internal("characters/Skeleton_Warrior.glb"));
         warrior.isEnemy = true;
-        warrior.initXP = 3;
+        warrior.initXP = 20;
         types.add(warrior);
 
         mage = new GameObjectType("Mage", true, false);
         mage.sceneAsset = new GLBLoader().load(Gdx.files.internal("characters/Skeleton_Mage.glb"));
         mage.isEnemy = true;
+        mage.initXP = 5;
         types.add(mage);
 
         minion = new GameObjectType("Minion", true, false);
         minion.sceneAsset = new GLBLoader().load(Gdx.files.internal("characters/Skeleton_Minion.glb"));
         minion.isEnemy = true;
+        minion.initXP = 10;
         types.add(minion);
 
         imp = new GameObjectType("Imp", true, false);
@@ -107,12 +109,14 @@ public class GameObjectTypes implements Disposable {
         shield1.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/shield_round.gltf"));
         shield1.z = 1f;
         shield1.isArmour = true;
+        shield1.initProtection = 5;
         types.add(shield1);
 
         shield2 = new GameObjectType("a Square Shield", false, true);
         shield2.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/shield_square.gltf"));
         shield2.z = 1f;
         shield2.isArmour = true;
+        shield2.initProtection = 10;
         types.add(shield2);
 
         arrows = new GameObjectType("arrows", false, true);

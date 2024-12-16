@@ -26,13 +26,15 @@ public class GUI implements Disposable {
     private Label gold;
     private Label hp;
     private Label xp;
-    private Image weapon, armour;
     private Label message1, message2, message3;
     private StringBuffer sb;
     private World world;
     private GameObject equippedWeapon;
     private GameObject equippedArmour;
     private InventoryWindow inventoryWindow;
+    private Inventory equippedInventory;
+    private InventorySlotButton weaponButton;
+    private InventorySlotButton armourButton;
 
     public GUI( World world ) {
         this.world = world;
@@ -42,6 +44,7 @@ public class GUI implements Disposable {
 
         // rely on resize() to call rebuild()
 
+        equippedInventory = new Inventory();
         inventoryWindow = new InventoryWindow("Inventory", skin, world);
 
     }
@@ -56,7 +59,7 @@ public class GUI implements Disposable {
 
         Table uiPanel = new Table();
 
-
+        Table stats = new Table();
         level = new Label("DUNGEON LEVEL: 0", skin, "small");
         gold = new Label("GOLD: 0", skin,"small");
         hp = new Label("HP: 0", skin,"small");
@@ -66,32 +69,37 @@ public class GUI implements Disposable {
         hp.setColor(Color.GREEN);
         xp.setColor(Color.PURPLE);
 
-        uiPanel.add(level).pad(30, 40, 10, 10).left().top().expandX();
-        uiPanel.row();
-        uiPanel.add(gold).pad(10, 40, 5, 10).left().top().expandX();
-        uiPanel.row();
-        uiPanel.add(hp).pad(10, 40, 5, 10).left().top().expandX();
-        uiPanel.row();
-        uiPanel.add(xp).pad(10, 40, 5, 10).left().top().expandX();
+        stats.add(level).pad(7).left().top();
+        stats.row();
+        stats.add(gold).pad(7).left().top();
+        stats.row();
+        stats.add(hp).pad(7).left().top();
+        stats.row();
+        stats.add(xp).pad(7).left().top();
+        stats.pack();
+
+        //uiPanel.debug();
+        uiPanel.add(stats).pad(20, 20, 10, 10).left().top();
         uiPanel.row();
 
         Table eq = new Table();
-        weapon = new Image();
-        TextureRegion region = new TextureRegion(GameObjectTypes.emptyIcon);
-        region.flip(false, true);
-        weapon.setDrawable(new TextureRegionDrawable(region));
-        eq.add(weapon).pad(5).right().top();
 
-        armour = new Image();
-        region = new TextureRegion(GameObjectTypes.emptyIcon);
-        region.flip(false, true);
-        armour.setDrawable(new TextureRegionDrawable(region));
-        eq.add(armour).pad(5).left().top();
+        eq.add(new Label("EQUIPPED", skin, "small")).colspan(2);
+        eq.row();
+        weaponButton = new InventorySlotButton( skin, world, equippedInventory.slots[0]);
+        eq.add(weaponButton).pad(5).right().top();
+        armourButton = new InventorySlotButton( skin, world, equippedInventory.slots[1]);
+        eq.add(armourButton).pad(5).left().top();
+        eq.row();
+        eq.add(new Label("Weapon", skin, "smaller"));
+        eq.add(new Label("Armour", skin, "smaller"));
         eq.pack();
 
+
         uiPanel.setHeight(stage.getHeight());
-        uiPanel.add(eq).center();
+        uiPanel.add(eq).center().padBottom(30);
         uiPanel.row();
+
 
         message1 = new Label("..", skin, "smaller");
         message2 = new Label("..", skin, "smaller");
@@ -153,38 +161,28 @@ public class GUI implements Disposable {
 
         setWeapon();
         setArmour();
+
+        weaponButton.update();
+        armourButton.update();
+
         inventoryWindow.update();
     }
 
     private void setWeapon(){
         if(world.rogue.stats.weaponItem != equippedWeapon){
             equippedWeapon = world.rogue.stats.weaponItem;
-
-            Sprite icon = null;
-            if(equippedWeapon == null)
-                icon = GameObjectTypes.emptyIcon;
-            else
-                icon = equippedWeapon.type.icon;
-
-            TextureRegion region = new TextureRegion(icon.getTexture());
-            region.flip(false, true);
-            weapon.setDrawable(new TextureRegionDrawable(region));
+            equippedInventory.slots[0].object = equippedWeapon;
+            equippedInventory.slots[0].count = 1;
+            weaponButton.update();
         }
     }
 
     private void setArmour(){
         if(world.rogue.stats.armourItem != equippedArmour){
             equippedArmour = world.rogue.stats.armourItem;
-
-            Sprite icon = null;
-            if(equippedArmour == null)
-                icon = GameObjectTypes.emptyIcon;
-            else
-                icon = equippedArmour.type.icon;
-
-            TextureRegion region = new TextureRegion(icon.getTexture());
-            region.flip(false, true);
-            armour.setDrawable(new TextureRegionDrawable(region));
+            equippedInventory.slots[1].object = equippedArmour;
+            equippedInventory.slots[1].count = 1;
+            armourButton.update();
         }
     }
 

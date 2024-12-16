@@ -24,7 +24,7 @@ public class InventoryWindow extends Window {
 
         int index = 0;
         for(int x = 0; x < numSlots; x++) {
-            InventorySlotButton b = new InventorySlotButton("TEST", skin, world, index);
+            InventorySlotButton b = new InventorySlotButton( skin, world, inventory.slots[index]);
             buttons[index++] = b;
             gridTable.add(b);
         }

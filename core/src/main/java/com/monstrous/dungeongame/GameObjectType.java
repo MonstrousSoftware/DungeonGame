@@ -19,6 +19,7 @@ public class GameObjectType {
     public boolean isSpellBook;
     public GameObjectType alternative;
     public SceneAsset sceneAsset;
+    public int initProtection;      // for armour
     public int initXP;
     public float z;     // height to render at when place on the ground (to avoid some model being inside the floor)
     public Sprite icon;
@@ -38,5 +39,6 @@ public class GameObjectType {
         this.isGold = false;
         this.isArrow = false;
         this.isSpellBook = false;
+        this.initProtection = 0;
     }
 }
