@@ -28,7 +28,7 @@ public class Populator {
 
             GameObjectType type = null;
 
-                int goodieType = MathUtils.random(0, 5);
+                int goodieType = MathUtils.random(0, 21);
                 switch (goodieType) {
                     case 0:
                         type = GameObjectTypes.gold;
@@ -105,6 +105,10 @@ public class Populator {
                 occupant.quantity = MathUtils.random(5,10);
             else if(type.isArmour)
                 occupant.protection = type.initProtection + MathUtils.random(-2, 2);
+            else if(type.isWeapon) {
+                occupant.damage = type.initDamage + MathUtils.random(-1, 2);
+                occupant.accuracy = type.initAccuracy + MathUtils.random(-1, 2);
+            }
 
             count--;
             if(count == 0)
@@ -112,7 +116,7 @@ public class Populator {
         }
     }
 
-    public static void distributeEnemies(DungeonMap map, GameObjects gameObjects, Enemies enemies ){
+    public static void distributeEnemies(DungeonMap map, int level, GameObjects gameObjects, Enemies enemies ){
 
         enemies.clear();
         int numRooms = map.rooms.size;
@@ -147,8 +151,9 @@ public class Populator {
             gameObjects.setOccupant(room.x+rx, room.y+ry, enemy);
             enemy.stats = new CharacterStats();
             assert type != null;
-            enemy.stats.experience = type.initXP;
+            enemy.stats.experience = MathUtils.random(type.initXP, type.initXP + level*type.initXP/2);     // at lower levels, enemies get more experienced
             enemy.stats.gold = MathUtils.random(0,5);
+            enemy.stats.aggressive = enemy.type.initAggressive;
             gameObjects.add(enemy);
             enemies.add(enemy);
             // seems redundant to provide x,y twice

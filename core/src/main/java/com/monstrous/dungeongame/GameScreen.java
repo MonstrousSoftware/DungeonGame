@@ -13,7 +13,6 @@ import com.monstrous.dungeongame.gui.GUI;
 import net.mgsx.gltf.scene3d.attributes.PBRCubemapAttribute;
 import net.mgsx.gltf.scene3d.attributes.PBRFloatAttribute;
 import net.mgsx.gltf.scene3d.attributes.PBRTextureAttribute;
-import net.mgsx.gltf.scene3d.lights.DirectionalLightEx;
 import net.mgsx.gltf.scene3d.lights.DirectionalShadowLight;
 import net.mgsx.gltf.scene3d.lights.PointLightEx;
 import net.mgsx.gltf.scene3d.scene.SceneManager;
@@ -118,7 +117,7 @@ public class GameScreen extends ScreenAdapter {
         world.isRebuilt = false;
         dungeonScenes.createRogueModel( world );
         dungeonScenes.liftFog( world );
-        dungeonScenes.buildMap( world.map );
+        dungeonScenes.showMap( world.map );
         dungeonScenes.buildCorridors( world.map );
         dungeonScenes.populateMap(world);
 
@@ -165,6 +164,8 @@ public class GameScreen extends ScreenAdapter {
 
             // refill scene manager
             sceneManager.getRenderableProviders().clear();
+            for(GameObject object: world.gameObjects.gameObjects)
+                object.scene = null;
             dungeonScenes.createRogueModel( world );
             dungeonScenes.liftFog( world );
             int roomId = world.map.roomCode[world.rogue.y][world.rogue.x];

@@ -12,9 +12,11 @@ public class GameObject {
     public Direction direction;
     public Scene scene;
     public CharacterStats stats;        // only for rogue and enemies
-    public int quantity;            // e.g. amount of gold for a gold object
+    public int quantity;                // e.g. amount of gold for a gold object
     public GameObject attackedBy;       // normally null
     public int protection;              // for armour
+    public int damage;                  // for weapons
+    public int accuracy;                // for weapons
 
 
 
@@ -26,6 +28,8 @@ public class GameObject {
         this.quantity = 1;
         this.attackedBy = null;
         this.protection = 0;
+        this.damage = 0;
+        this.accuracy = 0;
     }
 
     // NPC step
@@ -35,15 +39,52 @@ public class GameObject {
             return;
         }
 
-        int action = MathUtils.random(0,3);
-        switch(action){
-            // left/right keys translate to -x/+x
-            // up/down to +y/-y
-            //
-            case 0:   tryMove( world, scenes, 0, 1, Direction.NORTH); break;
-            case 1:   tryMove(world, scenes, -1, 0, Direction.WEST); break;
-            case 2:   tryMove(world, scenes, 0, -1, Direction.SOUTH); break;
-            case 3:   tryMove(world, scenes, 1,0, Direction.EAST); break;
+        // warrior switches aggression on and off
+        if(type == GameObjectTypes.warrior){
+            if(MathUtils.random(20) < 1)
+                stats.aggressive = !stats.aggressive;
+        }
+
+
+        if(stats.aggressive && MathUtils.random(2) > 1){
+            // move towards the player
+
+            int dx = (int) Math.signum(world.rogue.x - x);
+            int dy = (int) Math.signum(world.rogue.y - y);
+            if(dx != 0 && dy != 0){ // avoid diagonals
+                if(MathUtils.random(1)>0)
+                    dx = 0;
+                else
+                    dy = 0;
+            }
+            Direction dir = Direction.NORTH;
+            if(dx < 0)
+                dir = Direction.WEST;
+            else if (dx > 0)
+                dir = Direction.EAST;
+            else if (dy < 0)
+                dir = Direction.SOUTH;
+            tryMove(world, scenes, dx, dy, dir);
+        }
+        else {
+            int action = MathUtils.random(0, 3);
+            switch (action) {
+                // left/right keys translate to -x/+x
+                // up/down to +y/-y
+                //
+                case 0:
+                    tryMove(world, scenes, 0, 1, Direction.NORTH);
+                    break;
+                case 1:
+                    tryMove(world, scenes, -1, 0, Direction.WEST);
+                    break;
+                case 2:
+                    tryMove(world, scenes, 0, -1, Direction.SOUTH);
+                    break;
+                case 3:
+                    tryMove(world, scenes, 1, 0, Direction.EAST);
+                    break;
+            }
         }
     }
 
@@ -64,19 +105,26 @@ public class GameObject {
 
         // what is in the target cell? can be enemy, pickup or nothing
         GameObject occupant  = world.gameObjects.getOccupant(tx, ty);
+        GameObject opponent = null;
         if(occupant != null && occupant.type.isEnemy){
-            fight(world, scenes, occupant);
-            return;
+            opponent = occupant;
         }
         if(!type.isPlayer && tx == world.rogue.x && ty == world.rogue.y){
-            //Gdx.app.log("enemy fights rogue", "");
-            fight(world, scenes, world.rogue);
+            opponent = world.rogue;
+        }
+        if(opponent != null){
+            if(type == GameObjectTypes.imp && MathUtils.random(6) > 3)
+                rob(world,  world.rogue);
+            else
+                fight(world, scenes, world.rogue);
             return;
         }
 
+        // vacate old tile
         if(!type.isPlayer) {
             world.gameObjects.clearOccupant(x, y);
         }
+        // move to new tile
         x = tx;
         y = ty;
         scenes.moveObject( this, x, y, z);
@@ -98,13 +146,19 @@ public class GameObject {
         }
     }
 
-//    private void steal(World world, DungeonScenes scenes, GameObject character ){
-//        if(character.stats.gold > 0){
-//            character.stats.inventory.takeAllGold();
-//
-//        }
-//
-//    }
+    // this character will steal all victim's gold
+    private void rob(World world, GameObject victim ){
+        if(victim.stats.gold > 0){
+            int amount = victim.stats.inventory.removeGold();
+            stats.gold += amount;
+            GameObject gold = new GameObject(GameObjectTypes.gold, 0, 0, Direction.NORTH);
+            stats.inventory.addItem(gold);
+            if(type.isPlayer || victim.type.isPlayer || world.rogue.stats.increasedAwareness > 0) {
+                Sounds.pickup();
+                MessageBox.addLine(type.name + " stole " + amount + " gold from " + victim.type.name);
+            }
+        }
+    }
 
 
     private void pickUp(World world, DungeonScenes scenes, GameObject item ){
@@ -141,26 +195,41 @@ public class GameObject {
     }
 
     private void fight(World world, DungeonScenes scenes, GameObject other){
-        if(type.isPlayer || other.type.isPlayer )
-            Sounds.fight();
+
         int hp = 1;
         String verb = "hits";
-        if(stats.weaponItem != null && stats.weaponItem.type == GameObjectTypes.knife) {
-            hp = 2;
-            verb = "stabs";
+        if(stats.weaponItem != null) {
+            hp += stats.weaponItem.damage;
+            verb = "attacks";
         }
         hp += stats.experience /10;     // to tune
-        if(other.stats.armourItem != null && other.stats.armourItem.protection > hp){
-            MessageBox.addLine("The " + other.type.name + " blocks the attack");
-            if(hp > 0) {
-                other.stats.armourItem.protection--;        // armour takes damage
-                MessageBox.addLine("The " + other.stats.armourItem.type.name + " takes damage.");
-            }
-        } else {
-            other.stats.hitPoints = Math.max(0, other.stats.hitPoints - hp);
-            // with increased awareness player is informed of all events
-            if (type.isPlayer || world.rogue.stats.increasedAwareness > 0) {
-                MessageBox.addLine(type.name + " " + verb + " the " + other.type.name + "(HP: " + other.stats.hitPoints + ")");
+        int accuracy = stats.experience/5;
+        if(stats.weaponItem != null)
+            accuracy += stats.weaponItem.accuracy;
+        if(MathUtils.random(5+accuracy) < 3 ){
+            if(type.isPlayer || other.type.isPlayer )
+                Sounds.swoosh();
+            MessageBox.addLine(type.name + " misses.");
+        }
+        else {
+            if(type.isPlayer || other.type.isPlayer )
+                Sounds.fight();
+            if (other.stats.armourItem != null && other.stats.armourItem.protection > hp) {
+                MessageBox.addLine("The " + other.type.name + " blocks the attack");
+                if (hp > 3) {
+                    other.stats.armourItem.protection--;        // armour takes damage
+                    MessageBox.addLine("The armour takes damage.");
+                }
+                if(stats.weaponItem != null){
+                    MessageBox.addLine("The weapon takes damage.");
+                    stats.weaponItem.accuracy = Math.max(0, stats.weaponItem.accuracy-1);
+                }
+            } else {
+                other.stats.hitPoints = Math.max(0, other.stats.hitPoints - hp);
+                // with increased awareness player is informed of all events
+                if (type.isPlayer || other.type.isPlayer || world.rogue.stats.increasedAwareness > 0) {
+                    MessageBox.addLine(type.name + " " + verb + " the " + other.type.name + "(HP: " + other.stats.hitPoints + ")");
+                }
             }
         }
         if(other.stats.hitPoints <= 0){
@@ -195,7 +264,7 @@ public class GameObject {
         target.stats.hitPoints = Math.max(0, target.stats.hitPoints-hp);
         // with increased awareness player is informed of all events
         if(target.type.isPlayer || thrower.type.isPlayer || world.rogue.stats.increasedAwareness > 0) {
-            MessageBox.addLine(type.name + " hits  the " + target.type.name + "(HP: " + target.stats.hitPoints + ")");
+            MessageBox.addLine(type.name + " hits the " + target.type.name + "(HP: " + target.stats.hitPoints + ")");
         }
         if(target.stats.hitPoints <= 0){
             thrower.defeat(world, scenes, target);

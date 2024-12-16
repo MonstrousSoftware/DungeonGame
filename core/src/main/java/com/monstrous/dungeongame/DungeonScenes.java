@@ -51,7 +51,7 @@ public class DungeonScenes implements Disposable {
         sceneAssetPillar = new GLTFLoader().load(Gdx.files.internal("models/pillar.gltf"));
     }
 
-    public void buildMap(DungeonMap map){
+    public void showMap(DungeonMap map){
         for(Room room: map.rooms)
             if(room.uncovered)
                 showRoom(map, room);

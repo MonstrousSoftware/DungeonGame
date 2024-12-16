@@ -20,11 +20,14 @@ public class GameObjectType {
     public GameObjectType alternative;
     public SceneAsset sceneAsset;
     public int initProtection;      // for armour
+    public int initDamage;
+    public int initAccuracy;
     public int initXP;
+    public boolean initAggressive;
     public float z;     // height to render at when place on the ground (to avoid some model being inside the floor)
     public Sprite icon;
 
-    public GameObjectType(String name, boolean character, boolean pickup) {
+    public GameObjectType( String name, boolean character, boolean pickup) {
         this.name = name;
         this.character = character;
         this.pickup = pickup;
@@ -40,5 +43,8 @@ public class GameObjectType {
         this.isArrow = false;
         this.isSpellBook = false;
         this.initProtection = 0;
+        this.initDamage = 0;
+        this.initAccuracy = 0;
+        this.initAggressive = false;
     }
 }

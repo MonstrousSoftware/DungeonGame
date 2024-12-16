@@ -24,7 +24,7 @@ public class World {
 
     public World() {
         GameObjectTypes gameObjectTypes = new GameObjectTypes();
-        randomizeSwordLevel();
+        randomizeSwordLevel();      // where to hide the Sword of Yobled
         generateLevel();
     }
 
@@ -82,7 +82,7 @@ public class World {
         if(level == swordLevel)
             Populator.placeSword(map, gameObjects);
         Populator.distributeGoodies(map, gameObjects);
-        Populator.distributeEnemies(map, gameObjects, enemies);
+        Populator.distributeEnemies(map, level, gameObjects, enemies);
 
         gameObjects.clearOccupant(rogue.x, rogue.y);
 

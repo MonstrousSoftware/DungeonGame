@@ -23,6 +23,7 @@ public class InventorySlotButton extends Button {
 
     private final Label countLabel;
     private final Label buffLabel;
+    private final Label accuracyLabel;
     private final Inventory.Slot slot;
     private final Image image;
     private final TextureRegionDrawable placeHolder;
@@ -41,7 +42,9 @@ public class InventorySlotButton extends Button {
 
         Table buffTable = new Table();
         buffLabel = new Label("", skin, "smaller");
-        buffTable.add(buffLabel).left().top().expandX().expandY();    //
+        accuracyLabel = new Label("", skin, "smaller");
+        buffTable.add(buffLabel).left().top();    //
+        buffTable.add(accuracyLabel).right().top().expandX().expandY();
         buffTable.pack();
 
         currentType = null;
@@ -96,14 +99,21 @@ public class InventorySlotButton extends Button {
     }
 
     private void adjustBuffIndicator( Inventory.Slot slot) {
-        if(slot.count <= 0)
-            buffLabel.setText("");         // don't show a zero
-        if(count == 1){
+        if(slot.count == 1){
             if(slot.object.type.isArmour)
                 buffLabel.setText(slot.object.protection);
+            else if(slot.object.type.isWeapon) {
+                buffLabel.setText(slot.object.damage);
+                accuracyLabel.setText(slot.object.accuracy);
+            } else  {
+                buffLabel.setText("");
+                accuracyLabel.setText("");
+            }
         }
-        else
+        else {
             buffLabel.setText("");
+            accuracyLabel.setText("");
+        }
     }
 
     private TextureRegionDrawable makePlaceHolder() {

@@ -8,6 +8,7 @@ public class Sounds {
     private static Sound fightSound;
     private static Sound monsterDeathSound;
     private static Sound stomachRumbleSound;
+    private static Sound swooshSound;
 
 
     public static void pickup(){
@@ -20,6 +21,12 @@ public class Sounds {
         if(fightSound == null)
             fightSound = Gdx.audio.newSound(Gdx.files.internal("sounds/punch_h_05-224063.mp3"));
         fightSound.play();
+    }
+
+    public static void swoosh(){
+        if(swooshSound == null)
+            swooshSound = Gdx.audio.newSound(Gdx.files.internal("sounds/swoosh.mp3"));
+        swooshSound.play();
     }
 
     public static void monsterDeath(){

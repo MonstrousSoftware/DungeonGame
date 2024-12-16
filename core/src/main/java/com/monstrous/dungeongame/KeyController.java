@@ -32,7 +32,7 @@ public class KeyController extends InputAdapter {
 
     @Override
     public boolean keyDown(int keycode) {
-        System.out.println("keydown: "+keycode);
+
         // left/right keys translate to -x/+x
         // up/down to +y/-y
         //
@@ -126,7 +126,7 @@ public class KeyController extends InputAdapter {
     }
 
     private void digestFood(){
-        //System.out.println("food: "+world.rogue.stats.food);
+        System.out.println("food: "+world.rogue.stats.food);
         world.rogue.stats.food --;
         if(world.rogue.stats.food == 20) {
             Sounds.stomachRumble();
@@ -156,7 +156,8 @@ public class KeyController extends InputAdapter {
         if(throwMode)
             return processThrowChoice(character);
 
-        switch (character) {
+        //System.out.println("Character: "+character);
+        switch (Character.toLowerCase(character)) {
 
             case 'z':
                 turnRogue(false); return true;
@@ -180,6 +181,9 @@ public class KeyController extends InputAdapter {
                 return false;
             case ' ':
                 return true;        // do nothing
+            case '#':   // cheat code
+                world.rogue.stats.haveBookOfMaps = true;
+                return true;
             default:
                 return false;
         }

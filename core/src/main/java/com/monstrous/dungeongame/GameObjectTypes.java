@@ -64,6 +64,7 @@ public class GameObjectTypes implements Disposable {
         warrior.sceneAsset = new GLBLoader().load(Gdx.files.internal("characters/Skeleton_Warrior.glb"));
         warrior.isEnemy = true;
         warrior.initXP = 20;
+        warrior.initAggressive = true;
         types.add(warrior);
 
         mage = new GameObjectType("Mage", true, false);
@@ -93,17 +94,41 @@ public class GameObjectTypes implements Disposable {
         knife = new GameObjectType("a Knife", false, true);
         knife.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/dagger.gltf"));
         knife.isWeapon = true;
+        knife.initDamage = 5;
+        knife.initAccuracy = 5;
         types.add(knife);
 
         crossbow = new GameObjectType("a Crossbow", false, true);
         crossbow.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/crossbow_1handed.gltf"));
         crossbow.isWeapon = true;
+        crossbow.initDamage = 8;
+        crossbow.initAccuracy = 2;
         types.add(crossbow);
 
         explosive = new GameObjectType("an Explosive", false, true);
         explosive.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/smokebomb.gltf"));
         explosive.isWeapon = true;
+        explosive.initDamage = 12;
+        explosive.initAccuracy = 2;
         types.add(explosive);
+
+        arrows = new GameObjectType("arrows", false, true);
+        arrows.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/arrow_bundle.gltf"));
+        arrows.z = 1f;
+        arrows.isCountable = true;
+        arrows.isArrow = true;
+        types.add(arrows);
+
+        arrow = new GameObjectType("an arrow", false, true);
+        arrow.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/arrow.gltf"));
+        arrow.z = 1f;
+        arrow.isCountable = true;
+        arrow.isArrow = true;
+        arrow.initDamage = 3;
+        arrow.initAccuracy = 2;
+        types.add(arrow);
+        arrows.alternative = arrow; // to change model as quantity drops to 1
+        arrow.alternative = arrows;
 
         shield1 = new GameObjectType("a Round Shield", false, true);
         shield1.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/shield_round.gltf"));
@@ -119,21 +144,7 @@ public class GameObjectTypes implements Disposable {
         shield2.initProtection = 10;
         types.add(shield2);
 
-        arrows = new GameObjectType("arrows", false, true);
-        arrows.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/arrow_bundle.gltf"));
-        arrows.z = 1f;
-        arrows.isCountable = true;
-        arrows.isArrow = true;
-        types.add(arrows);
 
-        arrow = new GameObjectType("an arrow", false, true);
-        arrow.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/arrow.gltf"));
-        arrow.z = 1f;
-        arrow.isCountable = true;
-        arrow.isArrow = true;
-        types.add(arrow);
-        arrows.alternative = arrow; // to change model as quantity drops to 1
-        arrow.alternative = arrows;
 
         spellBookClosed = new GameObjectType("a Spellbook", false, true);
         spellBookClosed.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_closed.gltf"));
