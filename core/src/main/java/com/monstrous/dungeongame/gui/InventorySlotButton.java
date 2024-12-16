@@ -23,16 +23,14 @@ public class InventorySlotButton extends Button {
 
     private final Label countLabel;
     private final Label buffLabel;
-    private Inventory.Slot slot;
-    private Image image;
-    private TextureRegionDrawable placeHolder;
+    private final Inventory.Slot slot;
+    private final Image image;
+    private final TextureRegionDrawable placeHolder;
     private GameObjectType currentType;
     private int count;
-    private World world;
 
-    public InventorySlotButton(Skin skin, final World world, Inventory.Slot slot) {
+    public InventorySlotButton(Skin skin, Inventory.Slot slot) {
         super(skin, "slot");
-        this.world = world;
         this.slot = slot;
         count = 0;
 

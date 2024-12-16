@@ -32,6 +32,7 @@ public class GUI implements Disposable {
     private GameObject equippedWeapon;
     private GameObject equippedArmour;
     private InventoryWindow inventoryWindow;
+    private Inventory rogueInventory;
     private Inventory equippedInventory;
     private InventorySlotButton weaponButton;
     private InventorySlotButton armourButton;
@@ -44,8 +45,9 @@ public class GUI implements Disposable {
 
         // rely on resize() to call rebuild()
 
-        equippedInventory = new Inventory();
-        inventoryWindow = new InventoryWindow("Inventory", skin, world);
+        equippedInventory = new Inventory(2);
+        inventoryWindow = new InventoryWindow("Inventory", skin, world.rogue.stats.inventory);
+        rogueInventory = world.rogue.stats.inventory;
 
     }
 
@@ -86,9 +88,9 @@ public class GUI implements Disposable {
 
         eq.add(new Label("EQUIPPED", skin, "small")).colspan(2);
         eq.row();
-        weaponButton = new InventorySlotButton( skin, world, equippedInventory.slots[0]);
+        weaponButton = new InventorySlotButton( skin, equippedInventory.slots[0]);
         eq.add(weaponButton).pad(5).right().top();
-        armourButton = new InventorySlotButton( skin, world, equippedInventory.slots[1]);
+        armourButton = new InventorySlotButton( skin, equippedInventory.slots[1]);
         eq.add(armourButton).pad(5).left().top();
         eq.row();
         eq.add(new Label("Weapon", skin, "smaller"));
@@ -165,14 +167,26 @@ public class GUI implements Disposable {
         weaponButton.update();
         armourButton.update();
 
+        // force rebuild of Inv window on a game restart
+        if( rogueInventory != world.rogue.stats.inventory){
+            inventoryWindow.remove();
+            inventoryWindow = new InventoryWindow("Inventory", skin, world.rogue.stats.inventory);
+            stage.addActor(inventoryWindow);
+            rogueInventory = world.rogue.stats.inventory;
+        }
         inventoryWindow.update();
     }
 
     private void setWeapon(){
         if(world.rogue.stats.weaponItem != equippedWeapon){
             equippedWeapon = world.rogue.stats.weaponItem;
-            equippedInventory.slots[0].object = equippedWeapon;
-            equippedInventory.slots[0].count = 1;
+            if(equippedWeapon == null) {
+                equippedInventory.slots[0].object = null;
+                equippedInventory.slots[0].count = 0;
+            } else {
+                equippedInventory.slots[0].object = equippedWeapon;
+                equippedInventory.slots[0].count = 1;
+            }
             weaponButton.update();
         }
     }
@@ -180,8 +194,13 @@ public class GUI implements Disposable {
     private void setArmour(){
         if(world.rogue.stats.armourItem != equippedArmour){
             equippedArmour = world.rogue.stats.armourItem;
-            equippedInventory.slots[1].object = equippedArmour;
-            equippedInventory.slots[1].count = 1;
+            if(equippedArmour == null) {
+                equippedInventory.slots[1].object = null;
+                equippedInventory.slots[1].count = 0;
+            } else {
+                equippedInventory.slots[1].object = equippedArmour;
+                equippedInventory.slots[1].count = 1;
+            }
             armourButton.update();
         }
     }

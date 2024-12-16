@@ -20,13 +20,12 @@ public class CharacterStats {
     public CharacterStats() {
         hitPoints = 5;
         strength = 10;
-        //armour = 0;
         experience = 0;
         gold = 0;
         food = MAX_FOOD;
         weaponItem = null;
         armourItem = null;
-        inventory = new Inventory();
+        inventory = new Inventory(10);
         increasedAwareness = 0;
         haveBookOfMaps = false;
     }

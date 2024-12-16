@@ -10,21 +10,18 @@ import com.monstrous.dungeongame.World;
 public class InventoryWindow extends Window {
 
     private InventorySlotButton[] buttons;
-    private int numSlots;
 
-    public InventoryWindow(String title, Skin skin, World world) {
+    public InventoryWindow(String title, Skin skin, Inventory inventory) {
         super(title, skin, "default");
-        Inventory inventory = world.rogue.stats.inventory;
 
-        numSlots = inventory.NUM_SLOTS;
-
+        int numSlots = inventory.numSlots;
         buttons = new InventorySlotButton[numSlots];
 
         Table gridTable = new Table();
 
         int index = 0;
         for(int x = 0; x < numSlots; x++) {
-            InventorySlotButton b = new InventorySlotButton( skin, world, inventory.slots[index]);
+            InventorySlotButton b = new InventorySlotButton( skin, inventory.slots[index]);
             buttons[index++] = b;
             gridTable.add(b);
         }
@@ -37,7 +34,7 @@ public class InventoryWindow extends Window {
     }
 
     public void update() {
-        for(int i = 0; i < numSlots; i++){
+        for(int i = 0; i < buttons.length; i++){
             buttons[i].update();
         }
     }

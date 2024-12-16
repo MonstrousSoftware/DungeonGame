@@ -4,11 +4,10 @@ import com.badlogic.gdx.Gdx;
 
 public class Inventory {
 
-    public  final static int NUM_SLOTS = 10;
-
     public Slot[] slots;
+    public int numSlots;
 
-    public class Slot {
+    public static class Slot {
         public GameObject object;
         public int count;
 
@@ -57,9 +56,10 @@ public class Inventory {
     }
 
 
-    public Inventory() {
-        slots = new Slot[NUM_SLOTS];
-        for(int i = 0 ; i < NUM_SLOTS;i++)
+    public Inventory(int numSlots) {
+        this.numSlots = numSlots;
+        slots = new Slot[numSlots];
+        for(int i = 0 ; i < numSlots;i++)
             slots[i] = new Slot();
     }
 
@@ -69,7 +69,7 @@ public class Inventory {
 
         // find slot of matching type if this is a fungible item such as gold
         if(type.isCountable) {
-            for (int i = 0; i < NUM_SLOTS; i++) {
+            for (int i = 0; i < numSlots; i++) {
                 if (!slots[i].isEmpty() && slots[i].object.type == type) {
                     slots[i].addItem(item);
                     Gdx.app.log("Inventory", "slot " + i + " type: " + type.name + " count:" + slots[i].count);
@@ -83,7 +83,7 @@ public class Inventory {
             }
         }
         // find first free slot
-        for(int i = 0; i < NUM_SLOTS; i++) {
+        for(int i = 0; i < numSlots; i++) {
             if(slots[i].isEmpty() ){
                 slots[i].addItem(item);
                 Gdx.app.log("Inventory", "slot "+i+" type: "+type.name+" count:"+slots[i].count);
@@ -95,15 +95,27 @@ public class Inventory {
     }
 
     public GameObject removeItem(int slot) {
-        assert slot >= 0 && slot < NUM_SLOTS;
+        assert slot >= 0 && slot < numSlots;
         return slots[slot].removeItem();
     }
 
     public boolean contains( GameObjectType type ){
-        for(int i = 0; i < NUM_SLOTS; i++) {
+        for(int i = 0; i < numSlots; i++) {
             if(!slots[i].isEmpty() && slots[i].object.type == type)
                 return true;
         }
         return false;
+    }
+
+    public int removeGold() {
+        for(int i = 0; i < numSlots; i++) {
+            if(!slots[i].isEmpty() && slots[i].object.type.isGold){
+                int count = slots[i].count;
+                slots[i].count = 0;
+                slots[i].object = null;
+                return count;
+            }
+        }
+        return 0;
     }
 }

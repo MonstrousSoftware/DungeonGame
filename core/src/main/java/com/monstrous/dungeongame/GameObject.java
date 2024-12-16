@@ -214,9 +214,10 @@ public class GameObject {
         if(enemy.stats.gold > 0) {
             GameObject gold = new GameObject(GameObjectTypes.gold, 0,0,Direction.NORTH);
             gold.quantity = enemy.stats.gold;
+            enemy.stats.inventory.removeGold();
             scenes.placeObject(world.gameObjects, GameObjectTypes.gold, enemy.x, enemy.y);
-
             MessageBox.addLine(enemy.type.name+ " drops their gold. (+"+enemy.stats.gold+")");
+            enemy.stats.gold = 0;
         }
     }
 
