@@ -110,7 +110,7 @@ public class GameObject {
 
 
         // what is in the target cell? can be enemy, pickup or nothing
-        GameObject occupant  = world.gameObjects.getOccupant(tx, ty);
+        GameObject occupant  = world.levelData.gameObjects.getOccupant(tx, ty);
 
         if( occupant != null && occupant.type == GameObjectTypes.bigSword && !type.isPlayer ) {  // don't let monsters pick up sword or walk over sword
             return;
@@ -137,7 +137,7 @@ public class GameObject {
 
         // vacate old tile
         if(!type.isPlayer) {
-            world.gameObjects.clearOccupant(x, y);
+            world.levelData.gameObjects.clearOccupant(x, y);
         }
         // move to new tile
         x = tx;
@@ -158,7 +158,7 @@ public class GameObject {
 
         }
         if(!type.isPlayer) {
-            world.gameObjects.setOccupant(x, y, this);
+            world.levelData.gameObjects.setOccupant(x, y, this);
 
             // if enemy goes into fog of war, hide it
             if(scene != null && !world.levelData.tileSeen[y][x]){
@@ -217,8 +217,8 @@ public class GameObject {
             }
             if (item.scene != null)
                 scenes.remove(item.scene);
-            world.gameObjects.clearOccupant(x, y);
-            world.gameObjects.remove(item);
+            world.levelData.gameObjects.clearOccupant(x, y);
+            world.levelData.gameObjects.remove(item);
             if (item.type == GameObjectTypes.gold) {
                 stats.gold += item.quantity;
             }
@@ -370,14 +370,15 @@ public class GameObject {
         MessageBox.addLine(type.name+ " defeated the "+enemy.type.name+". (XP +"+enemy.stats.experience+")");
         if(!enemy.type.isPlayer)
             scenes.remove(enemy.scene);
-        world.gameObjects.clearOccupant(enemy.x, enemy.y);
+        world.levelData.gameObjects.clearOccupant(enemy.x, enemy.y);
         world.enemies.remove(enemy);
+        world.levelData.gameObjects.remove(enemy);
         stats.experience += enemy.stats.experience;
         if(enemy.stats.gold > 0) {
             GameObject gold = new GameObject(GameObjectTypes.gold, 0,0,Direction.NORTH);
             gold.quantity = enemy.stats.gold;
             enemy.stats.inventory.removeGold();
-            scenes.placeObject(world.gameObjects, GameObjectTypes.gold, enemy.x, enemy.y);
+            scenes.placeObject(world.levelData.gameObjects, GameObjectTypes.gold, enemy.x, enemy.y);
             MessageBox.addLine(enemy.type.name+ " drops their gold. (+"+enemy.stats.gold+")");
             enemy.stats.gold = 0;
         }

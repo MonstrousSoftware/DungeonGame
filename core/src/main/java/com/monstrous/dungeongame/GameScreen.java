@@ -166,7 +166,7 @@ public class GameScreen extends ScreenAdapter {
 
             // refill scene manager
             sceneManager.getRenderableProviders().clear();
-            for(GameObject object: world.gameObjects.gameObjects)
+            for(GameObject object: world.levelData.gameObjects.gameObjects)
                 object.scene = null;
             dungeonScenes.selectFloorType(world.level);
             dungeonScenes.createRogueModel( world );

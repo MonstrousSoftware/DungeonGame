@@ -115,7 +115,8 @@ public class KeyController extends InputAdapter {
             if(world.rogue.stats.hitPoints < CharacterStats.MAX_HITPOINTS)
                 world.rogue.stats.hitPoints++;
         }
-        world.enemies.step(scenes);     // move enemies
+
+        world.enemies.step(world, scenes);     // move enemies
 
         digestFood();
 
@@ -369,7 +370,7 @@ public class KeyController extends InputAdapter {
             if(nx < 0 || nx > world.map.mapWidth || ny < 0 || ny > world.map.mapHeight)
                 return true;
 
-            GameObject occupant = world.gameObjects.getOccupant(nx, ny);
+            GameObject occupant = world.levelData.gameObjects.getOccupant(nx, ny);
             if(occupant != null && occupant.type.isEnemy){
                 MessageBox.addLine("You hit "+occupant.type.name+".");
                 item.hits(world, scenes, world.rogue, occupant);
@@ -380,7 +381,7 @@ public class KeyController extends InputAdapter {
             TileType tile = world.map.getGrid(nx, ny);
             if(!TileType.walkable(tile,  world.map.getGrid(tx, ty))) {
                 // drop item short of the wall
-                scenes.dropObject(world.map, world.gameObjects, item, tx, ty);
+                scenes.dropObject(world.map, world.levelData.gameObjects, item, tx, ty);
                 return true;
             }
             tx = nx;
@@ -425,7 +426,7 @@ public class KeyController extends InputAdapter {
         if(item.type.isGold)
             world.rogue.stats.gold -= item.quantity;
         MessageBox.addLine("You dropped "+item.type.name+".");
-        scenes.dropObject(world.map, world.gameObjects, item, world.rogue.x, world.rogue.y);
+        scenes.dropObject(world.map, world.levelData.gameObjects, item, world.rogue.x, world.rogue.y);
     }
 
 

@@ -18,7 +18,7 @@ public class World {
     public int swordLevel;
 
     public DungeonMap map;                  // static architecture
-    public GameObjects gameObjects;         // items, enemies
+    //public GameObjects gameObjects;         // items, enemies
     public GameObject rogue;                // the player
     public Enemies enemies;                 // subset of gameObjects
     public boolean isRebuilt;               // force scenes to be recreated
@@ -81,6 +81,7 @@ public class World {
 
     private void generateLevel(){
         isRebuilt = true;
+        boolean newLevel;
 
         // map gets bigger at lower levels: keep aspect ratio 3/2
         //
@@ -90,8 +91,10 @@ public class World {
         if(level > levelDataArray.size-1) {       // new level
             levelData = new LevelData(level, w, h);
             levelDataArray.add(levelData);
+            newLevel = true;
         } else {    // existing level
             levelData = levelDataArray.get(level);
+            newLevel = false;
         }
         Array<Room> stairsFromAbove;
         if(level == 0)
@@ -101,19 +104,21 @@ public class World {
 
         map = new DungeonMap(seed, level, w, h, stairsFromAbove, levelData.stairPortals);
 
-        gameObjects = new GameObjects(w, h);
-        enemies = new Enemies(this);
+        enemies = new Enemies();
+        enemies.addFromObjects(levelData.gameObjects);
         // add dynamic object to the gameObjects list and its occupants grid
 
         if(rogue == null)   // don't create new rogue when changing level
-            rogue = Populator.placeRogue(map, gameObjects);
+            rogue = Populator.placeRogue(map, levelData.gameObjects);
 
-        if(level == swordLevel)
-            Populator.placeSword(map, gameObjects);
-        Populator.distributeGoodies(map, gameObjects);
-        Populator.distributeEnemies(map, level, gameObjects, enemies);
+        if(newLevel) {
+            if (level == swordLevel)
+                Populator.placeSword(map, levelData.gameObjects);
+            Populator.distributeGoodies(map, levelData.gameObjects);
+            Populator.distributeEnemies(map, level, levelData.gameObjects, enemies);
+        }
 
-        gameObjects.clearOccupant(rogue.x, rogue.y);
+        levelData.gameObjects.clearOccupant(rogue.x, rogue.y);
 
     }
 }

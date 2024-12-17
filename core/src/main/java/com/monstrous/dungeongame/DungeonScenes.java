@@ -183,7 +183,7 @@ public class DungeonScenes implements Disposable {
         }
 
         // add any items on floor
-        GameObject occupant = world.gameObjects.getOccupant(x,y);
+        GameObject occupant = world.levelData.gameObjects.getOccupant(x,y);
         if(occupant != null && occupant.scene == null){
             addScene(occupant);
         }
@@ -208,15 +208,27 @@ public class DungeonScenes implements Disposable {
         for(GameObject enemy: world.enemies.enemies)
             enemy.scene = null;
 
-        for(Room room: world.map.rooms)
-            if(levelData.seenRooms.contains(room.id, true))
-                populateRoom(world, room);
+        for(int x = 0; x < world.map.mapWidth; x++) {
+            for (int y = 0; y < world.map.mapHeight; y++) {
+                if(levelData.tileSeen[y][x]) {
+                    GameObject occupant = world.levelData.gameObjects.getOccupant(x, y);
+                    if (occupant != null && occupant.scene == null) {
+                        // note monsters could be seen before outside this room
+                        addScene(occupant);
+                    }
+                }
+            }
+        }
+//        for(Room room: world.map.rooms)
+//            if(levelData.seenRooms.contains(room.id, true))
+//                populateRoom(world, room);
+        // todo corridors
     }
 
     public void populateRoom(World world, Room room){
         for(int x = room.x; x < room.x+room.width; x++){
             for(int y = room.y; y < room.y + room.height; y++){
-                GameObject occupant = world.gameObjects.getOccupant(x,y);
+                GameObject occupant = world.levelData.gameObjects.getOccupant(x,y);
                 if(occupant != null && occupant.scene == null){
                     // note monsters could be seen before outside this room
                     addScene(occupant);
