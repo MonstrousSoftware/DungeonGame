@@ -257,8 +257,11 @@ public class DungeonScenes implements Disposable {
     }
 
     public void addScene(GameObject gameObject){
-
-        Scene item = new Scene(gameObject.type.sceneAsset.scene);
+        Scene item = null;
+        if(gameObject.type.isPlayer)
+            item = new Scene(gameObject.type.sceneAsset.scene, "Scene", "Rig");
+        else
+            item = new Scene(gameObject.type.sceneAsset.scene);
         setTransform(item.modelInstance.transform, gameObject.x, gameObject.y, gameObject.z, gameObject.direction);
         sceneManager.addScene(item);
         gameObject.scene = item;
@@ -274,6 +277,18 @@ public class DungeonScenes implements Disposable {
         GameObject rogue = world.rogue;
         addScene(rogue);
         adaptModel(rogue.scene, rogue.stats);
+        //rogue.scene.animationController.setAnimation("Walking_A", 1);
+
+
+        String armature = "Rig";
+        if(armature != null) {
+            Gdx.app.log("GameObjectType",  " armature: "+armature + " animations: "+rogue.scene.modelInstance.animations.size);
+            for(int i = 0; i < rogue.scene.modelInstance.animations.size; i++) {
+                String id = rogue.scene.modelInstance.animations.get(i).id;
+                Gdx.app.log(" animation :", id);
+            }
+
+        }
     }
 
     public void liftFog(World world){

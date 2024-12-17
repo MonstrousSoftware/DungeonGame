@@ -442,7 +442,7 @@ public class DungeonMap implements Disposable {
         if(grid[y][x] != TileType.VOID) {
             if(grid[y][x] == TileType.WALL && (tileOrientation[y][x] == dir || tileOrientation[y][x] == Direction.opposite(dir)) )
                 return;     // aligned with existing wall
-            System.out.println("Wall into non-void " + x + " , " + y + " type:" + grid[y][x]);
+//            System.out.println("Wall into non-void " + x + " , " + y + " type:" + grid[y][x]);
             grid[y][x] = TileType.WALL_T_SPLIT;
             tileOrientation[y][x] = dir;
         } else {
@@ -453,7 +453,7 @@ public class DungeonMap implements Disposable {
 
     private void placeCorner(int x, int y, Direction dir){
         if(grid[y][x] != TileType.VOID) {
-            System.out.println("Corner into non-void " + x + " , " + y + " type:" + grid[y][x]+" in dir "+tileOrientation[y][x]);
+//            System.out.println("Corner into non-void " + x + " , " + y + " type:" + grid[y][x]+" in dir "+tileOrientation[y][x]);
             if(grid[y][x] == TileType.WALL)
                 grid[y][x] = TileType.WALL_T_SPLIT; // keep wall orientation
             else if (grid[y][x] == TileType.WALL_CORNER)    // 2 corners            should sometime be a T

@@ -46,18 +46,18 @@ public class CreditsScreen extends ScreenAdapter {
             "contributions by Ken Arnold.\n" +
             "\n" +
             "3D models:\n" +
-            "KayKit - Character Pack Adventurers (via itch.io) (CC0 license)\n" +
-            "KayKit - Dungeon Pack Remastered (via itch.io) (CC0 license)\n" +
-            "KayKit - Skeletons Character Pack (via itch.io) (CC0 license)\n" +
+            " KayKit - Character Pack Adventurers (via itch.io) (CC0 license)\n" +
+            " KayKit - Dungeon Pack Remastered (via itch.io) (CC0 license)\n" +
+            " KayKit - Skeletons Character Pack (via itch.io) (CC0 license)\n" +
             "\n" +
             "Music:\n" +
-            "\"The Cave\" by Andrea Good (LuminousPresence) via Pixabay (Pixabay content license)  \n" +
+            " \"The Cave\" by Andrea Good (LuminousPresence) via Pixabay (Pixabay content license)  \n" +
             "\n" +
             "Font:\n" +
-            "Metamorphous by James Grieshaber via Google fonts (Open Font License)\n" +
+            " Metamorphous by James Grieshaber via Google fonts (Open Font License)\n" +
             "\n" +
             "Sound effects:\n" +
-            "Various sound effects via Pixabay");
+            " Various sound effects via Pixabay");
 
 
         screenTable.add(textLabel).pad(20).center();

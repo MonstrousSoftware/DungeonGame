@@ -19,11 +19,36 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class HelpScreen  extends ScreenAdapter {
 
-    public final static String VERSION = "version 1.0 16/12/2024";
+    public final static String VERSION = "version 1.1 16/12/2024";
 
-    private Main game;
+    private final String[] tips = {
+        "Take your time to think. It's a turn based game and there is no need to rush.",
+        "Don't forget to eat or you may faint and need to skip some turns.",
+        "Health regenerates over time. Press SPACE to rest.",
+        "The monsters at lower levels are more dangerous.",
+        "Experience (XP) will improve your fighting.",
+        "Imps like to steal gold.",
+        "Warriors get aggressive when they are in a bad mood.",
+        "Monsters will also pick up items and fight each other when you're not around.",
+        "Armour has a protection level that can degrade in a fight.",
+        "You can swap degraded weapons by equipping better ones",
+        "Poisonous potions can be thrown at enemies.",
+        "Throwing arrows do more damage when a crossbow is equipped.",
+        "Weapons have damage level and accuracy level.",
+        "Once opened, a spell book is useless.",
+        "Remember what the different potions do.",
+        "You can use the scroll wheel to zoom. ",
+        "Increase awareness lets you know what the monsters do.",
+        "Blocked attacks degrade weapon accuracy.",
+        "Unlock the map (M) by finding the Book of Maps.",
+        "The Sword of Yobled is at dungeon level 5 or below."
+    };
+
+    private final Main game;
     private Skin skin;
     private Stage stage;
+    private Label tipLabel;
+    private int tipIndex = 0;
 
     public HelpScreen(Main game) {
         this.game = game;
@@ -60,15 +85,20 @@ public class HelpScreen  extends ScreenAdapter {
         screenTable.add(keyLabel).pad(20).center();
         screenTable.row();
 
+        screenTable.add(new Label("Press T for a Game Tip", skin, "small")).pad(10).center();
+        screenTable.row();
         screenTable.add(new Label("Press C for Credits", skin, "small")).pad(10).center();
         screenTable.row();
-        screenTable.add(new Label("Press H to return", skin, "small")).pad(20).center();
+        screenTable.add(new Label("Press H to return", skin, "small")).pad(10).center();
+        screenTable.row();
+
+
+        tipLabel = new Label("", skin, "small");
+        tipLabel.setColor(Color.GOLD);
+        screenTable.add(tipLabel).pad(20).center();
         screenTable.pack();
 
         stage.addActor(screenTable);
-
-
-        //stage.addActor(new Label("Press H to return", skin));
     }
 
     @Override
@@ -79,6 +109,11 @@ public class HelpScreen  extends ScreenAdapter {
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.H)){
             game.setScreen( new GameScreen(game) );
+            return;
+        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.T)){
+            tipLabel.setText(tips[tipIndex]);
+            tipIndex = (tipIndex + 1) % tips.length;
             return;
         }
 

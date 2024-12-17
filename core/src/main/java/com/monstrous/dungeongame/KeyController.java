@@ -17,6 +17,7 @@ public class KeyController extends InputAdapter {
     private int throwSlot;
     private int frozenTimer;
     private int regenTimer;
+    private int digestionSpeed = 2;
 
     public KeyController(World world, DungeonScenes scenes) {
         this.world = world;
@@ -122,12 +123,14 @@ public class KeyController extends InputAdapter {
         // check for death
         if (world.rogue.stats.hitPoints <= 0) {
             MessageBox.addLine("You are dead. Press R to restart.");
+            world.rogue.scene.animationController.setAnimation(null);   // remove previous animation
+            world.rogue.scene.animationController.setAnimation("Death_A", 1);
         }
     }
 
     private void digestFood(){
-        System.out.println("food: "+world.rogue.stats.food);
-        world.rogue.stats.food --;
+        //System.out.println("food: "+world.rogue.stats.food);
+        world.rogue.stats.food -= digestionSpeed;
         if(world.rogue.stats.food == 20) {
             Sounds.stomachRumble();
             MessageBox.addLine("You feel hungry.");
@@ -139,6 +142,8 @@ public class KeyController extends InputAdapter {
         else if(world.rogue.stats.food == 0){
             Sounds.stomachRumble();
             MessageBox.addLine("You're so faint you can't move.");
+            world.rogue.scene.animationController.setAnimation(null);   // remove previous animation
+            world.rogue.scene.animationController.setAnimation("Lie_Idle", 3);
             frozenTimer = 5;
             world.rogue.stats.food = CharacterStats.REPLENISH_FOOD;
         }
@@ -180,6 +185,8 @@ public class KeyController extends InputAdapter {
                 MessageBox.addLine("Confirm with Y to restart.");
                 return false;
             case ' ':
+                world.rogue.scene.animationController.setAnimation(null);   // remove previous animation
+                world.rogue.scene.animationController.setAnimation("Idle", 3);
                 return true;        // do nothing
             case '#':   // cheat code
                 world.rogue.stats.haveBookOfMaps = true;
@@ -229,7 +236,7 @@ public class KeyController extends InputAdapter {
         // show the room if this is the first time we enter it
         int roomId = world.map.roomCode[y][x];
 
-        Gdx.app.log("Rogue on tile", world.map.getGrid(x,y).toString());
+        //Gdx.app.log("Rogue on tile", world.map.getGrid(x,y).toString());
         if(roomId >= 0) {
 
             Room room = world.map.rooms.get(roomId);
@@ -243,22 +250,9 @@ public class KeyController extends InputAdapter {
                 Gdx.app.log("Uncover corridor", " "+x+", "+y);
             scenes.visitCorridorSegment(world, x, y);
         }
-        if( world.map.getGrid(x,y) == TileType.STAIRS_DOWN){
-            world.rogue.z = -2;
-        }
-        else if( world.map.getGrid(x,y) == TileType.STAIRS_DOWN_DEEP){
-            world.rogue.z = -6;
-        }
-        else if( world.map.getGrid(x,y) == TileType.STAIRS_UP){
-            world.rogue.z = 2;
-        }
-        else if( world.map.getGrid(x,y) == TileType.STAIRS_UP_HIGH){
-            world.rogue.z = 6;
-        }
-        else {
-            world.rogue.z = 0;
-        }
+
         scenes.moveObject( world.rogue, x, y, world.rogue.z);
+
     }
 
 
@@ -357,6 +351,9 @@ public class KeyController extends InputAdapter {
     private boolean throwIt(int slotNr, int dx, int dy, Direction dir){
         System.out.println("Throw "+slotNr+" to dx:"+dx+", dy:"+dy);
 
+        world.rogue.scene.animationController.setAnimation(null);   // remove previous animation
+        world.rogue.scene.animationController.setAnimation("Throw", 1);
+
         Inventory.Slot slot = world.rogue.stats.inventory.slots[slotNr];
         if(slot.isEmpty())
             return true;
@@ -415,7 +412,6 @@ public class KeyController extends InputAdapter {
                 world.rogue.stats.inventory.addItem(prev);
         }
         scenes.adaptModel(world.rogue.scene, world.rogue.stats);
-
     }
 
     private void dropSlot(int slotNr ){
@@ -452,9 +448,6 @@ public class KeyController extends InputAdapter {
         }
     }
 
-
-
-
     private void readSpell(GameObjectType type){
         MessageBox.addLine("You read the spell book.");
         if(type == GameObjectTypes.spellBookClosed) {
@@ -463,7 +456,10 @@ public class KeyController extends InputAdapter {
             MessageBox.addLine("It is a book of maps.");
             world.rogue.stats.haveBookOfMaps = true;
         } else if(type == GameObjectTypes.spellBookClosedC) {
-            MessageBox.addLine("It has no effect.");
+            if(world.level == world.swordLevel)
+                MessageBox.addLine("The Sword of Yobled is at this level.");
+            else
+                MessageBox.addLine("The Sword of Yobled is not at this level.");
         } else if(type == GameObjectTypes.spellBookClosedD) {
             MessageBox.addLine("It has no effect.");
         }
@@ -480,6 +476,9 @@ public class KeyController extends InputAdapter {
         } else if(potion.type == GameObjectTypes.bottle_B_green){
             world.rogue.stats.hitPoints = Math.max(CharacterStats.MAX_HITPOINTS, world.rogue.stats.hitPoints+3);
             MessageBox.addLine("You feel invigorated.");
+        } else if(potion.type == GameObjectTypes.bottle_A_green) {
+            digestionSpeed = 1;
+            MessageBox.addLine("This aids your digestion.");
         } else {
             MessageBox.addLine("It has no effect.");
         }

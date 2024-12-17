@@ -99,6 +99,14 @@ public class Inventory {
         return slots[slot].removeItem();
     }
 
+    public GameObject removeItem(GameObject item) {
+        for(int i = 0; i < numSlots; i++) {
+            if(!slots[i].isEmpty() && slots[i].object.type == item.type && slots[i].count > 0)
+                return removeItem(i);
+        }
+        return null;
+    }
+
     public boolean contains( GameObjectType type ){
         for(int i = 0; i < numSlots; i++) {
             if(!slots[i].isEmpty() && slots[i].object.type == type)

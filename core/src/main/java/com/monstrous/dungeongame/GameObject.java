@@ -100,8 +100,14 @@ public class GameObject {
         int ty = y+dy;
         TileType from = world.map.getGrid(x, y);
         TileType cell = world.map.getGrid(tx, ty);
-        if(!TileType.walkable(cell, from))
+        if(!TileType.walkable(cell, from)){
+            if(scene != null) {
+                scene.animationController.setAnimation(null);   // remove previous animation
+                scene.animationController.setAnimation("Idle", 1);
+            }
             return;     // don't move to non walkable cell
+        }
+
 
         // what is in the target cell? can be enemy, pickup or nothing
         GameObject occupant  = world.gameObjects.getOccupant(tx, ty);
@@ -114,9 +120,9 @@ public class GameObject {
         }
         if(opponent != null){
             if(type == GameObjectTypes.imp && MathUtils.random(6) > 3)
-                rob(world,  world.rogue);
+                rob(world,  opponent);
             else
-                fight(world, scenes, world.rogue);
+                fight(world, scenes, opponent);
             return;
         }
 
@@ -127,10 +133,21 @@ public class GameObject {
         // move to new tile
         x = tx;
         y = ty;
+        switch( world.map.getGrid(x,y)){
+            case STAIRS_DOWN:           z = -2; break;
+            case STAIRS_DOWN_DEEP:      z = -6; break;
+            case STAIRS_UP:             z = 2; break;
+            case STAIRS_UP_HIGH:        z = 6; break;
+            default:                    z = 0; break;
+        }
         scenes.moveObject( this, x, y, z);
 
+        boolean pickingUp = false;
         if(occupant != null && occupant.type.pickup) {
-            pickUp(world, scenes, occupant);
+            if(type.isPlayer || occupant.type != GameObjectTypes.bigSword) {  // don't let monsters pick up sword
+                pickUp(world, scenes, occupant);
+                pickingUp = true;
+            }
         }
         if(!type.isPlayer) {
             world.gameObjects.setOccupant(x, y, this);
@@ -144,6 +161,11 @@ public class GameObject {
                 scenes.addScene( this );
             }
         }
+        if(scene != null && !pickingUp) {
+            scene.animationController.setAnimation(null);   // remove previous animation
+            scene.animationController.setAnimation("Walking_A", 1);
+        }
+
     }
 
     // this character will steal all victim's gold
@@ -163,6 +185,11 @@ public class GameObject {
 
     private void pickUp(World world, DungeonScenes scenes, GameObject item ){
         Gdx.app.log("Pickup", item.type.name);
+
+        if(scene != null) {
+            scene.animationController.setAnimation(null);   // remove previous animation
+            scene.animationController.setAnimation("PickUp", 1);
+        }
 
         if(stats.inventory.addItem(item)){  // if there is room in the inventory
 
@@ -187,15 +214,60 @@ public class GameObject {
             if (item.type == GameObjectTypes.gold) {
                 stats.gold += item.quantity;
             }
+            if(!type.isPlayer)
+                autoEquip(item);
             if (item.type == GameObjectTypes.bigSword) {
                 MessageBox.addLine("This is what you came for!");
                 MessageBox.addLine("Now return it to the surface.");
+                if(scene!= null) {
+                    scene.animationController.setAnimation(null);   // remove previous animation
+                    scene.animationController.setAnimation("Cheer", 3);
+                }
             }
         }
     }
 
-    private void fight(World world, DungeonScenes scenes, GameObject other){
+    // used by enemies to equip weapons or armour
+    private void autoEquip( GameObject item ){
 
+        if(item.type.isArmour){
+            GameObject prev = stats.armourItem;
+            // if it better that currently equipped one? or nothing equipped yet?
+            if(prev == null || item.protection > prev.protection) {
+                stats.armourItem = item;
+                // remove item from inventory
+                stats.inventory.removeItem(item);
+                // put old one back in inventory
+                if (prev != null)
+                    stats.inventory.addItem(prev);
+            }
+        } else if(item.type.isWeapon){
+            GameObject prev = stats.weaponItem;
+            if(prev == null || item.damage > prev.damage) {
+                stats.weaponItem = item;
+                stats.inventory.removeItem(item);
+                if (prev != null)
+                    stats.inventory.addItem(prev);
+            }
+        }
+    }
+
+    private void fight(World world, DungeonScenes scenes, GameObject other) {
+
+
+        if (type.isPlayer || other.type.isPlayer) {
+            GameObject enemy = this;
+            if (type.isPlayer)
+                enemy = other;
+
+            System.out.println("enemy "+enemy.type.name+ " xp:" + enemy.stats.experience + " hp:" + enemy.stats.hitPoints + " wp:" + (enemy.stats.weaponItem==null?"none":enemy.stats.weaponItem.type.name) +
+                " armour:" + (enemy.stats.armourItem == null?"none":enemy.stats.armourItem.type.name));
+        }
+
+        if(scene != null){
+            scene.animationController.setAnimation(null);   // remove previous animation
+            scene.animationController.setAnimation("Unarmed_Melee_Attack_Punch_A", 1);
+        }
         int hp = 1;
         String verb = "hits";
         if(stats.weaponItem != null) {
@@ -207,8 +279,10 @@ public class GameObject {
         if(stats.weaponItem != null)
             accuracy += stats.weaponItem.accuracy;
         if(MathUtils.random(5+accuracy) < 3 ){
-            if(type.isPlayer || other.type.isPlayer )
+            if(type.isPlayer || other.type.isPlayer ) {
                 Sounds.swoosh();
+
+            }
             MessageBox.addLine(type.name + " misses.");
         }
         else {
@@ -276,7 +350,8 @@ public class GameObject {
         if(type.isPlayer || enemy.type.isPlayer )
             Sounds.monsterDeath();
         MessageBox.addLine(type.name+ " defeated the "+enemy.type.name+". (XP +"+enemy.stats.experience+")");
-        scenes.remove(enemy.scene);
+        if(!enemy.type.isPlayer)
+            scenes.remove(enemy.scene);
         world.gameObjects.clearOccupant(enemy.x, enemy.y);
         world.enemies.remove(enemy);
         stats.experience += enemy.stats.experience;
