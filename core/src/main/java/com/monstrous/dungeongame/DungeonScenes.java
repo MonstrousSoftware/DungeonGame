@@ -21,6 +21,9 @@ public class DungeonScenes implements Disposable {
     private SceneManager sceneManager;
 
     private SceneAsset sceneAssetFloor;
+    private SceneAsset sceneAssetFloorA;
+    private SceneAsset sceneAssetFloorB;
+    private SceneAsset sceneAssetFloorC;
     private SceneAsset sceneAssetWall;
     private SceneAsset sceneAssetWall2;
     private SceneAsset sceneAssetWall3;
@@ -37,7 +40,9 @@ public class DungeonScenes implements Disposable {
     public DungeonScenes(SceneManager sceneManager) {
         this.sceneManager = sceneManager;
 
-        sceneAssetFloor = new GLTFLoader().load(Gdx.files.internal("models/floor_tile_large.gltf"));
+        sceneAssetFloorA = new GLTFLoader().load(Gdx.files.internal("models/floor_wood_large.gltf"));
+        sceneAssetFloorB = new GLTFLoader().load(Gdx.files.internal("models/floor_tile_large.gltf"));
+        sceneAssetFloorC = new GLTFLoader().load(Gdx.files.internal("models/floor_dirt_large.gltf"));
         sceneAssetWall = new GLTFLoader().load(Gdx.files.internal("models/wall.gltf"));
         sceneAssetWall2 = new GLTFLoader().load(Gdx.files.internal("models/wall_arched.gltf"));
         sceneAssetWall3 = new GLTFLoader().load(Gdx.files.internal("models/wall_archedwindow_gated.gltf"));
@@ -49,6 +54,17 @@ public class DungeonScenes implements Disposable {
         sceneAssetWallCrossing = new GLTFLoader().load(Gdx.files.internal("models/wall_crossing.gltf"));
         sceneAssetStairs = new GLTFLoader().load(Gdx.files.internal("models/stairs.gltf"));
         sceneAssetPillar = new GLTFLoader().load(Gdx.files.internal("models/pillar.gltf"));
+
+        sceneAssetFloor  = sceneAssetFloorA;    // alias
+    }
+
+    public void selectFloorType(int level){
+        if(level == 0)
+            sceneAssetFloor  = sceneAssetFloorA;
+        else if (level < 4)
+            sceneAssetFloor  = sceneAssetFloorB;
+        else
+            sceneAssetFloor  = sceneAssetFloorC;
     }
 
     public void showMap(DungeonMap map){
@@ -67,6 +83,7 @@ public class DungeonScenes implements Disposable {
 
                 Scene tile;
                 TileType cell = map.getGrid(x,y);
+                // floor tile, e.g. under wall
                 if(cell!= TileType.VOID && cell != TileType.STAIRS_DOWN && cell != TileType.STAIRS_DOWN_DEEP){
                     tile = new Scene(sceneAssetFloor.scene);
                     setTransform(tile.modelInstance.transform, x, y, 0, Direction.NORTH);
@@ -151,10 +168,12 @@ public class DungeonScenes implements Disposable {
 
         world.map.tileSeen[y][x] = true;
 
+        // add floor tile scene
         Scene tile = new Scene(sceneAssetFloor.scene);
         setTransform(tile.modelInstance.transform, x, y, 0, Direction.NORTH);
         sceneManager.addScene(tile);
 
+        // add doorway if needed
         TileType cell = world.map.getGrid(x,y);
         if(cell == TileType.DOORWAY){
             Scene doorway = new Scene(sceneAssetDoorWay.scene);
@@ -162,6 +181,7 @@ public class DungeonScenes implements Disposable {
             sceneManager.addScene(doorway);
         }
 
+        // add any items on floor
         GameObject occupant = world.gameObjects.getOccupant(x,y);
         if(occupant != null && occupant.scene == null){
             addScene(occupant);
@@ -331,6 +351,7 @@ public class DungeonScenes implements Disposable {
         }
     }
 
+    // mark the room or corridor segment where Rogue is as 'uncovered'
     public void liftFog(World world){
         int roomId = world.map.roomCode[world.rogue.y][world.rogue.x];
         if(roomId >= 0) {

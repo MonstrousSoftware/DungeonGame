@@ -96,7 +96,7 @@ public class World {
 
 
         // map gets bigger at lower levels: keep aspect ratio 3/2
-        // todo match up stairs
+        //
         int w = MAP_WIDTH+DELTA_WIDTH*level;
         int h = MAP_HEIGHT+DELTA_HEIGHT*level;
         map = new DungeonMap(seed, level, w, h, stairsFromAbove, levelData.stairPortals);

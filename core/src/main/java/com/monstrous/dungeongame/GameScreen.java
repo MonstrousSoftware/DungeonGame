@@ -114,6 +114,7 @@ public class GameScreen extends ScreenAdapter {
         sceneManager.environment.set(PBRCubemapAttribute.createDiffuseEnv(diffuseCubemap));
 
         dungeonScenes = new DungeonScenes(sceneManager);
+        dungeonScenes.selectFloorType(world.level);
         world.isRebuilt = false;
         dungeonScenes.createRogueModel( world );
         dungeonScenes.liftFog( world );
@@ -166,6 +167,7 @@ public class GameScreen extends ScreenAdapter {
             sceneManager.getRenderableProviders().clear();
             for(GameObject object: world.gameObjects.gameObjects)
                 object.scene = null;
+            dungeonScenes.selectFloorType(world.level);
             dungeonScenes.createRogueModel( world );
             dungeonScenes.liftFog( world );
             int roomId = world.map.roomCode[world.rogue.y][world.rogue.x];
