@@ -115,14 +115,6 @@ public class GameScreen extends ScreenAdapter {
 
         dungeonScenes = new DungeonScenes(sceneManager);
         world.isRebuilt = true;
-//        dungeonScenes.selectFloorType(world.level);
-//        world.isRebuilt = false;
-//        dungeonScenes.createRogueModel( world );
-//        dungeonScenes.uncoverAreaInPlayerView( world );
-//        dungeonScenes.showMap( world.map, world.levelData );
-//        dungeonScenes.showCorridors( world.map, world.levelData );
-//        dungeonScenes.populateMap(world);
-
 
         camController = new OrthoCamController(camera);
         keyController = new KeyController(world, dungeonScenes );
@@ -135,7 +127,6 @@ public class GameScreen extends ScreenAdapter {
         im.addProcessor(keyController);
         im.addProcessor(gui.stage);
         Gdx.input.setInputProcessor(im);
-
 
         bgColor = new Color(0x3e1323ff);
     }
@@ -171,16 +162,11 @@ public class GameScreen extends ScreenAdapter {
             dungeonScenes.selectFloorType(world.level);
             dungeonScenes.createRogueModel( world );
             dungeonScenes.uncoverAreaInPlayerView( world );
-//            int roomId = world.map.roomCode[world.rogue.y][world.rogue.x];
-//            Room room = world.map.rooms.get(roomId);
-//            dungeonScenes.showRoom( world.map, world.levelData, room );
             dungeonScenes.showMap( world.map, world.levelData );
             dungeonScenes.showCorridors( world.map, world.levelData ); //
             dungeonScenes.populateMap(world, world.levelData);
-            //dungeonScenes.populateRoom(world, room);
         }
 
-        //camController.setTrackedObject( world.rogue.scene.modelInstance );
         camController.update(deltaTime, world.rogue.scene.modelInstance);
         world.secondsElapsed += deltaTime;
 
@@ -201,7 +187,6 @@ public class GameScreen extends ScreenAdapter {
 
         // 3d view
         filter.render(fbo,0,0, Gdx.graphics.getWidth() - GUI.PANEL_WIDTH, Gdx.graphics.getHeight());
-
 
         gui.render(deltaTime);
     }

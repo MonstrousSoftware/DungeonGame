@@ -18,7 +18,6 @@ public class World {
     public int swordLevel;
 
     public DungeonMap map;                  // static architecture
-    //public GameObjects gameObjects;         // items, enemies
     public GameObject rogue;                // the player
     public Enemies enemies;                 // subset of gameObjects
     public boolean isRebuilt;               // force scenes to be recreated
@@ -106,7 +105,6 @@ public class World {
 
         enemies = new Enemies();
         enemies.addFromObjects(levelData.gameObjects);
-        // add dynamic object to the gameObjects list and its occupants grid
 
         if(rogue == null)   // don't create new rogue when changing level
             rogue = Populator.placeRogue(map, levelData.gameObjects);
