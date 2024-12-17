@@ -28,7 +28,7 @@ public class Populator {
 
             GameObjectType type = null;
 
-                int goodieType = MathUtils.random(0, 21);
+                int goodieType = MathUtils.random(0,22);
                 switch (goodieType) {
                     case 0:
                         type = GameObjectTypes.gold;
@@ -88,6 +88,9 @@ public class Populator {
                     case 21:
                         type = GameObjectTypes.arrows;
                         break;
+                    case 22:
+                        type = GameObjectTypes.axe;
+                        break;
                 }
 
 
@@ -113,6 +116,30 @@ public class Populator {
             count--;
             if(count == 0)
                 return;
+        }
+    }
+
+    public static void placeSword(DungeonMap map, GameObjects gameObjects){
+        while(true) {
+            // choose random room
+            int location = MathUtils.random(1, map.rooms.size-1);
+            Room room = map.rooms.get(location);
+            if(room.isStairWell)    // not a stairwell
+                continue;
+            // check if there is something in the centre?
+            GameObject occupant = gameObjects.getOccupant(room.centre.x, room.centre.y);
+            if(occupant != null)
+                continue;
+
+            GameObject sword = new GameObject(GameObjectTypes.bigSword, room.centre.x, room.centre.y, Direction.SOUTH);
+            gameObjects.setOccupant(room.centre.x, room.centre.y, sword);
+            gameObjects.add(sword);
+            sword.z = sword.type.z;
+            sword.quantity = 1;
+            sword.direction = Direction.SOUTH;
+            sword.damage = sword.type.initDamage;
+            sword.accuracy = sword.type.initAccuracy;
+            return;
         }
     }
 
@@ -187,23 +214,5 @@ public class Populator {
         }
     }
 
-    public static void placeSword(DungeonMap map, GameObjects gameObjects){
-        while(true) {
-            // choose random room
-            int location = MathUtils.random(1, map.rooms.size-1);
-            Room room = map.rooms.get(location);
-            if(room.isStairWell)    // not a stairwell
-                continue;
-            // check if there is something in the centre?
-            GameObject occupant = gameObjects.getOccupant(room.centre.x, room.centre.y);
-            if(occupant != null)
-                continue;
 
-            GameObject sword = new GameObject(GameObjectTypes.bigSword, room.centre.x, room.centre.y, Direction.SOUTH);
-            gameObjects.setOccupant(room.centre.x, room.centre.y, sword);
-            gameObjects.add(sword);
-            sword.direction = Direction.SOUTH;
-            return;
-        }
-    }
 }

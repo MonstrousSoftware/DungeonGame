@@ -111,6 +111,15 @@ public class GameObject {
 
         // what is in the target cell? can be enemy, pickup or nothing
         GameObject occupant  = world.gameObjects.getOccupant(tx, ty);
+
+        if( occupant != null && occupant.type == GameObjectTypes.bigSword && !type.isPlayer ) {  // don't let monsters pick up sword or walk over sword
+            return;
+        }
+
+
+//        if(type.isPlayer)
+//            System.out.println("Occupant: "+(occupant == null? "--" : occupant.type.name));
+
         GameObject opponent = null;
         if(occupant != null && occupant.type.isEnemy){
             opponent = occupant;
@@ -142,12 +151,11 @@ public class GameObject {
         }
         scenes.moveObject( this, x, y, z);
 
-        boolean pickingUp = false;
+        boolean pickingUpAnimation = false;
         if(occupant != null && occupant.type.pickup) {
-            if(type.isPlayer || occupant.type != GameObjectTypes.bigSword) {  // don't let monsters pick up sword
-                pickUp(world, scenes, occupant);
-                pickingUp = true;
-            }
+            pickUp(world, scenes, occupant);
+            pickingUpAnimation = true;
+
         }
         if(!type.isPlayer) {
             world.gameObjects.setOccupant(x, y, this);
@@ -161,7 +169,7 @@ public class GameObject {
                 scenes.addScene( this );
             }
         }
-        if(scene != null && !pickingUp) {
+        if(scene != null && !pickingUpAnimation) {
             scene.animationController.setAnimation(null);   // remove previous animation
             scene.animationController.setAnimation("Walking_A", 1);
         }
@@ -184,7 +192,7 @@ public class GameObject {
 
 
     private void pickUp(World world, DungeonScenes scenes, GameObject item ){
-        Gdx.app.log("Pickup", item.type.name);
+        //Gdx.app.log("Pickup", item.type.name);
 
         if(scene != null) {
             scene.animationController.setAnimation(null);   // remove previous animation
@@ -215,7 +223,7 @@ public class GameObject {
                 stats.gold += item.quantity;
             }
             if(!type.isPlayer)
-                autoEquip(item);
+                autoEquip(scenes, item);
             if (item.type == GameObjectTypes.bigSword) {
                 MessageBox.addLine("This is what you came for!");
                 MessageBox.addLine("Now return it to the surface.");
@@ -228,7 +236,7 @@ public class GameObject {
     }
 
     // used by enemies to equip weapons or armour
-    private void autoEquip( GameObject item ){
+    private void autoEquip( DungeonScenes scenes, GameObject item ){
 
         if(item.type.isArmour){
             GameObject prev = stats.armourItem;
@@ -238,16 +246,26 @@ public class GameObject {
                 // remove item from inventory
                 stats.inventory.removeItem(item);
                 // put old one back in inventory
-                if (prev != null)
+                if (prev != null) {
+                    if(scene !=null)
+                        scenes.detachModel(scene, "handslot.l", prev);
                     stats.inventory.addItem(prev);
+                }
+                if(scene!=null)
+                    scenes.attachModel(scene, "handslot.l",  item);
             }
         } else if(item.type.isWeapon){
             GameObject prev = stats.weaponItem;
             if(prev == null || item.damage > prev.damage) {
                 stats.weaponItem = item;
                 stats.inventory.removeItem(item);
-                if (prev != null)
+                if (prev != null) {
+                    if(scene !=null)
+                        scenes.detachModel(scene, "handslot.r", prev);
                     stats.inventory.addItem(prev);
+                }
+                if(scene !=null)
+                    scenes.attachModel(scene, "handslot.r",  item);
             }
         }
     }

@@ -17,13 +17,11 @@ import static com.monstrous.dungeongame.DungeonMap.*;
 public class MapScreen extends ScreenAdapter {
     //public final static int MARGIN = 5;
 
-    private Main game;
-    private World world;
-    //private DungeonMap map;
+    private final Main game;
+    private final World world;
     private ShapeRenderer shapeRenderer;
     private OrthographicCamera camera;
     private FitViewport viewport;
-    private Viewport uiViewport;
     private SpriteBatch batch;
     private BitmapFont font;
     private StringBuilder sb;
@@ -38,7 +36,6 @@ public class MapScreen extends ScreenAdapter {
         shapeRenderer = new ShapeRenderer();
         camera = new OrthographicCamera();
         viewport = new FitViewport(world.map.mapWidth, world.map.mapHeight, camera);
-        uiViewport = new ScreenViewport();
         batch = new SpriteBatch();
         font = new BitmapFont();
         sb = new StringBuilder();
@@ -197,11 +194,10 @@ public class MapScreen extends ScreenAdapter {
         sb.append(world.seed);
         sb.append(" Level: ");
         sb.append(world.level);
+
         batch.begin();
         font.draw(batch, sb.toString(), 10 ,90 );
-
         font.draw(batch, "Press M to return", 10 ,50 );
-
         batch.end();
 
     }
@@ -209,8 +205,6 @@ public class MapScreen extends ScreenAdapter {
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height, true);
-        uiViewport.update(width, height, true);
-        batch.setProjectionMatrix(uiViewport.getCamera().combined);
     }
 
 
@@ -223,5 +217,6 @@ public class MapScreen extends ScreenAdapter {
     public void dispose() {
         // Destroy screen's assets here.
         shapeRenderer.dispose();
+        batch.dispose();
     }
 }

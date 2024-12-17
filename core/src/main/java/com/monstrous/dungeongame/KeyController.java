@@ -131,11 +131,11 @@ public class KeyController extends InputAdapter {
     private void digestFood(){
         //System.out.println("food: "+world.rogue.stats.food);
         world.rogue.stats.food -= digestionSpeed;
-        if(world.rogue.stats.food == 20) {
+        if(world.rogue.stats.food == 30) {
             Sounds.stomachRumble();
             MessageBox.addLine("You feel hungry.");
         }
-        else if(world.rogue.stats.food == 6) {
+        else if(world.rogue.stats.food == 10) {
             Sounds.stomachRumble();
             MessageBox.addLine("You're so hungry you feel faint.");
         }
@@ -241,13 +241,13 @@ public class KeyController extends InputAdapter {
 
             Room room = world.map.rooms.get(roomId);
             if (!room.uncovered) {
-                Gdx.app.log("Uncover room", ""+roomId);
+                //Gdx.app.log("Uncover room", ""+roomId);
                 scenes.showRoom(world.map, room);
                 scenes.populateRoom(world, room);
             }
         } else if( world.map.getGrid(x,y) == TileType.CORRIDOR){
-            if(!world.map.tileSeen[y][x])
-                Gdx.app.log("Uncover corridor", " "+x+", "+y);
+//            if(!world.map.tileSeen[y][x])
+//                Gdx.app.log("Uncover corridor", " "+x+", "+y);
             scenes.visitCorridorSegment(world, x, y);
         }
 
@@ -403,15 +403,22 @@ public class KeyController extends InputAdapter {
         if(slot.object.type.isArmour){
             GameObject prev = world.rogue.stats.armourItem;
             world.rogue.stats.armourItem = slot.removeItem();
-            if(prev != null)
+            if(prev != null) {
                 world.rogue.stats.inventory.addItem(prev);
+                scenes.detachModel(world.rogue.scene, "handslot.l",  prev);
+            }
+            scenes.attachModel(world.rogue.scene, "handslot.l",  world.rogue.stats.armourItem);
+
         } else if(slot.object.type.isWeapon){
             GameObject prev = world.rogue.stats.weaponItem;
             world.rogue.stats.weaponItem = slot.removeItem();
-            if(prev != null)
+            if(prev != null) {
                 world.rogue.stats.inventory.addItem(prev);
+                scenes.detachModel(world.rogue.scene, "handslot.r",  prev);
+            }
+            scenes.attachModel(world.rogue.scene, "handslot.r",  world.rogue.stats.weaponItem);
         }
-        scenes.adaptModel(world.rogue.scene, world.rogue.stats);
+        //scenes.adaptModel(world.rogue.scene, world.rogue.stats);
     }
 
     private void dropSlot(int slotNr ){

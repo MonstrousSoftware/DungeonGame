@@ -25,6 +25,7 @@ public class GameObjectTypes implements Disposable {
     public static GameObjectType shield2;
     public static GameObjectType arrows;
     public static GameObjectType arrow;
+    public static GameObjectType axe;
 
     public static GameObjectType spellBookOpen;
     public static GameObjectType spellBookClosed;
@@ -144,7 +145,12 @@ public class GameObjectTypes implements Disposable {
         shield2.initProtection = 10;
         types.add(shield2);
 
-
+        axe = new GameObjectType("an Axe", false, true);
+        axe.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/axe_1handed.gltf"));
+        axe.isWeapon = true;
+        axe.initDamage = 15;
+        axe.initAccuracy = 5;
+        types.add(axe);
 
         spellBookClosed = new GameObjectType("a Spellbook", false, true);
         spellBookClosed.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_closed.gltf"));
@@ -223,6 +229,9 @@ public class GameObjectTypes implements Disposable {
 
         bigSword = new GameObjectType("the Sword of Yobled!", false, true);
         bigSword.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/sword_2handed_color.gltf"));
+        bigSword.isWeapon = true;
+        bigSword.initDamage = 25;
+        bigSword.initAccuracy = 5;
         types.add(bigSword);
 
 
@@ -234,7 +243,7 @@ public class GameObjectTypes implements Disposable {
         ShowCase showCase = new ShowCase();
         emptyIcon = showCase.makeIcon(null, ICON_SIZE, ICON_SIZE, false);
         for(GameObjectType type : types ){
-            Sprite icon = showCase.makeIcon(type.sceneAsset, ICON_SIZE, ICON_SIZE, type.isEnemy || type.isPlayer);
+            Sprite icon = showCase.makeIcon(type.sceneAsset, ICON_SIZE, ICON_SIZE, type.isEnemy || type.isPlayer || type == GameObjectTypes.bigSword);
             type.icon = icon;
         }
      }

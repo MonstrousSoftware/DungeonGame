@@ -72,12 +72,12 @@ public class Inventory {
             for (int i = 0; i < numSlots; i++) {
                 if (!slots[i].isEmpty() && slots[i].object.type == type) {
                     slots[i].addItem(item);
-                    Gdx.app.log("Inventory", "slot " + i + " type: " + type.name + " count:" + slots[i].count);
+                    //Gdx.app.log("Inventory", "slot " + i + " type: " + type.name + " count:" + slots[i].count);
                     return true;
                 }
                 if (!slots[i].isEmpty() && slots[i].object.type.isArrow && item.type.isArrow) {
                     slots[i].addItem(item);
-                    Gdx.app.log("Inventory", "slot " + i + " type: " + type.name + " count:" + slots[i].count);
+                    //Gdx.app.log("Inventory", "slot " + i + " type: " + type.name + " count:" + slots[i].count);
                     return true;
                 }
             }

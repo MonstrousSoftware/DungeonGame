@@ -36,6 +36,7 @@ public class GUI implements Disposable {
     private Inventory equippedInventory;
     private InventorySlotButton weaponButton;
     private InventorySlotButton armourButton;
+    private Label clockLabel;
 
     public GUI( World world ) {
         this.world = world;
@@ -48,11 +49,10 @@ public class GUI implements Disposable {
         equippedInventory = new Inventory(2);
         inventoryWindow = new InventoryWindow("Inventory", skin, world.rogue.stats.inventory);
         rogueInventory = world.rogue.stats.inventory;
-
     }
 
     private void rebuild(){
-        Gdx.app.log("GUI", "rebuild");
+        //Gdx.app.log("GUI", "rebuild");
         stage.clear();
 
         stage.addActor(inventoryWindow);
@@ -117,9 +117,17 @@ public class GUI implements Disposable {
         uiPanel.add(messageBox).pad(10).top().left().expand();
         uiPanel.row();
 
+
+
+
         Label helpLabel = new Label("Press H for help", skin, "smaller");
         helpLabel.setColor(Color.GRAY);
-        uiPanel.add(helpLabel).pad(30).bottom().right();
+        uiPanel.add(helpLabel).pad(10).bottom().right();
+        uiPanel.row();
+
+        clockLabel = new Label("00:00:00", skin, "smaller");
+        clockLabel.setColor(Color.GRAY);
+        uiPanel.add(clockLabel).pad(10).bottom().left();
         uiPanel.pack();
 
         // Screen is split in 2 columns. Left for 3d view and Right for fixed width ui panel
@@ -175,6 +183,27 @@ public class GUI implements Disposable {
             rogueInventory = world.rogue.stats.inventory;
         }
         inventoryWindow.update();
+
+        if(world.rogue.stats.hitPoints > 0) {   // clock stops when player dies
+
+            int hh = (int) (world.secondsElapsed / 3600);
+            int mm = (int) ((world.secondsElapsed - 3600 * hh) / 60);
+            int ss = (int) world.secondsElapsed - 60 * mm;
+            sb.setLength(0);
+            if (hh > 0) {
+                sb.append(hh);
+                sb.append(":");
+                if (mm < 10)
+                    sb.append("0");
+            }
+            sb.append(mm);
+            sb.append(":");
+            if (ss < 10)
+                sb.append("0");
+            sb.append(ss);
+            clockLabel.setText(sb.toString());
+        }
+
     }
 
     private void setWeapon(){
@@ -214,7 +243,7 @@ public class GUI implements Disposable {
     }
 
     public void resize(int width, int height) {
-        Gdx.app.log("GUI resize", "gui " + width + " x " + height);
+        //Gdx.app.log("GUI resize", "gui " + width + " x " + height);
         stage.getViewport().update(width, height, true);
         rebuild();
     }

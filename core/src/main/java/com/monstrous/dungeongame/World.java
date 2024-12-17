@@ -5,6 +5,7 @@ package com.monstrous.dungeongame;
 // and the items and enemies within it: gameObjects
 
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.utils.Array;
 
 public class World {
     private final static int MAP_WIDTH = 30;
@@ -21,10 +22,25 @@ public class World {
     public GameObject rogue;
     public Enemies enemies;
     public boolean isRebuilt;
+    public float secondsElapsed;
+    public Array<LevelData> levelDataArray;
+    private LevelData levelData;
+
 
     public World() {
+        secondsElapsed = 0;
         GameObjectTypes gameObjectTypes = new GameObjectTypes();
-        randomizeSwordLevel();      // where to hide the Sword of Yobled
+        levelDataArray = new Array<>();
+        create();
+    }
+
+    private void create(){
+        MessageBox.clear();
+        rogue = null;
+        level = 0;
+        secondsElapsed = 0;
+        levelDataArray.clear();
+        randomizeSwordLevel();
         generateLevel();
     }
 
@@ -35,6 +51,8 @@ public class World {
     }
 
     public void levelUp(){
+        if(level == 0)
+            return;
         level--;
         map.dispose();
         generateLevel();
@@ -47,30 +65,41 @@ public class World {
     }
 
     public void restart(){
-        MessageBox.clear();
-        seed = MathUtils.random(1,9999);
-        rogue = null;
-        level = 0;
         map.dispose();
-        randomizeSwordLevel();
-        generateLevel();
+        seed = MathUtils.random(1,9999);
         MessageBox.addLine("World seed: "+seed);
+        create();
     }
+
+
 
     private void randomizeSwordLevel(){
         MathUtils.random.setSeed(seed);
         // set level where the sword can be found
         swordLevel = 5 + MathUtils.random(0,2);
-        //swordLevel = 1;
     }
 
     private void generateLevel(){
         isRebuilt = true;
+
+        if(level > levelDataArray.size-1) {       // new level
+            levelData = new LevelData(level);
+            levelDataArray.add(levelData);
+        } else {    // existing level
+            levelData = levelDataArray.get(level);
+        }
+        Array<Room> stairsFromAbove;
+        if(level == 0)
+            stairsFromAbove = new Array<>();
+        else
+            stairsFromAbove = levelDataArray.get(level-1).stairPortals;
+
+
         // map gets bigger at lower levels: keep aspect ratio 3/2
         // todo match up stairs
         int w = MAP_WIDTH+DELTA_WIDTH*level;
         int h = MAP_HEIGHT+DELTA_HEIGHT*level;
-        map = new DungeonMap(seed, level, w, h);
+        map = new DungeonMap(seed, level, w, h, stairsFromAbove, levelData.stairPortals);
 
         gameObjects = new GameObjects(w, h);
         enemies = new Enemies(this);

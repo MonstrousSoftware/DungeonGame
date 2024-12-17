@@ -41,8 +41,8 @@ public class InventorySlotButton extends Button {
         countTable.pack();
 
         Table buffTable = new Table();
-        buffLabel = new Label("", skin, "smaller");
-        accuracyLabel = new Label("", skin, "smaller");
+        buffLabel = new Label("--", skin, "smaller");
+        accuracyLabel = new Label("--", skin, "smaller");
         buffTable.add(buffLabel).left().top();    //
         buffTable.add(accuracyLabel).right().top().expandX().expandY();
         buffTable.pack();

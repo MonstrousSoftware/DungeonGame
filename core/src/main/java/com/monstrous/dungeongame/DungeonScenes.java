@@ -277,17 +277,57 @@ public class DungeonScenes implements Disposable {
         GameObject rogue = world.rogue;
         addScene(rogue);
         adaptModel(rogue.scene, rogue.stats);
-        //rogue.scene.animationController.setAnimation("Walking_A", 1);
+        rogue.scene.animationController.setAnimation("Idle", 1);
 
 
-        String armature = "Rig";
-        if(armature != null) {
-            Gdx.app.log("GameObjectType",  " armature: "+armature + " animations: "+rogue.scene.modelInstance.animations.size);
-            for(int i = 0; i < rogue.scene.modelInstance.animations.size; i++) {
-                String id = rogue.scene.modelInstance.animations.get(i).id;
-                Gdx.app.log(" animation :", id);
+//        String armature = "Rig";
+//        if(armature != null) {
+//            Gdx.app.log("GameObjectType",  " armature: "+armature + " animations: "+rogue.scene.modelInstance.animations.size);
+//            for(int i = 0; i < rogue.scene.modelInstance.animations.size; i++) {
+//                String id = rogue.scene.modelInstance.animations.get(i).id;
+//                Gdx.app.log(" animation :", id);
+//            }
+//        }
+    }
+
+    public void attachModel(Scene character, String nodeName, GameObject item){
+        if(item == null || item.scene == null)
+            return;
+        for(Node node : character.modelInstance.nodes){
+            attachToNode( node, nodeName, item.scene);
+        }
+    }
+
+    // recursive method to attach weapons
+    private void attachToNode( Node node, String nodeName, Scene weapon ){
+
+        if(node.id.contentEquals(nodeName)){
+            node.addChild(weapon.modelInstance.nodes.first());
+        }
+        else {
+            for (Node n : node.getChildren()) {
+                attachToNode( n, nodeName, weapon);
             }
+        }
+    }
+    public void detachModel(Scene character, String nodeName, GameObject item){
+        if(item == null || item.scene == null)
+            return;
+        for(Node node : character.modelInstance.nodes){
+            detachFromNode( node, nodeName, item.scene);
+        }
+    }
 
+    // recursive method to attach weapons
+    private void detachFromNode( Node node, String nodeName, Scene weapon ){
+
+        if(node.id.contentEquals(nodeName)){
+            node.removeChild(weapon.modelInstance.nodes.first());
+        }
+        else {
+            for (Node n : node.getChildren()) {
+                detachFromNode( n, nodeName, weapon);
+            }
         }
     }
 
@@ -315,11 +355,16 @@ public class DungeonScenes implements Disposable {
         transform.setTranslation(SCALE*x, z, -SCALE*y);
     }
 
+    // obsolete
     public void adaptModel(Scene rogue, CharacterStats stats){
         ModelInstance instance = rogue.modelInstance;
         for(Node node : instance.nodes){
-            checkNode(1, node, stats.weaponItem);
+            //checkNode(1, node, stats.weaponItem);
+            checkNode(1, node, null);
         }
+
+        attachModel(rogue, "handslot.l",  stats.armourItem);
+        attachModel(rogue, "handslot.r",  stats.weaponItem);
     }
 
     // recursive method to enable/disable weapons

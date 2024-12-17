@@ -41,26 +41,20 @@ public class DungeonMap implements Disposable {
 
 
     // levelNr : 0 for top level, increasing as we go down
-
-    public DungeonMap(int mapSeed, int levelNr, int width, int height) {
+    // stairPortals: in= staircases from level above, out= staircases to level below
+    //
+    public DungeonMap(int mapSeed, int levelNr, int width, int height, Array<Room> stairsFromAbove, Array<Room>stairsToBelow) {
         this.mapWidth = width;
         this.mapHeight = height;
         rooms = new Array<>();
-
-
         roomId = 0;
-        rooms.clear();
 
-        if (levelNr > 0) {    // is there a floor above?
-            // use the higher level's seed to generate the stairs from above
-            MathUtils.random.setSeed(getLevelSeed(mapSeed, levelNr - 1));
-            generateStairWells(TileType.STAIRS_UP, mapWidth-World.DELTA_WIDTH, mapHeight-World.DELTA_HEIGHT);  // stairs coming down
-        }
+        connectStairWells(stairsFromAbove);  // connect to stairs coming down
 
         MathUtils.random.setSeed(getLevelSeed(mapSeed, levelNr));
 
         // generate stairs to the level below
-        generateStairWells(TileType.STAIRS_DOWN, mapWidth, mapHeight);    // stairs going down
+        generateStairWells(mapWidth, mapHeight, stairsToBelow);    // stairs going down
 
         generateRooms(rooms);
 
@@ -115,45 +109,35 @@ public class DungeonMap implements Disposable {
         return placeRoom(id, w, h);
     }
 
-    // place some stair wells going down
-    private void generateStairWells(TileType stairType, int mapW, int mapH){
-        int count = MathUtils.random(1, 2); // how many stair wells to generate?
-        for(int i = 0; i < count; i++){
-            Room stairWell = generateStairWell(roomId, stairType, mapW, mapH);
-            stairWell.stairType = stairType;
-            boolean overlap = checkOverlap(stairWell, rooms);
-            if(!overlap) {
-                rooms.add(stairWell);
-                roomId++;
-            }
+
+    // place some stairs going up to match stairs coming down
+    private void connectStairWells( Array<Room> stairPortals){
+        roomId = 0;
+        for(Room stairPortal : stairPortals) {
+            Room stairWell = connectStairWell(roomId, stairPortal);
+            rooms.add(stairWell);
+            roomId++;
         }
     }
 
-    // a stair well is a special type of room of fixed size with stair tiles inside.
-    private Room generateStairWell(int id, TileType stairType, int mapW, int mapH){
-        int d = MathUtils.random(0, 3); // random direction NESW
-        Direction direction = Direction.values()[d];
+    private Room connectStairWell( int roomId, Room stairPortal ){
+        Direction direction = Direction.opposite( stairPortal.stairsDirection); // staircase goes opposite direction to one coming down, e.g. North becomes South
 
-        // place horizontal or vertical
-        int w = (direction == Direction.EAST || direction == Direction.WEST) ? 3 : 1;
-        int h = (direction == Direction.EAST || direction == Direction.WEST) ? 1 : 3;
-        Room stairWell = placeRoom(id, w, h, mapW, mapH);
-        stairWell.stairsDirection = direction;
-
-
-        if(stairType == TileType.STAIRS_UP) {
-            d = (d + 2) % 4;    // reverse direction
-            stairWell.stairsDirection = Direction.values()[d];
-            // offset stairwell one cell compared to the floor above
-            switch(stairWell.stairsDirection){
-                case NORTH: stairWell.y--; break;
-                case EAST: stairWell.x--; break;
-                case SOUTH: stairWell.y++; break;
-                case WEST: stairWell.x++; break;
-            }
-//            stairWell.x += World.DELTA_WIDTH/2;
-//            stairWell.y += World.DELTA_HEIGHT/2;
+        int x = stairPortal.x;
+        int y = stairPortal.y;
+        // offset stairwell one cell (the landing) compared to the floor above
+        switch(direction){
+            case NORTH:     y--; break;
+            case EAST:      x--; break;
+            case SOUTH:     y++; break;
+            case WEST:      x++; break;
         }
+        Room stairWell =  new Room(roomId, x, y, stairPortal.width, stairPortal.height);
+        stairWell.stairsDirection = direction;
+        stairWell.isStairWell = true;
+        stairWell.stairType = TileType.STAIRS_UP;
+
+        // set 'centre' to the landing, this is where paths will connect to
         switch(stairWell.stairsDirection) {
             case NORTH:
             case EAST:     // pointing east
@@ -166,7 +150,52 @@ public class DungeonMap implements Disposable {
                 stairWell.centre.set(stairWell.x+2, stairWell.y); // centre connection node on the landing
                 break;
         }
+        return stairWell;
+    }
+
+    // place some stair wells going down
+    private void generateStairWells( int mapW, int mapH, Array<Room> stairPortals){
+        stairPortals.clear();
+        int count = MathUtils.random(1, 2); // how many stair wells to generate?
+        while(count > 0){
+            Room stairWell = generateStairWell(roomId,  mapW, mapH);
+
+            boolean overlap = checkOverlap(stairWell, rooms);
+            if(!overlap) {
+                rooms.add(stairWell);
+                stairPortals.add(stairWell);
+                roomId++;
+                count--;
+            }
+        }
+    }
+
+    // a stair well is a special type of room of fixed size with stair tiles inside.
+    private Room generateStairWell(int id, int mapW, int mapH){
+        int d = MathUtils.random(0, 3); // random direction NESW
+        Direction direction = Direction.values()[d];
+
+        // place horizontal or vertical
+        int w = (direction == Direction.EAST || direction == Direction.WEST) ? 3 : 1;
+        int h = (direction == Direction.EAST || direction == Direction.WEST) ? 1 : 3;
+        Room stairWell = placeRoom(id, w, h, mapW, mapH);
+        stairWell.stairsDirection = direction;
+        stairWell.stairType = TileType.STAIRS_DOWN;
         stairWell.isStairWell = true;
+
+        switch(stairWell.stairsDirection) {
+            case NORTH:
+            case EAST:     // pointing east
+                stairWell.centre.set(stairWell.x, stairWell.y); // centre connection node on the landing
+                break;
+            case SOUTH:
+                stairWell.centre.set(stairWell.x, stairWell.y+2); // centre connection node on the landing
+                break;
+            case WEST:     // pointing west
+                stairWell.centre.set(stairWell.x+2, stairWell.y); // centre connection node on the landing
+                break;
+        }
+
         return stairWell;
     }
 
@@ -184,8 +213,6 @@ public class DungeonMap implements Disposable {
 
 
     private boolean checkOverlap(Room newRoom, Array<Room> rooms){
-
-
         for(Room room : rooms ){
             if(room.overlaps(newRoom))
                 return true;

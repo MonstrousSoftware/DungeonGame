@@ -19,7 +19,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class HelpScreen  extends ScreenAdapter {
 
-    public final static String VERSION = "version 1.1 16/12/2024";
+    public final static String VERSION = "version 1.2 17/12/2024";
 
     private final String[] tips = {
         "Take your time to think. It's a turn based game and there is no need to rush.",
