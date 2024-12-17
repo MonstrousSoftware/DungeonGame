@@ -67,19 +67,20 @@ public class DungeonScenes implements Disposable {
             sceneAssetFloor  = sceneAssetFloorC;
     }
 
-    public void showMap(DungeonMap map){
+    public void showMap(DungeonMap map, LevelData levelData){
         for(Room room: map.rooms)
-            if(room.uncovered)
-                showRoom(map, room);
+            if(levelData.seenRooms.contains(room.id, true))
+                showRoom(map, levelData, room);
 
     }
 
-    public void showRoom(DungeonMap map, Room room){
-        room.uncovered = true;
+    public void showRoom(DungeonMap map, LevelData levelData, Room room){
+        levelData.seenRooms.add(room.id);
+        //room.uncovered = true;
 
         for(int x = room.x; x <= room.x + room.width; x++){
             for(int y = room.y; y <= room.y + room.height; y++){
-                map.tileSeen[y][x] = true;
+                levelData.tileSeen[y][x] = true;
 
                 Scene tile;
                 TileType cell = map.getGrid(x,y);
@@ -150,23 +151,22 @@ public class DungeonScenes implements Disposable {
 
 
 
-    // show corridor segment if not seen before
+    // show corridor segment if not seen before, unmask a 3x3 grid of corridors and doorway tiles
     public void visitCorridorSegment(World world, int x, int y){
-        //unmaskCorridorSegment(world, x, y);
         for(int dx = -1; dx <= 1; dx++){
             for(int dy = -1; dy <= 1; dy++){
-                unmaskCorridorSegment(world, x+dx, y+dy);
+                showCorridorSegment(world, x+dx, y+dy);
             }
         }
     }
 
-    public void unmaskCorridorSegment(World world, int x, int y){
-        if(world.map.tileSeen[y][x])
+    public void showCorridorSegment(World world, int x, int y){
+        if(world.levelData.tileSeen[y][x])
             return;
         if( !TileType.hasFloor(world.map.getGrid(x,y)))
             return;
 
-        world.map.tileSeen[y][x] = true;
+        world.levelData.tileSeen[y][x] = true;
 
         // add floor tile scene
         Scene tile = new Scene(sceneAssetFloor.scene);
@@ -174,6 +174,7 @@ public class DungeonScenes implements Disposable {
         sceneManager.addScene(tile);
 
         // add doorway if needed
+        // note: could be duplicated by showRoom()
         TileType cell = world.map.getGrid(x,y);
         if(cell == TileType.DOORWAY){
             Scene doorway = new Scene(sceneAssetDoorWay.scene);
@@ -188,12 +189,12 @@ public class DungeonScenes implements Disposable {
         }
     }
 
-    public void buildCorridors(DungeonMap map){
+    public void showCorridors(DungeonMap map, LevelData levelData){
         for(int x = 0; x < map.mapWidth; x++){
             for(int y = 0; y < map.mapHeight; y++){
-                if(map.tileSeen[y][x]){
+                if(levelData.tileSeen[y][x]){
                     TileType cell = map.getGrid(x,y);
-                    if(TileType.hasFloor(cell)){
+                    if(TileType.hasFloor(cell)){                // todo: also adds tiles for rooms
                         Scene tile = new Scene(sceneAssetFloor.scene);
                         setTransform(tile.modelInstance.transform, x, y, 0, Direction.NORTH);
                         sceneManager.addScene(tile);
@@ -203,12 +204,12 @@ public class DungeonScenes implements Disposable {
         }
     }
 
-    public void populateMap(World world){
+    public void populateMap(World world, LevelData levelData){
         for(GameObject enemy: world.enemies.enemies)
             enemy.scene = null;
 
         for(Room room: world.map.rooms)
-            if(room.uncovered)
+            if(levelData.seenRooms.contains(room.id, true))
                 populateRoom(world, room);
     }
 
@@ -352,11 +353,12 @@ public class DungeonScenes implements Disposable {
     }
 
     // mark the room or corridor segment where Rogue is as 'uncovered'
-    public void liftFog(World world){
+    public void uncoverAreaInPlayerView(World world){
         int roomId = world.map.roomCode[world.rogue.y][world.rogue.x];
         if(roomId >= 0) {
             Room room = world.map.rooms.get(roomId);
-            room.uncovered = true;
+            //room.uncovered = true;
+            world.levelData.seenRooms.add(roomId);
         }
         else
             visitCorridorSegment(world, world.rogue.x, world.rogue.y);

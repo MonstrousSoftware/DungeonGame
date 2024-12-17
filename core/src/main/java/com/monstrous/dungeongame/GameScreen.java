@@ -114,16 +114,17 @@ public class GameScreen extends ScreenAdapter {
         sceneManager.environment.set(PBRCubemapAttribute.createDiffuseEnv(diffuseCubemap));
 
         dungeonScenes = new DungeonScenes(sceneManager);
-        dungeonScenes.selectFloorType(world.level);
-        world.isRebuilt = false;
-        dungeonScenes.createRogueModel( world );
-        dungeonScenes.liftFog( world );
-        dungeonScenes.showMap( world.map );
-        dungeonScenes.buildCorridors( world.map );
-        dungeonScenes.populateMap(world);
+        world.isRebuilt = true;
+//        dungeonScenes.selectFloorType(world.level);
+//        world.isRebuilt = false;
+//        dungeonScenes.createRogueModel( world );
+//        dungeonScenes.uncoverAreaInPlayerView( world );
+//        dungeonScenes.showMap( world.map, world.levelData );
+//        dungeonScenes.showCorridors( world.map, world.levelData );
+//        dungeonScenes.populateMap(world);
 
 
-        camController = new OrthoCamController(camera, world.rogue.scene.modelInstance);
+        camController = new OrthoCamController(camera);
         keyController = new KeyController(world, dungeonScenes );
 
         gui = new GUI( world );
@@ -169,16 +170,18 @@ public class GameScreen extends ScreenAdapter {
                 object.scene = null;
             dungeonScenes.selectFloorType(world.level);
             dungeonScenes.createRogueModel( world );
-            dungeonScenes.liftFog( world );
-            int roomId = world.map.roomCode[world.rogue.y][world.rogue.x];
-            Room room = world.map.rooms.get(roomId);
-            dungeonScenes.showRoom( world.map, room );
-            dungeonScenes.populateRoom(world, room);
-            camController.setTrackedObject( world.rogue.scene.modelInstance );
+            dungeonScenes.uncoverAreaInPlayerView( world );
+//            int roomId = world.map.roomCode[world.rogue.y][world.rogue.x];
+//            Room room = world.map.rooms.get(roomId);
+//            dungeonScenes.showRoom( world.map, world.levelData, room );
+            dungeonScenes.showMap( world.map, world.levelData );
+            dungeonScenes.showCorridors( world.map, world.levelData ); //
+            dungeonScenes.populateMap(world, world.levelData);
+            //dungeonScenes.populateRoom(world, room);
         }
 
         //camController.setTrackedObject( world.rogue.scene.modelInstance );
-        camController.update(deltaTime);
+        camController.update(deltaTime, world.rogue.scene.modelInstance);
         world.secondsElapsed += deltaTime;
 
         world.rogue.scene.modelInstance.transform.getTranslation(pointLight.position);

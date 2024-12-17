@@ -36,7 +36,7 @@ public class DungeonMap implements Disposable {
     private TileType [][] grid;             // map grid for fixed architecture, walls, etc.
     public Direction [][] tileOrientation;      // orientation of tile
     public int[][] roomCode;                // id of the room
-    public boolean[][] tileSeen;         // has the corridor segment been seen?
+    //public boolean[][] tileSeen;         // has the corridor segment been seen?
 
 
 
@@ -354,7 +354,6 @@ public class DungeonMap implements Disposable {
         grid = new TileType[mapHeight][mapWidth];
         tileOrientation = new Direction[mapHeight][mapWidth];
         roomCode = new int[mapHeight][mapWidth];
-        tileSeen = new boolean[mapHeight][mapWidth];
 
         // init whole grid to empty space
         for(int x = 0; x < mapWidth; x++) {
@@ -388,7 +387,6 @@ public class DungeonMap implements Disposable {
             for(int y = 0; y < rh; y++){
                 roomCode[ry+y][rx+x] = room.id;
                 tileOrientation[ry+y][rx+x] = dir;
-                //tileSeen[ry+y][rx+x] = true;
             }
         }
 
@@ -432,7 +430,6 @@ public class DungeonMap implements Disposable {
         for(int x = 0; x <= rw; x++){
             for(int y = 0; y <= rh; y++){
                 roomCode[ry+y][rx+x] = room.id;
-                //tileSeen[ry+y][rx+x] = true;
             }
         }
 

@@ -14,7 +14,7 @@ public class Room {
     public boolean isStairWell;
     public TileType stairType;           // STAIRS_UP or STAIRS_DOWN (only valid if isStairWell)
     public Direction stairsDirection;
-    public boolean uncovered;
+    //public boolean uncovered;
 
     public Room(int id, int x, int y, int w, int h) {
         this.id = id;
@@ -27,7 +27,7 @@ public class Room {
         distances = new Array<>();
         closeNeighbours = new Array<>();
         isStairWell = false;
-        uncovered = false;
+        //uncovered = false;
     }
 
 

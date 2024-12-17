@@ -16,24 +16,18 @@ public class OrthoCamController extends InputAdapter {
     public final static float ZOOM_SPEED = 0.1f;
 
     private OrthographicCamera cam;
-    private ModelInstance trackedObject;
     private Vector3 position;
     private Vector3 prevPosition;
     private boolean zoomInPressed = false;
     private boolean zoomOutPressed = false;
 
-    public OrthoCamController(OrthographicCamera cam, final ModelInstance trackedObject) {
+    public OrthoCamController(OrthographicCamera cam) {
         this.cam = cam;
-        this.trackedObject = trackedObject;
         position = new Vector3();
         prevPosition = new Vector3();
     }
 
-    public void setTrackedObject(final ModelInstance trackedObject){
-        this.trackedObject = trackedObject;
-    }
-
-    public void update( float deltaTime ) {
+    public void update( float deltaTime, ModelInstance trackedObject ) {
         boolean mustUpdate = false;
         if(zoomInPressed) {
             zoom(ZOOM_SPEED * deltaTime);

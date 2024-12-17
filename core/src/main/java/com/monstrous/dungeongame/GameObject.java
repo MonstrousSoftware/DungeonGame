@@ -161,11 +161,11 @@ public class GameObject {
             world.gameObjects.setOccupant(x, y, this);
 
             // if enemy goes into fog of war, hide it
-            if(scene != null && !world.map.tileSeen[y][x]){
+            if(scene != null && !world.levelData.tileSeen[y][x]){
                 scenes.removeScene( this );
             }
             // and vice versa
-            if(scene == null && world.map.tileSeen[y][x]){
+            if(scene == null && world.levelData.tileSeen[y][x]){
                 scenes.addScene( this );
             }
         }

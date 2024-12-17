@@ -1,6 +1,5 @@
 package com.monstrous.dungeongame;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 
@@ -199,10 +198,10 @@ public class KeyController extends InputAdapter {
     private void restart() {
         world.restart();
         scenes.clear();
-        scenes.liftFog(world);
+        scenes.uncoverAreaInPlayerView(world);
         int roomId = world.map.roomCode[world.rogue.y][world.rogue.x];
         Room room = world.map.rooms.get(roomId);
-        scenes.showRoom(world.map, room);
+        scenes.showRoom(world.map, world.levelData, room);
         scenes.populateRoom(world, room);
     }
 
@@ -240,14 +239,11 @@ public class KeyController extends InputAdapter {
         if(roomId >= 0) {
 
             Room room = world.map.rooms.get(roomId);
-            if (!room.uncovered) {
-                //Gdx.app.log("Uncover room", ""+roomId);
-                scenes.showRoom(world.map, room);
+            if (!world.levelData.seenRooms.contains(roomId, true)) {
+                scenes.showRoom(world.map, world.levelData, room);
                 scenes.populateRoom(world, room);
             }
         } else if( world.map.getGrid(x,y) == TileType.CORRIDOR){
-//            if(!world.map.tileSeen[y][x])
-//                Gdx.app.log("Uncover corridor", " "+x+", "+y);
             scenes.visitCorridorSegment(world, x, y);
         }
 

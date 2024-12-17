@@ -17,14 +17,14 @@ public class World {
     public int level = 0;
     public int swordLevel;
 
-    public DungeonMap map;
-    public GameObjects gameObjects;
-    public GameObject rogue;
-    public Enemies enemies;
-    public boolean isRebuilt;
+    public DungeonMap map;                  // static architecture
+    public GameObjects gameObjects;         // items, enemies
+    public GameObject rogue;                // the player
+    public Enemies enemies;                 // subset of gameObjects
+    public boolean isRebuilt;               // force scenes to be recreated
     public float secondsElapsed;
     public Array<LevelData> levelDataArray;
-    private LevelData levelData;
+    public LevelData levelData;
 
 
     public World() {
@@ -82,8 +82,13 @@ public class World {
     private void generateLevel(){
         isRebuilt = true;
 
+        // map gets bigger at lower levels: keep aspect ratio 3/2
+        //
+        int w = MAP_WIDTH+DELTA_WIDTH*level;
+        int h = MAP_HEIGHT+DELTA_HEIGHT*level;
+
         if(level > levelDataArray.size-1) {       // new level
-            levelData = new LevelData(level);
+            levelData = new LevelData(level, w, h);
             levelDataArray.add(levelData);
         } else {    // existing level
             levelData = levelDataArray.get(level);
@@ -94,11 +99,6 @@ public class World {
         else
             stairsFromAbove = levelDataArray.get(level-1).stairPortals;
 
-
-        // map gets bigger at lower levels: keep aspect ratio 3/2
-        //
-        int w = MAP_WIDTH+DELTA_WIDTH*level;
-        int h = MAP_HEIGHT+DELTA_HEIGHT*level;
         map = new DungeonMap(seed, level, w, h, stairsFromAbove, levelData.stairPortals);
 
         gameObjects = new GameObjects(w, h);
