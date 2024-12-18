@@ -17,6 +17,7 @@ public class GameObjectType {
     public boolean isGold;
     public boolean isArrow;
     public boolean isSpellBook;
+    public boolean isBigSword;
     public GameObjectType alternative;
     public SceneAsset sceneAsset;
     public int initProtection;      // for armour
@@ -46,5 +47,6 @@ public class GameObjectType {
         this.initDamage = 0;
         this.initAccuracy = 0;
         this.initAggressive = false;
+        this.isBigSword = false;
     }
 }

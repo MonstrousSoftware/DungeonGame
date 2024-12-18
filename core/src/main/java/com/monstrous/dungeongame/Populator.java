@@ -8,7 +8,7 @@ public class Populator {
     public static void distributeGoodies(DungeonMap map, GameObjects gameObjects){
 
         int numRooms = map.rooms.size;
-        int count = MathUtils.random(numRooms/2, numRooms);        // nr of drops depends on nr of rooms
+        int count = MathUtils.random(numRooms/2, numRooms*3);        // nr of drops depends on nr of rooms
         int attempts = 0;
         while(true){
             attempts++;
@@ -28,7 +28,7 @@ public class Populator {
 
             GameObjectType type = null;
 
-                int goodieType = MathUtils.random(0,22);
+                int goodieType = MathUtils.random(0,1);
                 switch (goodieType) {
                     case 0:
                         type = GameObjectTypes.gold;
@@ -103,14 +103,14 @@ public class Populator {
             occupant.z = type.z;
             occupant.quantity = 1;
             if(type == GameObjectTypes.gold)
-                occupant.quantity = MathUtils.random(1,20);
+                occupant.quantity = MathUtils.random(1,30);
             else if(type == GameObjectTypes.arrows)
-                occupant.quantity = MathUtils.random(5,10);
+                occupant.quantity = MathUtils.random(3,8);
             else if(type.isArmour)
                 occupant.protection = type.initProtection + MathUtils.random(-2, 2);
             else if(type.isWeapon) {
-                occupant.damage = type.initDamage + MathUtils.random(-1, 2);
-                occupant.accuracy = type.initAccuracy + MathUtils.random(-1, 2);
+                occupant.damage = type.initDamage + MathUtils.random(-1, 3);
+                occupant.accuracy = type.initAccuracy + MathUtils.random(-1, 3);
             }
 
             count--;
@@ -166,7 +166,7 @@ public class Populator {
             if(occupant != null)
                 continue;
 
-            int enemyType = MathUtils.random(0, 3);
+            int enemyType = MathUtils.random(3, 3);
             GameObjectType type = null;
             switch(enemyType){
                 case 0: type = GameObjectTypes.warrior; break;
@@ -178,8 +178,12 @@ public class Populator {
             gameObjects.setOccupant(room.x+rx, room.y+ry, enemy);
             enemy.stats = new CharacterStats();
             assert type != null;
-            enemy.stats.experience = MathUtils.random(type.initXP, type.initXP + level*type.initXP/2);     // at lower levels, enemies get more experienced
-            enemy.stats.gold = MathUtils.random(0,5);
+            enemy.stats.experience = type.initXP * (1+MathUtils.random(level*10));     // at lower levels, enemies get more experienced
+            int goldAmount = MathUtils.random(0,5);
+            if(goldAmount > 0){
+                GameObject gold = new GameObject(GameObjectTypes.gold, goldAmount);
+                enemy.stats.inventory.addItem(gold);
+            }
             enemy.stats.aggressive = enemy.type.initAggressive;
             gameObjects.add(enemy);
             enemies.add(enemy);

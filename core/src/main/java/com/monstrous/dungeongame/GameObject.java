@@ -20,6 +20,11 @@ public class GameObject {
 
 
 
+    public GameObject(GameObjectType type, int quantity) {
+        this(type, 0,0, Direction.NORTH);   // for object in inventory we don't care about position
+        this.quantity = quantity;
+    }
+
     public GameObject(GameObjectType type, int x, int y, Direction direction) {
         this.type = type;
         this.x = x;
@@ -128,7 +133,7 @@ public class GameObject {
             opponent = world.rogue;
         }
         if(opponent != null){
-            if(type == GameObjectTypes.imp && MathUtils.random(6) > 3)
+            if(type == GameObjectTypes.imp && MathUtils.random(6) >= 3)
                 rob(world,  opponent);
             else
                 fight(world, scenes, opponent);
@@ -178,10 +183,10 @@ public class GameObject {
 
     // this character will steal all victim's gold
     private void rob(World world, GameObject victim ){
-        if(victim.stats.gold > 0){
-            int amount = victim.stats.inventory.removeGold();
-            stats.gold += amount;
-            GameObject gold = new GameObject(GameObjectTypes.gold, 0, 0, Direction.NORTH);
+
+        int amount = victim.stats.inventory.removeGold();
+        if(amount > 0){
+            GameObject gold = new GameObject(GameObjectTypes.gold, amount);
             stats.inventory.addItem(gold);
             if(type.isPlayer || victim.type.isPlayer || world.rogue.stats.increasedAwareness > 0) {
                 Sounds.pickup();
@@ -219,14 +224,12 @@ public class GameObject {
                 scenes.remove(item.scene);
             world.levelData.gameObjects.clearOccupant(x, y);
             world.levelData.gameObjects.remove(item);
-            if (item.type == GameObjectTypes.gold) {
-                stats.gold += item.quantity;
-            }
+
             if(!type.isPlayer)
                 autoEquip(scenes, item);
             if (item.type == GameObjectTypes.bigSword) {
                 MessageBox.addLine("This is what you came for!");
-                MessageBox.addLine("Now return it to the surface.");
+                MessageBox.addLine("Now return it to the start.");
                 if(scene!= null) {
                     scene.animationController.setAnimation(null);   // remove previous animation
                     scene.animationController.setAnimation("Cheer", 3);
@@ -236,6 +239,8 @@ public class GameObject {
     }
 
     // used by enemies to equip weapons or armour
+    // they will always equip the best weapon/armour
+    //
     private void autoEquip( DungeonScenes scenes, GameObject item ){
 
         if(item.type.isArmour){
@@ -286,29 +291,39 @@ public class GameObject {
             scene.animationController.setAnimation(null);   // remove previous animation
             scene.animationController.setAnimation("Unarmed_Melee_Attack_Punch_A", 1);
         }
-        int hp = 1;
-        String verb = "hits";
-        if(stats.weaponItem != null) {
-            hp += stats.weaponItem.damage;
-            verb = "attacks";
-        }
-        hp += stats.experience /10;     // to tune
-        int accuracy = stats.experience/5;
+
+        // accuracy determines if the attack even hits
+        // 40% baseline + up to 40% on XP + a few percent from weapon
+        // where XP impact maxes out from 200 onwards, i.e. 10 warrior kills
+        //
+        int accuracy = 40 + Math.min(stats.experience/4, 50);
         if(stats.weaponItem != null)
             accuracy += stats.weaponItem.accuracy;
-        if(MathUtils.random(5+accuracy) < 3 ){
+
+        // experienced enemies can dodge the attack
+        int defensiveSkills = Math.min(other.stats.experience/10, 20);
+        System.out.println("accuracy "+accuracy+" vs RND("+(100+defensiveSkills)+")");
+        if(MathUtils.random(100 + defensiveSkills) < accuracy ){
             if(type.isPlayer || other.type.isPlayer ) {
                 Sounds.swoosh();
-
             }
             MessageBox.addLine(type.name + " misses.");
         }
         else {
+            int hp = 1;
+            String verb = "hits";
+            if(stats.weaponItem != null) {
+                hp += stats.weaponItem.damage;
+                verb = "attacks";
+            }
+            hp += Math.min(stats.experience /20, 20);     // experience bonus
+            System.out.println("attack hp "+hp+" vs protection "+(other.stats.armourItem == null? 0 : other.stats.armourItem.protection));
+
             if(type.isPlayer || other.type.isPlayer )
                 Sounds.fight();
             if (other.stats.armourItem != null && other.stats.armourItem.protection > hp) {
                 MessageBox.addLine("The " + other.type.name + " blocks the attack");
-                if (hp > 3) {
+                if (hp > other.stats.armourItem.protection/2) {
                     other.stats.armourItem.protection--;        // armour takes damage
                     MessageBox.addLine("The armour takes damage.");
                 }
@@ -317,7 +332,9 @@ public class GameObject {
                     stats.weaponItem.accuracy = Math.max(0, stats.weaponItem.accuracy-1);
                 }
             } else {
+                // not missed, not blocked
                 other.stats.hitPoints = Math.max(0, other.stats.hitPoints - hp);
+
                 // with increased awareness player is informed of all events
                 if (type.isPlayer || other.type.isPlayer || world.rogue.stats.increasedAwareness > 0) {
                     MessageBox.addLine(type.name + " " + verb + " the " + other.type.name + "(HP: " + other.stats.hitPoints + ")");
@@ -365,22 +382,30 @@ public class GameObject {
 
 
     private void defeat(World world, DungeonScenes scenes, GameObject enemy){
-        if(type.isPlayer || enemy.type.isPlayer )
+        // play sound effect if player was involved
+        if(type.isPlayer || enemy.type.isPlayer || world.rogue.stats.increasedAwareness > 0) {
             Sounds.monsterDeath();
-        MessageBox.addLine(type.name+ " defeated the "+enemy.type.name+". (XP +"+enemy.stats.experience+")");
+            MessageBox.addLine(type.name + " defeated the " + enemy.type.name + ". (XP +" + enemy.stats.experience + ")");
+        }
+        // remove enemy visually and logically
         if(!enemy.type.isPlayer)
             scenes.remove(enemy.scene);
         world.levelData.gameObjects.clearOccupant(enemy.x, enemy.y);
         world.enemies.remove(enemy);
         world.levelData.gameObjects.remove(enemy);
-        stats.experience += enemy.stats.experience;
-        if(enemy.stats.gold > 0) {
-            GameObject gold = new GameObject(GameObjectTypes.gold, 0,0,Direction.NORTH);
-            gold.quantity = enemy.stats.gold;
+
+        // victor gets XP
+        stats.experience += enemy.type.initXP;      // base XP, not the actual XP
+
+        // any gold gets dropped on the floor
+        int goldAmount = enemy.stats.inventory.countGold();
+        if(goldAmount > 0) {
             enemy.stats.inventory.removeGold();
-            scenes.placeObject(world.levelData.gameObjects, GameObjectTypes.gold, enemy.x, enemy.y);
-            MessageBox.addLine(enemy.type.name+ " drops their gold. (+"+enemy.stats.gold+")");
-            enemy.stats.gold = 0;
+            GameObject gold = new GameObject(GameObjectTypes.gold, enemy.x, enemy.y, Direction.NORTH);
+            gold.quantity = goldAmount;
+            scenes.placeObject(world.levelData.gameObjects, gold, enemy.x, enemy.y);    // place in the world and on screen
+            if(type.isPlayer || enemy.type.isPlayer || world.rogue.stats.increasedAwareness > 0) {
+                MessageBox.addLine(enemy.type.name+ " drops their gold. ("+gold.quantity+")");
         }
     }
 

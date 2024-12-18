@@ -1,13 +1,12 @@
 package com.monstrous.dungeongame;
 
 public class CharacterStats {
-    public final static int MAX_HITPOINTS = 10;
+    public final static int MAX_HITPOINTS = 40;
     public final static int MAX_FOOD = 500;
     public final static int REPLENISH_FOOD = 100;   // after a faint
 
     public int hitPoints;
     public int experience;
-    public int gold;
     public int food;
     public boolean aggressive;
     public GameObject armourItem;
@@ -17,9 +16,8 @@ public class CharacterStats {
     public boolean haveBookOfMaps;
 
     public CharacterStats() {
-        hitPoints = 5;
+        hitPoints = MAX_HITPOINTS/2;
         experience = 0;
-        gold = 0;
         food = MAX_FOOD;
         aggressive = false;
         weaponItem = null;

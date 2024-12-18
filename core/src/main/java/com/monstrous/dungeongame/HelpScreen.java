@@ -35,13 +35,14 @@ public class HelpScreen  extends ScreenAdapter {
         "Poisonous potions can be thrown at enemies.",
         "Throwing arrows do more damage when a crossbow is equipped.",
         "Weapons have damage level and accuracy level.",
-        "Once opened, a spell book is useless.",
+        "Once opened, a spell book has no further use.",
+        "The Sword of Yobled is at dungeon level 5 or below.",
         "Remember what the different potions do.",
         "You can use the scroll wheel to zoom. ",
         "Increase awareness lets you know what the monsters do.",
         "Blocked attacks degrade weapon accuracy.",
         "Unlock the map (M) by finding the Book of Maps.",
-        "The Sword of Yobled is at dungeon level 5 or below."
+        "Return the Sword of Yobled to the start of the quest."
     };
 
     private final Main game;

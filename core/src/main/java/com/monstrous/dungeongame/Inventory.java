@@ -126,4 +126,14 @@ public class Inventory {
         }
         return 0;
     }
+
+    public int countGold() {
+        // gold can only be in one slot, because more gold will always be added to the same slot (as it is countable).
+        for(int i = 0; i < numSlots; i++) {
+            if(!slots[i].isEmpty() && slots[i].object.type.isGold){
+                return slots[i].count;
+            }
+        }
+        return 0;
+    }
 }

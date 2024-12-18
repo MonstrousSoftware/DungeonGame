@@ -5,8 +5,8 @@ import com.badlogic.gdx.InputAdapter;
 
 public class KeyController extends InputAdapter {
 
-    private World world;
-    private DungeonScenes scenes;
+    private final World world;
+    private final DungeonScenes scenes;
     private boolean equipMode;  // after e
     private boolean dropMode;   // after d
     private boolean useMode;    // after u
@@ -37,7 +37,7 @@ public class KeyController extends InputAdapter {
         // up/down to +y/-y
         //
 
-        if (world.rogue.stats.hitPoints <= 0) { // player is dead
+        if (world.gameOver) { // player is dead or has beaten the game
             return false;
         }
 
@@ -81,9 +81,10 @@ public class KeyController extends InputAdapter {
     public boolean keyTyped(char character) {
         //System.out.println("keytyped: "+character);
         // if player is dead, only accept restart command
-        if (world.rogue.stats.hitPoints <= 0) {
-            if (character == 'r') {
-                restart();
+        if (world.gameOver) {
+            if (character == 'r' || character =='R') {
+                restart(character == 'R');
+                world.gameOver = false;
                 return true;
             }
             return false;
@@ -105,17 +106,19 @@ public class KeyController extends InputAdapter {
 
     // arrive here after having made a move or skipping a turn
     private void wrapUp(){
+        // time-out on increased awareness
         if(world.rogue.stats.increasedAwareness > 0){
             world.rogue.stats.increasedAwareness--;
             if(world.rogue.stats.increasedAwareness == 0)
                 MessageBox.addLine("Your increased awareness wore off.");
         }
+        // regenerate HP
         if(--regenTimer <= 0){
-            regenTimer = Math.max(20-world.level, 3);
+            regenTimer = Math.max(10-world.level, 3);
             if(world.rogue.stats.hitPoints < CharacterStats.MAX_HITPOINTS)
                 world.rogue.stats.hitPoints++;
         }
-
+        // move enemies
         world.enemies.step(world, scenes);     // move enemies
 
         digestFood();
@@ -123,6 +126,7 @@ public class KeyController extends InputAdapter {
         // check for death
         if (world.rogue.stats.hitPoints <= 0) {
             MessageBox.addLine("You are dead. Press R to restart.");
+            world.gameOver = true;
             world.rogue.scene.animationController.setAnimation(null);   // remove previous animation
             world.rogue.scene.animationController.setAnimation("Death_A", 1);
         }
@@ -196,8 +200,8 @@ public class KeyController extends InputAdapter {
         }
     }
 
-    private void restart() {
-        world.restart();
+    private void restart( boolean keepSeed ) {
+        world.restart(keepSeed);
         scenes.clear();
         scenes.uncoverAreaInPlayerView(world);
         int roomId = world.map.roomCode[world.rogue.y][world.rogue.x];
@@ -250,6 +254,18 @@ public class KeyController extends InputAdapter {
 
         scenes.moveObject( world.rogue, x, y, world.rogue.z);
 
+        // Did we return to the first room with the Sword?
+        CharacterStats stats = world.rogue.stats;
+        if(world.level == 0 && roomId == world.startRoomId &&  ((stats.weaponItem != null && stats.weaponItem.type == GameObjectTypes.bigSword) || stats.inventory.contains(GameObjectTypes.bigSword)) ) {
+            MessageBox.addLine("Congratulations!");
+            MessageBox.addLine("The Sword of Yobled was recovered.");
+            MessageBox.addLine("You have finished the game!");
+            world.rogue.scene.animationController.setAnimation(null);   // remove previous animation
+            world.rogue.scene.animationController.setAnimation("Cheer", 20 );
+            world.gameOver = true;
+            // todo more fanfare
+        }
+
     }
 
 
@@ -273,7 +289,7 @@ public class KeyController extends InputAdapter {
         confirmMode = false;
 
         if(character ==  'y' ||  character == 'Y'){
-            restart();
+            restart(character == 'Y');
         }
         return false;
     }
@@ -359,8 +375,7 @@ public class KeyController extends InputAdapter {
         // take item from inventory slot
         GameObject item = slot.removeItem();
         MessageBox.addLine("You throw "+item.type.name+".");
-        if(item.type.isGold)
-            world.rogue.stats.gold -= item.quantity;
+
         int tx = world.rogue.x;
         int ty = world.rogue.y;
         while(true) {
@@ -423,8 +438,6 @@ public class KeyController extends InputAdapter {
         if(slot.isEmpty())
             return;
         GameObject item = slot.removeItem();
-        if(item.type.isGold)
-            world.rogue.stats.gold -= item.quantity;
         MessageBox.addLine("You dropped "+item.type.name+".");
         scenes.dropObject(world.map, world.levelData.gameObjects, item, world.rogue.x, world.rogue.y);
     }
@@ -460,7 +473,8 @@ public class KeyController extends InputAdapter {
             MessageBox.addLine("It is a book of maps.");
             world.rogue.stats.haveBookOfMaps = true;
         } else if(type == GameObjectTypes.spellBookClosedC) {
-            if(world.level == world.swordLevel)
+            if(world.level == world.swordLevel || (world.rogue.stats.weaponItem != null && world.rogue.stats.weaponItem.type.isBigSword)
+                    || world.rogue.stats.inventory.contains(GameObjectTypes.bigSword) )
                 MessageBox.addLine("The Sword of Yobled is at this level.");
             else
                 MessageBox.addLine("The Sword of Yobled is not at this level.");

@@ -16,6 +16,8 @@ public class World {
     public int seed = 1234;
     public int level = 0;
     public int swordLevel;
+    public int startRoomId;
+    public boolean gameOver;
 
     public DungeonMap map;                  // static architecture
     public GameObject rogue;                // the player
@@ -28,6 +30,7 @@ public class World {
 
     public World() {
         secondsElapsed = 0;
+        gameOver = false;
         GameObjectTypes gameObjectTypes = new GameObjectTypes();
         levelDataArray = new Array<>();
         create();
@@ -55,17 +58,17 @@ public class World {
         level--;
         map.dispose();
         generateLevel();
-        if(level == 0 && rogue.stats.inventory.contains(GameObjectTypes.bigSword)) {
-            MessageBox.addLine("Congratulations!");
-            MessageBox.addLine("The Sword of Yobled was recovered.");
-            MessageBox.addLine("You have finished the game!");
-            // todo more fanfare
-        }
+
     }
 
     public void restart(){
+        restart(false);
+    }
+
+    public void restart(boolean keepSeed){
         map.dispose();
-        seed = MathUtils.random(1,9999);
+        if(!keepSeed)
+            seed = MathUtils.random(1,9999);
         MessageBox.addLine("World seed: "+seed);
         create();
     }
@@ -76,6 +79,7 @@ public class World {
         MathUtils.random.setSeed(seed);
         // set level where the sword can be found
         swordLevel = 5 + MathUtils.random(0,2);
+        //swordLevel = 1;
     }
 
     private void generateLevel(){
@@ -106,8 +110,10 @@ public class World {
         enemies = new Enemies();
         enemies.addFromObjects(levelData.gameObjects);
 
-        if(rogue == null)   // don't create new rogue when changing level
+        if(rogue == null) {  // don't create new rogue when changing level
             rogue = Populator.placeRogue(map, levelData.gameObjects);
+            startRoomId = map.roomCode[rogue.y][rogue.x];     // remember the starting room, the rogue needs to return here
+        }
 
         if(newLevel) {
             if (level == swordLevel)

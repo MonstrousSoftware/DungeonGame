@@ -16,8 +16,7 @@ public class MessageBox {
 
     public static void clear(){
         lines.clear();
-        addLine("");
-        addLine("");
-        addLine("");
+        for(int i = 0; i < 10; i++)
+            addLine("");
     }
 }

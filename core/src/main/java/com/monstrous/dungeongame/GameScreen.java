@@ -168,7 +168,8 @@ public class GameScreen extends ScreenAdapter {
         }
 
         camController.update(deltaTime, world.rogue.scene.modelInstance);
-        world.secondsElapsed += deltaTime;
+        if(!world.gameOver)
+            world.secondsElapsed += deltaTime;
 
         world.rogue.scene.modelInstance.transform.getTranslation(pointLight.position);
         pointLight.position.y += 3;

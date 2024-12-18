@@ -19,6 +19,7 @@ import com.monstrous.dungeongame.*;
 public class GUI implements Disposable {
 
     public static final int PANEL_WIDTH = 400;      // width of UI panel
+    public static final int NUM_MESSAGES = 10;
 
     public Stage stage;
     private Skin skin;
@@ -26,7 +27,7 @@ public class GUI implements Disposable {
     private Label gold;
     private Label hp;
     private Label xp;
-    private Label message1, message2, message3;
+    private Label[] messages;
     private StringBuffer sb;
     private World world;
     private GameObject equippedWeapon;
@@ -37,6 +38,7 @@ public class GUI implements Disposable {
     private InventorySlotButton weaponButton;
     private InventorySlotButton armourButton;
     private Label clockLabel;
+    private int elapsedSeconds;
 
     public GUI( World world ) {
         this.world = world;
@@ -102,23 +104,14 @@ public class GUI implements Disposable {
         uiPanel.add(eq).center().padBottom(30);
         uiPanel.row();
 
-
-        message1 = new Label("..", skin, "smaller");
-        message2 = new Label("..", skin, "smaller");
-        message3 = new Label("..", skin,"smaller");
-        // message.setColor(Color.BLUE);
+        messages = new Label[NUM_MESSAGES];
         Table messageBox = new Table();
-        messageBox.add(message1).pad(3).left();
-        messageBox.row();
-        messageBox.add(message2).pad(3).left();
-        messageBox.row();
-        messageBox.add(message3).pad(3).left();
-
+        for(int i = 0; i < NUM_MESSAGES; i++) {
+            messages[i] = new Label("..", skin, "smaller");
+            messageBox.add(messages[i]).pad(3).left().row();
+        }
         uiPanel.add(messageBox).pad(10).top().left().expand();
         uiPanel.row();
-
-
-
 
         Label helpLabel = new Label("Press H for help", skin, "smaller");
         helpLabel.setColor(Color.GRAY);
@@ -144,7 +137,7 @@ public class GUI implements Disposable {
     }
 
 
-    private void update(){
+    private void update() {
         sb.setLength(0);
         sb.append("DUNGEON LEVEL: ");
         sb.append(world.level);
@@ -152,7 +145,7 @@ public class GUI implements Disposable {
 
         sb.setLength(0);
         sb.append("GOLD: ");
-        sb.append(world.rogue.stats.gold);
+        sb.append(world.rogue.stats.inventory.countGold());
         gold.setText(sb.toString());
 
         sb.setLength(0);
@@ -165,9 +158,8 @@ public class GUI implements Disposable {
         sb.append(world.rogue.stats.experience);
         xp.setText(sb.toString());
 
-        message3.setText(MessageBox.lines.get(MessageBox.lines.size-1));
-        message2.setText(MessageBox.lines.get(MessageBox.lines.size-2));
-        message1.setText(MessageBox.lines.get(MessageBox.lines.size-3));
+        for(int i = 0; i < NUM_MESSAGES; i++)
+            messages[i].setText(MessageBox.lines.get(MessageBox.lines.size - (i+1)));
 
         setWeapon();
         setArmour();
@@ -176,7 +168,7 @@ public class GUI implements Disposable {
         armourButton.update();
 
         // force rebuild of Inv window on a game restart
-        if( rogueInventory != world.rogue.stats.inventory){
+        if (rogueInventory != world.rogue.stats.inventory) {
             inventoryWindow.remove();
             inventoryWindow = new InventoryWindow("Inventory", skin, world.rogue.stats.inventory);
             stage.addActor(inventoryWindow);
@@ -184,7 +176,8 @@ public class GUI implements Disposable {
         }
         inventoryWindow.update();
 
-        if(world.rogue.stats.hitPoints > 0) {   // clock stops when player dies
+        if ((int)world.secondsElapsed != elapsedSeconds) {
+            elapsedSeconds = (int)world.secondsElapsed;
 
             int hh = (int) (world.secondsElapsed / 3600);
             int mm = (int) ((world.secondsElapsed - 3600 * hh) / 60);

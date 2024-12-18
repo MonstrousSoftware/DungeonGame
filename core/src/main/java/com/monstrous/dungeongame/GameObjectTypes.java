@@ -83,7 +83,7 @@ public class GameObjectTypes implements Disposable {
         imp = new GameObjectType("Imp", true, false);
         imp.sceneAsset = new GLBLoader().load(Gdx.files.internal("characters/Skeleton_Rogue.glb"));
         imp.isEnemy = true;
-        imp.initXP = 2;
+        imp.initXP = 8;
         types.add(imp);
 
         gold = new GameObjectType("Gold", false, true);
@@ -148,7 +148,7 @@ public class GameObjectTypes implements Disposable {
         axe = new GameObjectType("an Axe", false, true);
         axe.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/axe_1handed.gltf"));
         axe.isWeapon = true;
-        axe.initDamage = 15;
+        axe.initDamage = 10;
         axe.initAccuracy = 5;
         types.add(axe);
 
@@ -232,6 +232,7 @@ public class GameObjectTypes implements Disposable {
         bigSword.isWeapon = true;
         bigSword.initDamage = 25;
         bigSword.initAccuracy = 5;
+        bigSword.isBigSword = true;
         types.add(bigSword);
 
 
