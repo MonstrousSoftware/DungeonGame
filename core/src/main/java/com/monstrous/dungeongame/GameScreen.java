@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.shaders.DepthShader;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Vector3;
@@ -43,6 +44,8 @@ public class GameScreen extends ScreenAdapter {
     private FrameBuffer fbo;
     private Filter filter;
     private Color bgColor;
+    private float stepTimer;
+    private ModelInstance focalInstance;    // what the camera is following
 
 
     public GameScreen(Main game) {
@@ -129,6 +132,7 @@ public class GameScreen extends ScreenAdapter {
         Gdx.input.setInputProcessor(im);
 
         bgColor = new Color(0x3e1323ff);
+        stepTimer = 1;
     }
 
 
@@ -165,13 +169,31 @@ public class GameScreen extends ScreenAdapter {
             dungeonScenes.showMap( world.map, world.levelData );
             dungeonScenes.showCorridors( world.map, world.levelData ); //
             dungeonScenes.populateMap(world, world.levelData);
+            focalInstance = world.rogue.scene.modelInstance;
         }
 
-        camController.update(deltaTime, world.rogue.scene.modelInstance);
+
         if(!world.gameOver)
             world.secondsElapsed += deltaTime;
 
-        world.rogue.scene.modelInstance.transform.getTranslation(pointLight.position);
+        if(world.gameOver) {
+            if(world.rogue.attackedBy != null &&  world.rogue.attackedBy.scene != null)
+                focalInstance = world.rogue.attackedBy.scene.modelInstance;     // follow attacker now
+
+            // death cam mode, show the world moves on
+            stepTimer -= deltaTime;
+            if(stepTimer < 0) {
+                stepTimer = 0.3f;
+                // move enemies
+                world.enemies.step(world, dungeonScenes);     // move enemies
+                if(world.rogue.attackedBy != null)
+                    keyController.discoverMap(world.rogue.attackedBy);
+            }
+        }
+
+        camController.update(deltaTime, focalInstance);
+
+        focalInstance.transform.getTranslation(pointLight.position);
         pointLight.position.y += 3;
         shadowCastingLight.setCenter(pointLight.position);
 

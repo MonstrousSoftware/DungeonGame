@@ -1,18 +1,44 @@
 package com.monstrous.dungeongame;
 
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.utils.Array;
 
 public class Populator {
 
 
-    public static void distributeGoodies(DungeonMap map, GameObjects gameObjects){
+    private static void generatePopulation(int levelNr, boolean goodies, Array<GameObjectType> mandatory, Array<GameObjectType> optional) {
+        int min = 0;
+        int max = 0;
+        for(GameObjectType type :GameObjectTypes.types)
+        {
+            if (levelNr >= type.startLevel && (levelNr <= type.endLevel || type.endLevel == 99)) {    // dungeon level range per type
+                if (type.maxCount == 0)
+                    continue;
+                if (goodies == type.isEnemy)    // select goodies or enemies
+                    continue;
+                for (int i = 0; i < type.minCount; i++)
+                    mandatory.add(type);
+                for (int i = type.minCount; i < type.maxCount; i++)
+                    optional.add(type);
+                System.out.println(" drop " + type.name + " min:" + type.minCount + " max:" + type.maxCount);
+                min += type.minCount;
+                max += type.maxCount;
+            }
+        }
+        System.out.println("Total min:"+min+" max:"+max);
+    }
 
-        int numRooms = map.rooms.size;
-        int count = MathUtils.random(numRooms/2, numRooms*3);        // nr of drops depends on nr of rooms
+    public static void distributeGoodies(DungeonMap map, int levelNr, GameObjects gameObjects){
+        Array<GameObjectType> mandatory = new Array<>();
+        Array<GameObjectType> optional = new Array<>();
+        generatePopulation(levelNr, true, mandatory, optional);
+
+        //int numRooms = map.rooms.size;
+        //int count = MathUtils.random(numRooms/2, numRooms*3);        // nr of drops depends on nr of rooms
         int attempts = 0;
         while(true){
             attempts++;
-            if(attempts > 40)       // avoid endless loop
+            if(attempts > 50)       // avoid endless loop
                 break;
 
             int location = MathUtils.random(0, map.rooms.size-1);
@@ -22,100 +48,41 @@ public class Populator {
             // find a point inside the room (edges are walls)
             int rx = MathUtils.random(1, room.width-1);
             int ry = MathUtils.random(1, room.height-1);
-            GameObject occupant = gameObjects.getOccupant(room.x+rx, room.y+ry);
-            if(occupant != null)
+            GameObject item = gameObjects.getOccupant(room.x+rx, room.y+ry);
+            if(item != null)
                 continue;
 
             GameObjectType type = null;
-
-                int goodieType = MathUtils.random(0, 22);
-                switch (goodieType) {
-                    case 0:
-                        type = GameObjectTypes.gold;
-                        break;
-                    case 1:
-                        type = GameObjectTypes.knife;
-                        break;
-                    case 2:
-                        type = GameObjectTypes.crossbow;
-                        break;
-                    case 3:
-                        type = GameObjectTypes.explosive;
-                        break;
-                    case 4:
-                        type = GameObjectTypes.shield1;
-                        break;
-                    case 5:
-                        type = GameObjectTypes.shield2;
-                        break;
-                    case 6:
-                        type = GameObjectTypes.spellBookClosed;
-                        break;
-                    case 7:
-                        type = GameObjectTypes.bottle_A_brown;
-                        break;
-                    case 8:
-                        type = GameObjectTypes.bottle_A_green;
-                        break;
-                    case 9:
-                        type = GameObjectTypes.bottle_B_brown;
-                        break;
-                    case 10:
-                        type = GameObjectTypes.bottle_B_green;
-                        break;
-                    case 11:
-                        type = GameObjectTypes.bottle_C_brown;
-                        break;
-                    case 12:
-                        type = GameObjectTypes.bottle_C_green;
-                        break;
-                    case 13:
-                    case 14:
-                    case 15:
-                    case 16:
-                        type = GameObjectTypes.food;
-                        break;
-                    case 17:
-                        type = GameObjectTypes.spellBookClosedB;
-                        break;
-                    case 18:
-                        type = GameObjectTypes.spellBookClosedC;
-                        break;
-                    case 19:
-                        type = GameObjectTypes.spellBookClosedD;
-                        break;
-                    case 20:
-                    case 21:
-                        type = GameObjectTypes.arrows;
-                        break;
-                    case 22:
-                        type = GameObjectTypes.axe;
-                        break;
-                }
+            if(mandatory.size > 0) {
+                type = mandatory.first();
+                mandatory.removeIndex(0);
+            } else if (optional.size > 0) {
+                int choice = MathUtils.random(0, optional.size-1);
+                type = optional.get(choice);
+                optional.removeIndex(choice);
+            } else
+                break;
 
 
-            occupant = new GameObject(type, room.x+rx, room.y+ry, Direction.SOUTH);
-            gameObjects.setOccupant(room.x+rx, room.y+ry, occupant);
+            item = new GameObject(type, room.x+rx, room.y+ry, Direction.SOUTH);
+            gameObjects.setOccupant(room.x+rx, room.y+ry, item);
+            gameObjects.add(item);
             // seems redundant to provide x,y twice
 
-            gameObjects.add(occupant);
-            assert type != null;
-            occupant.z = type.z;
-            occupant.quantity = 1;
-            if(type == GameObjectTypes.gold)
-                occupant.quantity = MathUtils.random(1,30);
-            else if(type == GameObjectTypes.arrows)
-                occupant.quantity = MathUtils.random(3,8);
-            else if(type.isArmour)
-                occupant.protection = type.initProtection + MathUtils.random(-2, 2);
-            else if(type.isWeapon) {
-                occupant.damage = type.initDamage + MathUtils.random(-1, 3);
-                occupant.accuracy = type.initAccuracy + MathUtils.random(-1, 3);
-            }
 
-            count--;
-            if(count == 0)
-                return;
+            assert type != null;
+            item.z = type.z;
+            item.quantity = 1;
+            if(type == GameObjectTypes.gold)
+                item.quantity = MathUtils.random(1,30);
+            else if(type == GameObjectTypes.arrows)
+                item.quantity = MathUtils.random(3,8);
+            else if(type.isArmour)
+                item.protection = type.initProtection + MathUtils.random(-2, 2);
+            else if(type.isWeapon) {
+                item.damage = type.initDamage + MathUtils.random(-1, 3);
+                item.accuracy = type.initAccuracy + MathUtils.random(-1, 3);
+            }
         }
     }
 
@@ -143,7 +110,10 @@ public class Populator {
         }
     }
 
-    public static void distributeEnemies(DungeonMap map, int level, GameObjects gameObjects, Enemies enemies ){
+    public static void distributeEnemies(DungeonMap map, int levelNr, GameObjects gameObjects, Enemies enemies ){
+        Array<GameObjectType> mandatory = new Array<>();
+        Array<GameObjectType> optional = new Array<>();
+        generatePopulation(levelNr, false, mandatory, optional);
 
         enemies.clear();
         int numRooms = map.rooms.size;
@@ -151,7 +121,7 @@ public class Populator {
         int attempts = 0;
         while(true){
             attempts++;
-            if(attempts > 10)       // avoid endless loop
+            if(attempts > 20)       // avoid endless loop
                 break;
 
             int location = MathUtils.random(0, map.rooms.size-1);
@@ -166,19 +136,30 @@ public class Populator {
             if(occupant != null)
                 continue;
 
-            int enemyType = MathUtils.random(0, 3);
             GameObjectType type = null;
-            switch(enemyType){
-                case 0: type = GameObjectTypes.warrior; break;
-                case 1: type = GameObjectTypes.mage; break;
-                case 2: type = GameObjectTypes.minion; break;
-                case 3: type = GameObjectTypes.imp; break;
-            }
+            if(mandatory.size > 0) {
+                type = mandatory.first();
+                mandatory.removeIndex(0);
+            } else if (optional.size > 0) {
+                int choice = MathUtils.random(0, optional.size-1);
+                type = optional.get(choice);
+                optional.removeIndex(choice);
+            } else
+                break;
+
+//            int enemyType = MathUtils.random(0, 3);
+//            GameObjectType type = null;
+//            switch(enemyType){
+//                case 0: type = GameObjectTypes.warrior; break;
+//                case 1: type = GameObjectTypes.mage; break;
+//                case 2: type = GameObjectTypes.minion; break;
+//                case 3: type = GameObjectTypes.imp; break;
+//            }
             GameObject enemy = new GameObject(type, room.x+rx, room.y+ry, Direction.SOUTH);
             gameObjects.setOccupant(room.x+rx, room.y+ry, enemy);
             enemy.stats = new CharacterStats();
             assert type != null;
-            enemy.stats.experience = type.initXP * (1+MathUtils.random(level*10));     // at lower levels, enemies get more experienced
+            enemy.stats.experience = type.initXP * (1+MathUtils.random(levelNr*10));     // at lower levels, enemies get more experienced
             int goldAmount = MathUtils.random(0,5);
             if(goldAmount > 0){
                 GameObject gold = new GameObject(GameObjectTypes.gold, goldAmount);
@@ -189,9 +170,8 @@ public class Populator {
             enemies.add(enemy);
             // seems redundant to provide x,y twice
 
-
             count--;
-            if(count == 0)
+            if(count == 0 && mandatory.size == 0)
                 return;
         }
     }

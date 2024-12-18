@@ -7,6 +7,8 @@ public class GameObjectType {
     public String name;
     public boolean character;
     public boolean pickup;
+    public int startLevel, endLevel;    // at which levels can they be found?
+    public int minCount, maxCount;      // how many to be found per level?
     public boolean isPlayer;
     public boolean isEnemy;
     public boolean isCountable;
@@ -28,10 +30,14 @@ public class GameObjectType {
     public float z;     // height to render at when place on the ground (to avoid some model being inside the floor)
     public Sprite icon;
 
-    public GameObjectType( String name, boolean character, boolean pickup) {
+    public GameObjectType( String name, boolean character, boolean pickup, int startLevel, int endLevel, int minCount, int maxCount) {
         this.name = name;
         this.character = character;
         this.pickup = pickup;
+        this.startLevel = startLevel;
+        this.endLevel = endLevel;
+        this.minCount = minCount;
+        this.maxCount = maxCount;
         this.isPlayer = false;
         this.isCountable = false;
         this.initXP = 1;

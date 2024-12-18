@@ -114,7 +114,7 @@ public class KeyController extends InputAdapter {
         }
         // regenerate HP
         if(--regenTimer <= 0){
-            regenTimer = Math.max(10-world.level, 3);
+            regenTimer = Math.max(20-2*world.level, 3);
             if(world.rogue.stats.hitPoints < CharacterStats.MAX_HITPOINTS)
                 world.rogue.stats.hitPoints++;
         }
@@ -235,27 +235,30 @@ public class KeyController extends InputAdapter {
 
         world.rogue.tryMove(world, scenes, dx, dy, dir);
 
-        int x = world.rogue.x;
-        int y = world.rogue.y;
-        // show the room if this is the first time we enter it
-        int roomId = world.map.roomCode[y][x];
+        discoverMap( world.rogue);
 
-        //Gdx.app.log("Rogue on tile", world.map.getGrid(x,y).toString());
-        if(roomId >= 0) {
+//        int x = world.rogue.x;
+//        int y = world.rogue.y;
+//        // show the room if this is the first time we enter it
+//        int roomId = world.map.roomCode[y][x];
+//
+//        //Gdx.app.log("Rogue on tile", world.map.getGrid(x,y).toString());
+//        if(roomId >= 0) {
+//
+//            Room room = world.map.rooms.get(roomId);
+//            if (!world.levelData.seenRooms.contains(roomId, true)) {
+//                scenes.showRoom(world.map, world.levelData, room);
+//                scenes.populateRoom(world, room);
+//            }
+//        } else if( world.map.getGrid(x,y) == TileType.CORRIDOR){
+//            scenes.visitCorridorSegment(world, x, y);
+//        }
 
-            Room room = world.map.rooms.get(roomId);
-            if (!world.levelData.seenRooms.contains(roomId, true)) {
-                scenes.showRoom(world.map, world.levelData, room);
-                scenes.populateRoom(world, room);
-            }
-        } else if( world.map.getGrid(x,y) == TileType.CORRIDOR){
-            scenes.visitCorridorSegment(world, x, y);
-        }
-
-        scenes.moveObject( world.rogue, x, y, world.rogue.z);
+        scenes.moveObject( world.rogue, world.rogue.x, world.rogue.y, world.rogue.z);
 
         // Did we return to the first room with the Sword?
         CharacterStats stats = world.rogue.stats;
+        int roomId = world.map.roomCode[world.rogue.y][world.rogue.x];
         if(world.level == 0 && roomId == world.startRoomId &&  ((stats.weaponItem != null && stats.weaponItem.type == GameObjectTypes.bigSword) || stats.inventory.contains(GameObjectTypes.bigSword)) ) {
             // clear message box
             for(int i = 0; i < 10; i++)
@@ -276,7 +279,24 @@ public class KeyController extends InputAdapter {
 
     }
 
+    public void discoverMap( GameObject character ){
+        int x = character.x;
+        int y = character.y;
+        // show the room if this is the first time we enter it
+        int roomId = world.map.roomCode[y][x];
 
+        //Gdx.app.log("Rogue on tile", world.map.getGrid(x,y).toString());
+        if(roomId >= 0) {
+
+            Room room = world.map.rooms.get(roomId);
+            if (!world.levelData.seenRooms.contains(roomId, true)) {
+                scenes.showRoom(world.map, world.levelData, room);
+                scenes.populateRoom(world, room);
+            }
+        } else if( world.map.getGrid(x,y) == TileType.CORRIDOR){
+            scenes.visitCorridorSegment(world, x, y);
+        }
+    }
 
 
     private void equip(){
@@ -475,18 +495,18 @@ public class KeyController extends InputAdapter {
 
     private void readSpell(GameObjectType type){
         MessageBox.addLine("You read the spell book.");
-        if(type == GameObjectTypes.spellBookClosed) {
+        if(type == GameObjectTypes.spellBookClosed) { // purple
             MessageBox.addLine("The paper makes you feel sad.");
-        } else if(type == GameObjectTypes.spellBookClosedB) {
+        } else if(type == GameObjectTypes.spellBookClosedB) { // red
             MessageBox.addLine("It is a book of maps.");
             world.rogue.stats.haveBookOfMaps = true;
-        } else if(type == GameObjectTypes.spellBookClosedC) {
+        } else if(type == GameObjectTypes.spellBookClosedC) { // black
             if(world.level == world.swordLevel || (world.rogue.stats.weaponItem != null && world.rogue.stats.weaponItem.type.isBigSword)
                     || world.rogue.stats.inventory.contains(GameObjectTypes.bigSword) )
                 MessageBox.addLine("The Sword of Yobled is at this level.");
             else
                 MessageBox.addLine("The Sword of Yobled is not at this level.");
-        } else if(type == GameObjectTypes.spellBookClosedD) {
+        } else if(type == GameObjectTypes.spellBookClosedD) { // green
             MessageBox.addLine("It has no effect.");
         }
     }

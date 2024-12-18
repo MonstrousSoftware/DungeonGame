@@ -277,6 +277,8 @@ public class GameObject {
 
     private void fight(World world, DungeonScenes scenes, GameObject other) {
 
+        if(other.stats.hitPoints<=0)
+            return; // don't fight a corpse
 
         if (type.isPlayer || other.type.isPlayer) {
             GameObject enemy = this;
@@ -291,6 +293,8 @@ public class GameObject {
             scene.animationController.setAnimation(null);   // remove previous animation
             scene.animationController.setAnimation("Unarmed_Melee_Attack_Punch_A", 1);
         }
+
+        other.attackedBy = this;
 
         // accuracy determines if the attack even hits
         // 40% baseline + up to 40% on XP + a few percent from weapon
@@ -385,7 +389,7 @@ public class GameObject {
         // play sound effect if player was involved
         if(type.isPlayer || enemy.type.isPlayer || world.rogue.stats.increasedAwareness > 0) {
             Sounds.monsterDeath();
-            MessageBox.addLine(type.name + " defeated the " + enemy.type.name + ". (XP +" + enemy.stats.experience + ")");
+            MessageBox.addLine(type.name + " defeated the " + enemy.type.name + ". (XP +" + enemy.type.initXP + ")");
         }
         // remove enemy visually and logically
         if(!enemy.type.isPlayer && enemy.scene != null)

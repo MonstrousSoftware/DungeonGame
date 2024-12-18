@@ -86,11 +86,11 @@ public class Inventory {
         for(int i = 0; i < numSlots; i++) {
             if(slots[i].isEmpty() ){
                 slots[i].addItem(item);
-                Gdx.app.log("Inventory", "slot "+i+" type: "+type.name+" count:"+slots[i].count);
+                //Gdx.app.log("Inventory", "slot "+i+" type: "+type.name+" count:"+slots[i].count);
                 return true;
             }
         }
-        Gdx.app.error("inventory full", "");
+        //Gdx.app.error("inventory full", "");
         return false;
     }
 

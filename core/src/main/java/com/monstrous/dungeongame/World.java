@@ -122,7 +122,7 @@ public class World {
         if(newLevel) {
             if (level == swordLevel)
                 Populator.placeSword(map, levelData.gameObjects);
-            Populator.distributeGoodies(map, levelData.gameObjects);
+            Populator.distributeGoodies(map, level, levelData.gameObjects);
             Populator.distributeEnemies(map, level, levelData.gameObjects, enemies);
         }
 
