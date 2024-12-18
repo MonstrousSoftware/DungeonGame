@@ -388,7 +388,7 @@ public class GameObject {
             MessageBox.addLine(type.name + " defeated the " + enemy.type.name + ". (XP +" + enemy.stats.experience + ")");
         }
         // remove enemy visually and logically
-        if(!enemy.type.isPlayer)
+        if(!enemy.type.isPlayer && enemy.scene != null)
             scenes.remove(enemy.scene);
         world.levelData.gameObjects.clearOccupant(enemy.x, enemy.y);
         world.enemies.remove(enemy);
@@ -404,7 +404,7 @@ public class GameObject {
             GameObject gold = new GameObject(GameObjectTypes.gold, enemy.x, enemy.y, Direction.NORTH);
             gold.quantity = goldAmount;
             scenes.placeObject(world.levelData.gameObjects, gold, enemy.x, enemy.y);    // place in the world and on screen
-            if(type.isPlayer || enemy.type.isPlayer || world.rogue.stats.increasedAwareness > 0) {
+            if(type.isPlayer || enemy.type.isPlayer || world.rogue.stats.increasedAwareness > 0)
                 MessageBox.addLine(enemy.type.name+ " drops their gold. ("+gold.quantity+")");
         }
     }

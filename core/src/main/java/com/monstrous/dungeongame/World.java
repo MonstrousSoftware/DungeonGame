@@ -18,6 +18,7 @@ public class World {
     public int swordLevel;
     public int startRoomId;
     public boolean gameOver;
+    public boolean gameCompleted;
 
     public DungeonMap map;                  // static architecture
     public GameObject rogue;                // the player
@@ -31,6 +32,7 @@ public class World {
     public World() {
         secondsElapsed = 0;
         gameOver = false;
+        gameCompleted = false;
         GameObjectTypes gameObjectTypes = new GameObjectTypes();
         levelDataArray = new Array<>();
         create();
@@ -69,6 +71,8 @@ public class World {
         map.dispose();
         if(!keepSeed)
             seed = MathUtils.random(1,9999);
+        gameOver = false;
+        gameCompleted = false;
         MessageBox.addLine("World seed: "+seed);
         create();
     }

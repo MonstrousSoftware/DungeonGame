@@ -37,4 +37,11 @@ public class Enemies {
             enemy.step(world, scenes);
         }
     }
+
+    public void hideAll(DungeonScenes scenes){
+        for(GameObject enemy : enemies){
+            if(enemy.scene != null)
+                scenes.remove(enemy.scene);
+        }
+    }
 }

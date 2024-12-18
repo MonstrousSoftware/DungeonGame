@@ -257,12 +257,20 @@ public class KeyController extends InputAdapter {
         // Did we return to the first room with the Sword?
         CharacterStats stats = world.rogue.stats;
         if(world.level == 0 && roomId == world.startRoomId &&  ((stats.weaponItem != null && stats.weaponItem.type == GameObjectTypes.bigSword) || stats.inventory.contains(GameObjectTypes.bigSword)) ) {
-            MessageBox.addLine("Congratulations!");
+            // clear message box
+            for(int i = 0; i < 10; i++)
+                MessageBox.addLine("");
+            MessageBox.addLine("You have completed the quest!");
             MessageBox.addLine("The Sword of Yobled was recovered.");
-            MessageBox.addLine("You have finished the game!");
+            MessageBox.addLine("Congratulations!");
+
+            scenes.turnObject(world.rogue, Direction.SOUTH, world.rogue.x, world.rogue.y);    // turn towards the camera
+
             world.rogue.scene.animationController.setAnimation(null);   // remove previous animation
             world.rogue.scene.animationController.setAnimation("Cheer", 20 );
             world.gameOver = true;
+            world.gameCompleted = true;
+            world.enemies.hideAll(scenes);  // hide any leftover enemies
             // todo more fanfare
         }
 

@@ -28,7 +28,7 @@ public class Populator {
 
             GameObjectType type = null;
 
-                int goodieType = MathUtils.random(0,1);
+                int goodieType = MathUtils.random(0, 22);
                 switch (goodieType) {
                     case 0:
                         type = GameObjectTypes.gold;
@@ -166,7 +166,7 @@ public class Populator {
             if(occupant != null)
                 continue;
 
-            int enemyType = MathUtils.random(3, 3);
+            int enemyType = MathUtils.random(0, 3);
             GameObjectType type = null;
             switch(enemyType){
                 case 0: type = GameObjectTypes.warrior; break;

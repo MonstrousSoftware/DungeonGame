@@ -178,7 +178,7 @@ public class GameScreen extends ScreenAdapter {
         // render
         sceneManager.renderShadows();
         fbo.begin();
-        ScreenUtils.clear(bgColor, true);
+        ScreenUtils.clear((world.gameCompleted? Color.GOLD : bgColor), true);
         sceneManager.update(deltaTime);
         sceneManager.renderColors();
         fbo.end();
