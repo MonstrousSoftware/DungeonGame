@@ -17,6 +17,7 @@ public class GameObject {
     public int protection;              // for armour
     public int damage;                  // for weapons
     public int accuracy;                // for weapons
+    public boolean hasFocus;
 
 
 
@@ -44,6 +45,10 @@ public class GameObject {
             return;
         }
 
+        if(lookForLoot(world, scenes))
+            return;
+
+
         // warrior switches aggression on and off
         if(type == GameObjectTypes.warrior){
             if(MathUtils.random(20) < 1)
@@ -51,7 +56,7 @@ public class GameObject {
         }
 
 
-        if(stats.aggressive && MathUtils.random(2) > 1){
+        if(stats.aggressive && world.rogue.stats.hitPoints > 0 && MathUtils.random(2) > 1){
             // move towards the player
 
             int dx = (int) Math.signum(world.rogue.x - x);
@@ -93,6 +98,31 @@ public class GameObject {
         }
     }
 
+    // check for valuables nearby and move towards it
+    public boolean lookForLoot(World world, DungeonScenes scenes){
+        if(grabLoot(world, scenes, -1, 0, Direction.WEST))
+            return true;
+        if(grabLoot(world, scenes, 1, 0, Direction.EAST))
+            return true;
+        if(grabLoot(world, scenes, 0, 1, Direction.NORTH))
+            return true;
+        if(grabLoot(world, scenes, 0, -1, Direction.SOUTH))
+            return true;
+        return false;
+    }
+
+    public boolean grabLoot(World world, DungeonScenes scenes, int dx, int dy, Direction dir){
+        GameObject occupant  = world.levelData.gameObjects.getOccupant(x+dx, y+dy);
+        TileType tile = world.map.getGrid(x+dx, y+dy);
+        if(occupant != null && (occupant.type.isGold || occupant.type.isWeapon || occupant.type.isArmour || occupant.type.isArrow || tile == TileType.DOORWAY)){
+            // gravitate towards doorways to encourage exploration (not sure this helps)
+
+            tryMove(world, scenes, dx, dy, dir);
+            return true;
+        }
+        return false;
+    }
+
     public void defend(World world, DungeonScenes scenes){
         fight( world, scenes, attackedBy);
         attackedBy = null;
@@ -129,7 +159,7 @@ public class GameObject {
         if(occupant != null && occupant.type.isEnemy){
             opponent = occupant;
         }
-        if(!type.isPlayer && tx == world.rogue.x && ty == world.rogue.y){
+        if(!type.isPlayer && tx == world.rogue.x && ty == world.rogue.y && world.rogue.stats.hitPoints > 0){
             opponent = world.rogue;
         }
         if(opponent != null){
@@ -188,7 +218,7 @@ public class GameObject {
         if(amount > 0){
             GameObject gold = new GameObject(GameObjectTypes.gold, amount);
             stats.inventory.addItem(gold);
-            if(type.isPlayer || victim.type.isPlayer || world.rogue.stats.increasedAwareness > 0) {
+            if(hasFocus || victim.hasFocus || world.rogue.stats.increasedAwareness > 0) {
                 Sounds.pickup();
                 MessageBox.addLine(type.name + " stole " + amount + " gold from " + victim.type.name);
             }
@@ -197,7 +227,7 @@ public class GameObject {
 
 
     private void pickUp(World world, DungeonScenes scenes, GameObject item ){
-        //Gdx.app.log("Pickup", item.type.name);
+        Gdx.app.log("Pickup", item.type.name);
 
         if(scene != null) {
             scene.animationController.setAnimation(null);   // remove previous animation
@@ -213,7 +243,7 @@ public class GameObject {
             // with increased awareness player is informed of all events
             // otherwise report only on player actions
             //
-            if(type.isPlayer || world.rogue.stats.increasedAwareness > 0) {
+            if(hasFocus || world.rogue.stats.increasedAwareness > 0) {
                 Sounds.pickup();
                 if (item.type.isCountable)
                     MessageBox.addLine(name + " picked up " + item.quantity + " " + item.type.name);
@@ -280,6 +310,11 @@ public class GameObject {
         if(other.stats.hitPoints<=0)
             return; // don't fight a corpse
 
+        if(other == this)
+            Gdx.app.error("fight", "Fighting oneself");
+
+        Gdx.app.log("fight", type.name+" hp:"+stats.hitPoints+" vs "+other.type.name+" hp:"+other.stats.hitPoints);
+
         if (type.isPlayer || other.type.isPlayer) {
             GameObject enemy = this;
             if (type.isPlayer)
@@ -308,10 +343,10 @@ public class GameObject {
         int defensiveSkills = Math.min(other.stats.experience/10, 20);
         System.out.println("accuracy "+accuracy+" vs RND("+(100+defensiveSkills)+")");
         if(MathUtils.random(100 + defensiveSkills) < accuracy ){
-            if(type.isPlayer || other.type.isPlayer ) {
+            if(hasFocus || other.hasFocus ) {
                 Sounds.swoosh();
+                MessageBox.addLine(type.name + " misses.");
             }
-            MessageBox.addLine(type.name + " misses.");
         }
         else {
             int hp = 1;
@@ -323,7 +358,7 @@ public class GameObject {
             hp += Math.min(stats.experience /20, 20);     // experience bonus
             System.out.println("attack hp "+hp+" vs protection "+(other.stats.armourItem == null? 0 : other.stats.armourItem.protection));
 
-            if(type.isPlayer || other.type.isPlayer )
+            if(hasFocus || other.hasFocus )
                 Sounds.fight();
             if (other.stats.armourItem != null && other.stats.armourItem.protection > hp) {
                 MessageBox.addLine("The " + other.type.name + " blocks the attack");
@@ -352,7 +387,8 @@ public class GameObject {
 
     // something was thrown at the target
     public void hits(World world, DungeonScenes scenes, GameObject thrower, GameObject target){
-        Sounds.fight();
+        if(hasFocus || target.hasFocus )
+            Sounds.fight();
 
         int hp = 1;
 
@@ -376,7 +412,7 @@ public class GameObject {
 
         target.stats.hitPoints = Math.max(0, target.stats.hitPoints-hp);
         // with increased awareness player is informed of all events
-        if(target.type.isPlayer || thrower.type.isPlayer || world.rogue.stats.increasedAwareness > 0) {
+        if(target.hasFocus || thrower.hasFocus || world.rogue.stats.increasedAwareness > 0) {
             MessageBox.addLine(type.name + " hits the " + target.type.name + "(HP: " + target.stats.hitPoints + ")");
         }
         if(target.stats.hitPoints <= 0){
@@ -387,7 +423,7 @@ public class GameObject {
 
     private void defeat(World world, DungeonScenes scenes, GameObject enemy){
         // play sound effect if player was involved
-        if(type.isPlayer || enemy.type.isPlayer || world.rogue.stats.increasedAwareness > 0) {
+        if(hasFocus || enemy.hasFocus || world.rogue.stats.increasedAwareness > 0) {
             Sounds.monsterDeath();
             MessageBox.addLine(type.name + " defeated the " + enemy.type.name + ". (XP +" + enemy.type.initXP + ")");
         }

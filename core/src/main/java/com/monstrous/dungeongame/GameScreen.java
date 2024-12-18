@@ -45,7 +45,7 @@ public class GameScreen extends ScreenAdapter {
     private Filter filter;
     private Color bgColor;
     private float stepTimer;
-    private ModelInstance focalInstance;    // what the camera is following
+    private GameObject focalActor;    // who the camera is following, normally the Rogue
 
 
     public GameScreen(Main game) {
@@ -169,7 +169,8 @@ public class GameScreen extends ScreenAdapter {
             dungeonScenes.showMap( world.map, world.levelData );
             dungeonScenes.showCorridors( world.map, world.levelData ); //
             dungeonScenes.populateMap(world, world.levelData);
-            focalInstance = world.rogue.scene.modelInstance;
+            focalActor = world.rogue;
+            focalActor.hasFocus = true;
         }
 
 
@@ -177,8 +178,11 @@ public class GameScreen extends ScreenAdapter {
             world.secondsElapsed += deltaTime;
 
         if(world.gameOver) {
-            if(world.rogue.attackedBy != null &&  world.rogue.attackedBy.scene != null)
-                focalInstance = world.rogue.attackedBy.scene.modelInstance;     // follow attacker now
+            if(focalActor.stats.hitPoints <= 0 && focalActor.attackedBy != null &&  focalActor.attackedBy.scene != null){
+                focalActor.hasFocus = false;
+                focalActor = focalActor.attackedBy;     // follow the killer, transitively
+                focalActor.hasFocus = true;
+            }
 
             // death cam mode, show the world moves on
             stepTimer -= deltaTime;
@@ -186,14 +190,15 @@ public class GameScreen extends ScreenAdapter {
                 stepTimer = 0.3f;
                 // move enemies
                 world.enemies.step(world, dungeonScenes);     // move enemies
-                if(world.rogue.attackedBy != null)
-                    keyController.discoverMap(world.rogue.attackedBy);
+                if(focalActor != null)
+                    keyController.discoverMap(focalActor);
             }
         }
 
-        camController.update(deltaTime, focalInstance);
+        assert focalActor != null;
+        camController.update(deltaTime, focalActor.scene.modelInstance);
 
-        focalInstance.transform.getTranslation(pointLight.position);
+        focalActor.scene.modelInstance.transform.getTranslation(pointLight.position);
         pointLight.position.y += 3;
         shadowCastingLight.setCenter(pointLight.position);
 
