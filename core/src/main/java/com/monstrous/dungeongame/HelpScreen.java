@@ -17,16 +17,17 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-public class HelpScreen  extends ScreenAdapter {
+public class HelpScreen  extends StdScreenAdapter {
 
-    public final static String VERSION = "version 1.2 17/12/2024";
+    public final static String VERSION = "version 1.3 19/12/2024";
 
     private final String[] tips = {
         "Take your time to think. It's a turn based game and there is no need to rush.",
+        "Every restart changes the dungeon.",
         "Don't forget to eat or you may faint and need to skip some turns.",
         "Health regenerates over time. Press SPACE to rest.",
         "The monsters at lower levels are more dangerous.",
-        "Experience (XP) will improve your fighting.",
+        "Experience (XP) will improve your fighting skills.",
         "Imps like to steal gold.",
         "Warriors get aggressive when they are in a bad mood.",
         "Monsters will also pick up items and fight each other when you're not around.",
@@ -37,7 +38,7 @@ public class HelpScreen  extends ScreenAdapter {
         "Weapons have damage level and accuracy level.",
         "Once opened, a spell book has no further use.",
         "The Sword of Yobled is at dungeon level 5 or below.",
-        "Remember what the different potions do.",
+        "Learn what the different potions do.",
         "You can use the scroll wheel to zoom. ",
         "Increase awareness lets you know what the monsters do.",
         "Blocked attacks degrade weapon accuracy.",
@@ -59,6 +60,10 @@ public class HelpScreen  extends ScreenAdapter {
     public void show() {
 
         skin = new Skin(Gdx.files.internal("skin/d3.json"));
+        rebuild();
+    }
+
+    private void rebuild() {
         stage = new Stage(new ScreenViewport());
 
         Table screenTable = new Table();
@@ -82,7 +87,16 @@ public class HelpScreen  extends ScreenAdapter {
 
         Label keyLabel = new Label("Keys:", skin, "small");
         keyLabel.setColor(Color.CYAN);
-        keyLabel.setText("KEYS:\n  Arrow keys to move\n  SPACE : rest\n  U + digit : use\n  D + digit : drop\n  E + digit : equip\n  T+digit+arrow : throw\n  Z, C : turn\n  M : map\n  R : restart\n");
+        keyLabel.setText("KEYS:\n" +
+            "  Arrow keys : move or fight\n" +
+            "  U + digit : use food/potion/spell book\n" +
+            "  D + digit : drop item\n" +
+            "  E + digit : equip weapon/armour\n" +
+            "  T + digit + arrow : throw item\n" +
+            "  M : map\n" +
+            "  SPACE : rest\n" +
+            "  R : restart (confirm with Y)\n" +
+            "  F11 : toggle full-screen\n");
         screenTable.add(keyLabel).pad(20).center();
         screenTable.row();
 
@@ -104,6 +118,8 @@ public class HelpScreen  extends ScreenAdapter {
 
     @Override
     public void render(float deltaTime) {
+        super.render(deltaTime);
+
         if(Gdx.input.isKeyJustPressed(Input.Keys.C)){
             game.setScreen( new CreditsScreen(game) );
             return;
@@ -127,6 +143,8 @@ public class HelpScreen  extends ScreenAdapter {
 
     @Override
     public void resize(int width, int height) {
+
+        stage.getViewport().update(width, height, true);
     }
 
 

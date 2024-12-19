@@ -24,7 +24,7 @@ import net.mgsx.gltf.scene3d.shaders.PBRShaderProvider;
 import net.mgsx.gltf.scene3d.utils.IBLBuilder;
 
 
-public class GameScreen extends ScreenAdapter {
+public class GameScreen extends StdScreenAdapter {
     final static int SHADOW_MAP_SIZE = 2048;
 
     private Main game;
@@ -46,6 +46,7 @@ public class GameScreen extends ScreenAdapter {
     private Color bgColor;
     private float stepTimer;
     private GameObject focalActor;    // who the camera is following, normally the Rogue
+    private int width, height;
 
 
     public GameScreen(Main game) {
@@ -139,6 +140,8 @@ public class GameScreen extends ScreenAdapter {
 
     @Override
     public void render(float deltaTime) {
+        super.render(deltaTime);
+
         if(Gdx.input.isKeyJustPressed(Input.Keys.M)){
             if(world.rogue.stats.haveBookOfMaps) {
                 game.setScreen(new MapScreen(game));
@@ -146,7 +149,7 @@ public class GameScreen extends ScreenAdapter {
             }
             MessageBox.addLine("You need the Book of Maps.");
         }
-        if(Gdx.input.isKeyJustPressed(Input.Keys.H)){
+        else if(Gdx.input.isKeyJustPressed(Input.Keys.H)){
             game.setScreen( new HelpScreen(game) );
             return;
         }
@@ -154,6 +157,19 @@ public class GameScreen extends ScreenAdapter {
             game.setScreen( new CreditsScreen(game) );
             return;
         }
+//        else if (Gdx.input.isKeyJustPressed(Input.Keys.F11)) {               // wait till key is released so we toggle only once
+//            if (!Gdx.graphics.isFullscreen()) {
+//                width = Gdx.graphics.getWidth();
+//                height = Gdx.graphics.getHeight();
+//                Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+//                Gdx.app.log("To fullscreen", "from "+width+" x "+height);
+//                resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+//            } else {
+//                Gdx.graphics.setWindowedMode(width, height);
+//                Gdx.app.log("To windowed mode", "" + width + " x " + height);
+//                resize(width, height);
+//            }
+//        }
 
 
         if(world.isRebuilt){

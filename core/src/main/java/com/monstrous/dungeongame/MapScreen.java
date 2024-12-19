@@ -14,7 +14,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import static com.monstrous.dungeongame.DungeonMap.*;
 
 
-public class MapScreen extends ScreenAdapter {
+public class MapScreen extends StdScreenAdapter {
     //public final static int MARGIN = 5;
 
     private final Main game;
@@ -43,6 +43,8 @@ public class MapScreen extends ScreenAdapter {
 
     @Override
     public void render(float delta) {
+        super.render(delta);
+
         if(Gdx.input.isKeyJustPressed(Input.Keys.M)){
             game.setScreen( new GameScreen(game) );
             return;
