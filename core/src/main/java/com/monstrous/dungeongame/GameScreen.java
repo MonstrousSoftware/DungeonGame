@@ -174,6 +174,8 @@ public class GameScreen extends ScreenAdapter {
         }
 
 
+        keyController.update(deltaTime); // for key repeat
+
         if(!world.gameOver)
             world.secondsElapsed += deltaTime;
 

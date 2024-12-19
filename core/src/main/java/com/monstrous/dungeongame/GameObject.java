@@ -372,7 +372,10 @@ public class GameObject {
                 }
             } else {
                 // not missed, not blocked
-                other.stats.hitPoints = Math.max(0, other.stats.hitPoints - hp);
+                if(other.stats.hitPoints < 5)
+                    other.stats.hitPoints = Math.max(0, other.stats.hitPoints - hp);
+                else
+                    other.stats.hitPoints = Math.max(2, other.stats.hitPoints - hp);        // avoid one-hit kills
 
                 // with increased awareness player is informed of all events
                 if (type.isPlayer || other.type.isPlayer || world.rogue.stats.increasedAwareness > 0) {
@@ -387,7 +390,7 @@ public class GameObject {
 
     // something was thrown at the target
     public void hits(World world, DungeonScenes scenes, GameObject thrower, GameObject target){
-        if(hasFocus || target.hasFocus )
+        //if(hasFocus || target.hasFocus )
             Sounds.fight();
 
         int hp = 1;

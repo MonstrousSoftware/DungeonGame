@@ -5,6 +5,9 @@ import com.badlogic.gdx.InputAdapter;
 
 public class KeyController extends InputAdapter {
 
+    private static float KEY_DELAY = 0.5f;
+    private static float KEY_REPEAT_DELAY = 0.05f;
+
     private final World world;
     private final DungeonScenes scenes;
     private boolean equipMode;  // after e
@@ -17,6 +20,8 @@ public class KeyController extends InputAdapter {
     private int frozenTimer;
     private int regenTimer;
     private int digestionSpeed = 2;
+    private int keyDown;
+    private float downTime;
 
     public KeyController(World world, DungeonScenes scenes) {
         this.world = world;
@@ -30,12 +35,31 @@ public class KeyController extends InputAdapter {
         regenTimer = 10;
     }
 
+    // used for key repeat
+    public void update(float deltaTime){
+        if(keyDown == 0)
+            return;
+        downTime -= deltaTime;
+        if(downTime <= 0){
+            downTime = KEY_REPEAT_DELAY;
+            handleKey(keyDown); // simulate a key press
+        }
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        keyDown = 0;
+        return true;
+    }
+
     @Override
     public boolean keyDown(int keycode) {
+        keyDown = keycode;
+        downTime = KEY_DELAY;
+        return handleKey(keycode);
+    }
 
-        // left/right keys translate to -x/+x
-        // up/down to +y/-y
-        //
+    private boolean handleKey(int keycode){
 
         if (world.gameOver) { // player is dead or has beaten the game
             return false;
@@ -53,6 +77,11 @@ public class KeyController extends InputAdapter {
         }
         else {
             done = false;
+
+            // left/right keys translate to -x/+x
+            // up/down to +y/-y
+            //
+
             switch (keycode) {
                 case Input.Keys.LEFT:
                     tryMoveRogue(-1, 0, Direction.WEST);
@@ -76,6 +105,8 @@ public class KeyController extends InputAdapter {
             wrapUp();
         return done;
     }
+
+
 
     @Override
     public boolean keyTyped(char character) {
@@ -102,6 +133,9 @@ public class KeyController extends InputAdapter {
 
         return handled;
     }
+
+
+
 
 
     // arrive here after having made a move or skipping a turn

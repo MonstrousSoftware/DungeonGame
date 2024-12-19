@@ -159,7 +159,7 @@ public class GUI implements Disposable {
         xp.setText(sb.toString());
 
         for(int i = 0; i < NUM_MESSAGES; i++)
-            messages[i].setText(MessageBox.lines.get(MessageBox.lines.size - (i+1)));
+            messages[i].setText(MessageBox.lines.get(MessageBox.lines.size - (NUM_MESSAGES-i)));
 
         setWeapon();
         setArmour();
