@@ -99,10 +99,11 @@ public class InventorySlotButton extends Button {
     }
 
     private void adjustBuffIndicator( Inventory.Slot slot) {
-        if(slot.count == 1){
-            if(slot.object.type.isArmour)
+        if(slot.count == 1){ // single item in the slot?
+            if(slot.object.type.isArmour) {
                 buffLabel.setText(slot.object.protection);
-            else if(slot.object.type.isWeapon) {
+                accuracyLabel.setText("");
+            } else if(slot.object.type.isWeapon) {
                 buffLabel.setText(slot.object.damage);
                 accuracyLabel.setText(slot.object.accuracy);
             } else  {

@@ -13,6 +13,7 @@ public class GameObjectType {
     public boolean isEnemy;
     public boolean isCountable;
     public boolean isWeapon;
+    public boolean isRangeWeapon;
     public boolean isArmour;
     public boolean isEdible;
     public boolean isPotion;
@@ -23,8 +24,10 @@ public class GameObjectType {
     public GameObjectType alternative;
     public SceneAsset sceneAsset;
     public int initProtection;      // for armour
-    public int initDamage;
-    public int initAccuracy;
+    public int initMeleeAccuracy;
+    public int initMeleeDamage;
+    public int initThrowDamage;
+    public int initThrowAccuracy;
     public int initXP;
     public boolean initAggressive;
     public float z;     // height to render at when place on the ground (to avoid some model being inside the floor)
@@ -43,6 +46,7 @@ public class GameObjectType {
         this.initXP = 1;
         this.z = 1f;
         this.isWeapon = false;
+        this.isRangeWeapon = false;
         this.isArmour = false;
         this.isEdible = false;
         this.isPotion = false;
@@ -50,8 +54,10 @@ public class GameObjectType {
         this.isArrow = false;
         this.isSpellBook = false;
         this.initProtection = 0;
-        this.initDamage = 0;
-        this.initAccuracy = 0;
+        this.initMeleeDamage = 0;
+        this.initMeleeAccuracy = 0;
+        this.initThrowDamage = 0;
+        this.initThrowAccuracy = 0;
         this.initAggressive = false;
         this.isBigSword = false;
     }

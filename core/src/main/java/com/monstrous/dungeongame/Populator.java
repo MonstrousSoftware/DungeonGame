@@ -80,8 +80,14 @@ public class Populator {
             else if(type.isArmour)
                 item.protection = type.initProtection + MathUtils.random(-2, 2);
             else if(type.isWeapon) {
-                item.damage = type.initDamage + MathUtils.random(-1, 3);
-                item.accuracy = type.initAccuracy + MathUtils.random(-1, 3);
+                if(type.isRangeWeapon) {
+                    item.damage = type.initThrowDamage + MathUtils.random(-1, 3);
+                    item.accuracy = type.initThrowAccuracy + MathUtils.random(-1, 3);
+                } else {
+                    item.damage = type.initMeleeDamage + MathUtils.random(-1, 3);
+                    item.accuracy = type.initMeleeAccuracy + MathUtils.random(-1, 3);
+
+                }
             }
         }
     }
@@ -104,8 +110,8 @@ public class Populator {
             sword.z = sword.type.z;
             sword.quantity = 1;
             sword.direction = Direction.SOUTH;
-            sword.damage = sword.type.initDamage;
-            sword.accuracy = sword.type.initAccuracy;
+            sword.damage = sword.type.initMeleeDamage;
+            sword.accuracy = sword.type.initMeleeAccuracy;
             return;
         }
     }

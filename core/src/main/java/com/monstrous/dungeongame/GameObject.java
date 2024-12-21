@@ -229,12 +229,11 @@ public class GameObject {
     private void pickUp(World world, DungeonScenes scenes, GameObject item ){
         Gdx.app.log("Pickup", item.type.name);
 
-        if(scene != null) {
-            scene.animationController.setAnimation(null);   // remove previous animation
-            scene.animationController.setAnimation("PickUp", 1);
-        }
-
         if(stats.inventory.addItem(item)){  // if there is room in the inventory
+            if(scene != null) {
+                scene.animationController.setAnimation(null);   // remove previous animation
+                scene.animationController.setAnimation("PickUp", 1);
+            }
 
             String name = type.name;
             if(type.isPlayer)
@@ -336,13 +335,15 @@ public class GameObject {
         // where XP impact maxes out from 200 onwards, i.e. 10 warrior kills
         //
         int accuracy = 40 + Math.min(stats.experience/4, 50);
-        if(stats.weaponItem != null)
+        if(stats.weaponItem != null && !stats.weaponItem.type.isRangeWeapon)
             accuracy += stats.weaponItem.accuracy;
 
         // experienced enemies can dodge the attack
         int defensiveSkills = Math.min(other.stats.experience/10, 20);
-        System.out.println("accuracy "+accuracy+" vs RND("+(100+defensiveSkills)+")");
-        if(MathUtils.random(100 + defensiveSkills) < accuracy ){
+        int rnd = MathUtils.random(100 + defensiveSkills);
+        System.out.println("accuracy "+accuracy+" vs RND("+(100+defensiveSkills)+") rolls: "+rnd+ "misses? "+(rnd< accuracy));
+
+        if(rnd < accuracy ){
             if(hasFocus || other.hasFocus ) {
                 Sounds.swoosh();
                 MessageBox.addLine(type.name + " misses.");
@@ -351,7 +352,7 @@ public class GameObject {
         else {
             int hp = 1;
             String verb = "hits";
-            if(stats.weaponItem != null) {
+            if(stats.weaponItem != null && !stats.weaponItem.type.isRangeWeapon) {
                 hp += stats.weaponItem.damage;
                 verb = "attacks";
             }

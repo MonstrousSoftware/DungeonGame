@@ -95,22 +95,26 @@ public class GameObjectTypes implements Disposable {
         knife = new GameObjectType("a Knife", false, true, 0, 99, 1, 2);
         knife.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/dagger.gltf"));
         knife.isWeapon = true;
-        knife.initDamage = 5;
-        knife.initAccuracy = 5;
+        knife.initMeleeDamage = 5;
+        knife.initMeleeAccuracy = 5;
+        knife.initThrowDamage = 5;
+        knife.initThrowAccuracy = 5;
         types.add(knife);
 
         crossbow = new GameObjectType("a Crossbow", false, true, 1, 99, 1, 1);
         crossbow.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/crossbow_1handed.gltf"));
         crossbow.isWeapon = true;
-        crossbow.initDamage = 8;
-        crossbow.initAccuracy = 2;
+        crossbow.initThrowDamage = 8;
+        crossbow.initThrowAccuracy = 2;
+        crossbow.isRangeWeapon = true;
         types.add(crossbow);
 
         explosive = new GameObjectType("an Explosive", false, true, 2, 99, 1, 5);
         explosive.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/smokebomb.gltf"));
         explosive.isWeapon = true;
-        explosive.initDamage = 12;
-        explosive.initAccuracy = 2;
+        explosive.initThrowDamage = 12;
+        explosive.initThrowAccuracy = 2;
+        crossbow.isRangeWeapon = true;
         types.add(explosive);
 
         arrows = new GameObjectType("arrows", false, true, 1, 99, 1, 3);
@@ -125,8 +129,9 @@ public class GameObjectTypes implements Disposable {
         arrow.z = 1f;
         arrow.isCountable = true;
         arrow.isArrow = true;
-        arrow.initDamage = 3;
-        arrow.initAccuracy = 2;
+        arrow.initThrowDamage = 3;
+        arrow.initThrowAccuracy = 2;
+        crossbow.isRangeWeapon = true;
         types.add(arrow);
         arrows.alternative = arrow; // to change model as quantity drops to 1
         arrow.alternative = arrows;
@@ -148,8 +153,10 @@ public class GameObjectTypes implements Disposable {
         axe = new GameObjectType("an Axe", false, true, 4, 99, 1, 2);
         axe.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/axe_1handed.gltf"));
         axe.isWeapon = true;
-        axe.initDamage = 10;
-        axe.initAccuracy = 5;
+        axe.initMeleeDamage = 10;
+        axe.initMeleeAccuracy = 5;
+        axe.initThrowDamage = 10;
+        axe.initThrowAccuracy = 5;
         types.add(axe);
 
         spellBookClosed = new GameObjectType("a purple Spellbook", false, true, 0, 2, 1, 1);
@@ -230,8 +237,8 @@ public class GameObjectTypes implements Disposable {
         bigSword = new GameObjectType("the Sword of Yobled!", false, true, 5, 7, 0, 0);     // needs some external logic to ensure there is only one
         bigSword.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/sword_2handed_color.gltf"));
         bigSword.isWeapon = true;
-        bigSword.initDamage = 25;
-        bigSword.initAccuracy = 5;
+        bigSword.initMeleeDamage = 25;
+        bigSword.initMeleeAccuracy = 10;
         bigSword.isBigSword = true;
         types.add(bigSword);
 
