@@ -42,8 +42,8 @@ public class MapScreen extends StdScreenAdapter {
     }
 
     @Override
-    public void render(float delta) {
-        super.render(delta);
+    public void render(float deltaTime) {
+        super.render(deltaTime);
 
         if(Gdx.input.isKeyJustPressed(Input.Keys.M)){
             game.setScreen( new GameScreen(game) );
@@ -62,7 +62,8 @@ public class MapScreen extends StdScreenAdapter {
             viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
             System.out.println("seed: "+world.seed+ " level: "+world.level);
         }
-
+        if(game.keyController != null)
+            game.keyController.update(deltaTime); // for key repeat
 
         viewport.setWorldSize(world.map.mapWidth, world.map.mapHeight);
         viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);

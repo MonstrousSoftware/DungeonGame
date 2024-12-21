@@ -334,16 +334,16 @@ public class GameObject {
         // 40% baseline + up to 40% on XP + a few percent from weapon
         // where XP impact maxes out from 200 onwards, i.e. 10 warrior kills
         //
-        int accuracy = 40 + Math.min(stats.experience/4, 50);
+        int accuracy = 40 + Math.min(stats.experience/10, 55);
         if(stats.weaponItem != null && !stats.weaponItem.type.isRangeWeapon)
             accuracy += stats.weaponItem.accuracy;
 
         // experienced enemies can dodge the attack
         int defensiveSkills = Math.min(other.stats.experience/10, 20);
-        int rnd = MathUtils.random(100 + defensiveSkills);
-        System.out.println("accuracy "+accuracy+" vs RND("+(100+defensiveSkills)+") rolls: "+rnd+ "misses? "+(rnd< accuracy));
+        int rnd = MathUtils.random(90 + defensiveSkills);
+        System.out.println("accuracy "+accuracy+" vs RND("+(100+defensiveSkills)+") rolls: "+rnd+ "misses? "+(accuracy < rnd ));
 
-        if(rnd < accuracy ){
+        if(accuracy < rnd  ){
             if(hasFocus || other.hasFocus ) {
                 Sounds.swoosh();
                 MessageBox.addLine(type.name + " misses.");
@@ -405,14 +405,14 @@ public class GameObject {
         if(type == GameObjectTypes.knife)
             hp = 3;
         else if(type == GameObjectTypes.explosive) {
-            hp = 10;
+            hp += damage;
         }
         else if(type == GameObjectTypes.arrow) {
             // if crossbow is equipped arrows do more damage
             if(thrower.stats.weaponItem != null && thrower.stats.weaponItem.type == GameObjectTypes.crossbow)
-                hp = 10;
+                hp += thrower.stats.weaponItem.damage;
             else
-                hp = 3;
+                hp += damage;
         }
         else if(type == GameObjectTypes.bottle_C_green){
             hp = 3;     // poison

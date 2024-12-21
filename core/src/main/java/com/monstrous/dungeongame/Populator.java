@@ -197,8 +197,11 @@ public class Populator {
             GameObject rogue = new GameObject(GameObjectTypes.rogue, room.centre.x, room.centre.y, Direction.SOUTH);
             gameObjects.setOccupant(room.centre.x, room.centre.y, rogue);
             rogue.stats = new CharacterStats();
+            rogue.stats.experience = rogue.type.initXP;
             gameObjects.add(rogue);
             rogue.direction = Direction.SOUTH;
+
+
 
             return rogue;
         }

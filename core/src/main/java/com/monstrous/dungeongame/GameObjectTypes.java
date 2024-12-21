@@ -179,7 +179,7 @@ public class GameObjectTypes implements Disposable {
         types.add(spellBookOpenB);
         spellBookClosedB.alternative = spellBookOpenB;
 
-        spellBookClosedC = new GameObjectType("a black Spellbook", false, true, 0, 99, 0, 1);
+        spellBookClosedC = new GameObjectType("a black Spellbook", false, true, 0, 99, 0, 2);
         spellBookClosedC.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/spellbook_closed_C.gltf"));
         spellBookClosedC.isSpellBook = true;
         types.add(spellBookClosedC);
@@ -229,7 +229,7 @@ public class GameObjectTypes implements Disposable {
         bottle_C_brown.isPotion = true;
         types.add(bottle_C_brown);
 
-        bottle_C_green = new GameObjectType("a Sweet Potion", false, true, 4, 99, 0, 4);
+        bottle_C_green = new GameObjectType("a Sweet Potion", false, true, 3, 99, 0, 4);
         bottle_C_green.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/bottle_C_green.gltf"));
         bottle_C_green.isPotion = true;
         types.add(bottle_C_green);

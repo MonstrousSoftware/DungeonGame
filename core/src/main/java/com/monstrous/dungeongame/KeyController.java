@@ -33,6 +33,7 @@ public class KeyController extends InputAdapter {
         throwMode = false;
         throwDirectionMode = false;
         regenTimer = 10;
+
     }
 
     // used for key repeat
@@ -99,6 +100,13 @@ public class KeyController extends InputAdapter {
                     tryMoveRogue(0, -1, Direction.SOUTH);
                     done = true;
                     break;
+                case Input.Keys.SPACE:
+                    if( !world.rogue.scene.animationController.current.animation.id.contentEquals("Idle")){
+                        world.rogue.scene.animationController.setAnimation(null);   // remove previous animation
+                        world.rogue.scene.animationController.setAnimation("Idle", -1);
+                    }
+                    done = true;
+                    break;        // do nothing
             }
         }
         if(done)
@@ -181,7 +189,7 @@ public class KeyController extends InputAdapter {
             Sounds.stomachRumble();
             MessageBox.addLine("You're so faint you can't move.");
             world.rogue.scene.animationController.setAnimation(null);   // remove previous animation
-            world.rogue.scene.animationController.setAnimation("Lie_Idle", 3);
+            world.rogue.scene.animationController.setAnimation("Lie_Idle", -1);
             frozenTimer = 5;
             world.rogue.stats.food = CharacterStats.REPLENISH_FOOD;
         }
@@ -222,11 +230,8 @@ public class KeyController extends InputAdapter {
                 confirmMode = true;
                 MessageBox.addLine("Confirm with Y to restart.");
                 return false;
-            case ' ':
-                world.rogue.scene.animationController.setAnimation(null);   // remove previous animation
-                world.rogue.scene.animationController.setAnimation("Idle", 3);
-                return true;        // do nothing
-            case '#':   // cheat code
+
+            case ']':   // cheat code
                 world.rogue.stats.haveBookOfMaps = true;
                 return true;
             default:
@@ -551,10 +556,10 @@ public class KeyController extends InputAdapter {
             world.rogue.stats.increasedAwareness = 100;
             MessageBox.addLine("Your awareness is increased.");
         } else if(potion.type == GameObjectTypes.bottle_C_green){
-            world.rogue.stats.hitPoints = Math.max(0, world.rogue.stats.hitPoints-3);
+            world.rogue.stats.hitPoints = Math.max(1, world.rogue.stats.hitPoints-10);
             MessageBox.addLine("It is poison. You lose health.");
         } else if(potion.type == GameObjectTypes.bottle_B_green){
-            world.rogue.stats.hitPoints = Math.max(CharacterStats.MAX_HITPOINTS, world.rogue.stats.hitPoints+3);
+            world.rogue.stats.hitPoints = Math.min(CharacterStats.MAX_HITPOINTS, world.rogue.stats.hitPoints+3);
             MessageBox.addLine("You feel invigorated.");
         } else if(potion.type == GameObjectTypes.bottle_A_green) {
             digestionSpeed = 1;

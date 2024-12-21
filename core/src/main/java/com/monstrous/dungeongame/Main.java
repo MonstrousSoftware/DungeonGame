@@ -8,6 +8,7 @@ import com.badlogic.gdx.audio.Music;
 public class Main extends Game {
 
     public World world;
+    public KeyController keyController; // so it can be shared between screens
     public Music music;
     private MessageBox mb = new MessageBox();
 

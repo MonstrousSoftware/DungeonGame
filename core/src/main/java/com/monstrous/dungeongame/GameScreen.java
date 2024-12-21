@@ -38,7 +38,7 @@ public class GameScreen extends StdScreenAdapter {
     private Texture brdfLUT;
     private DungeonScenes dungeonScenes;
     private OrthoCamController camController;
-    private KeyController keyController;
+    //private KeyController keyController;
     private PointLightEx pointLight;
     private DirectionalShadowLight shadowCastingLight;
     private FrameBuffer fbo;
@@ -46,8 +46,6 @@ public class GameScreen extends StdScreenAdapter {
     private Color bgColor;
     private float stepTimer;
     private GameObject focalActor;    // who the camera is following, normally the Rogue
-    private int width, height;
-
 
     public GameScreen(Main game) {
         this.game = game;
@@ -121,14 +119,14 @@ public class GameScreen extends StdScreenAdapter {
         world.isRebuilt = true;
 
         camController = new OrthoCamController(camera);
-        keyController = new KeyController(world, dungeonScenes );
+        game.keyController = new KeyController(world, dungeonScenes );
 
         gui = new GUI( world );
         filter = new Filter();
 
         InputMultiplexer im = new InputMultiplexer();
         im.addProcessor(camController);
-        im.addProcessor(keyController);
+        im.addProcessor(game.keyController);
         im.addProcessor(gui.stage);
         Gdx.input.setInputProcessor(im);
 
@@ -176,7 +174,7 @@ public class GameScreen extends StdScreenAdapter {
         }
 
 
-        keyController.update(deltaTime); // for key repeat
+        game.keyController.update(deltaTime); // for key repeat
 
         if(!world.gameOver)
             world.secondsElapsed += deltaTime;
@@ -195,7 +193,7 @@ public class GameScreen extends StdScreenAdapter {
                 // move enemies
                 world.enemies.step(world, dungeonScenes);     // move enemies
                 if(focalActor != null)
-                    keyController.discoverMap(focalActor);
+                    game.keyController.discoverMap(focalActor);
             }
         }
 

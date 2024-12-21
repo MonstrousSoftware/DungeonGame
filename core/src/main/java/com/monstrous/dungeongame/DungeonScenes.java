@@ -310,7 +310,7 @@ public class DungeonScenes implements Disposable {
         GameObject rogue = world.rogue;
         addScene(rogue);
         adaptModel(rogue.scene, rogue.stats);
-        rogue.scene.animationController.setAnimation("Idle", 1);
+        rogue.scene.animationController.setAnimation("Idle", -1);
 
 
 //        String armature = "Rig";
