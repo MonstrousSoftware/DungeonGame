@@ -101,7 +101,7 @@ public class GameObjectTypes implements Disposable {
         knife.initThrowAccuracy = 5;
         types.add(knife);
 
-        crossbow = new GameObjectType("a Crossbow", false, true, 1, 99, 1, 1);
+        crossbow = new GameObjectType("a Crossbow", false, true, 2, 99, 1, 1);
         crossbow.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/crossbow_1handed.gltf"));
         crossbow.isWeapon = true;
         crossbow.initThrowDamage = 8;
@@ -150,7 +150,7 @@ public class GameObjectTypes implements Disposable {
         shield2.initProtection = 10;
         types.add(shield2);
 
-        axe = new GameObjectType("an Axe", false, true, 4, 99, 1, 2);
+        axe = new GameObjectType("an Axe", false, true, 4, 99, 1, 3);
         axe.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/axe_1handed.gltf"));
         axe.isWeapon = true;
         axe.initMeleeDamage = 10;
