@@ -209,7 +209,7 @@ public class GameObjectTypes implements Disposable {
         bottle_A_brown.isPotion = true;
         types.add(bottle_A_brown);
 
-        bottle_A_green = new GameObjectType("a Jade Potion", false, true,1, 99, 0, 4);
+        bottle_A_green = new GameObjectType("a Jade Potion", false, true,1, 99, 0, 1);
         bottle_A_green.sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/bottle_A_green.gltf"));
         bottle_A_green.isPotion = true;
         types.add(bottle_A_green);

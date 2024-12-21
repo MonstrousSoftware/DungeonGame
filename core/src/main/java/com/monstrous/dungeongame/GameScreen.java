@@ -157,20 +157,6 @@ public class GameScreen extends StdScreenAdapter {
             game.setScreen( new CreditsScreen(game) );
             return;
         }
-//        else if (Gdx.input.isKeyJustPressed(Input.Keys.F11)) {               // wait till key is released so we toggle only once
-//            if (!Gdx.graphics.isFullscreen()) {
-//                width = Gdx.graphics.getWidth();
-//                height = Gdx.graphics.getHeight();
-//                Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
-//                Gdx.app.log("To fullscreen", "from "+width+" x "+height);
-//                resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-//            } else {
-//                Gdx.graphics.setWindowedMode(width, height);
-//                Gdx.app.log("To windowed mode", "" + width + " x " + height);
-//                resize(width, height);
-//            }
-//        }
-
 
         if(world.isRebuilt){
             world.isRebuilt = false;

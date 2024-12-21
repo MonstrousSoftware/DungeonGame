@@ -63,6 +63,7 @@ public class MapScreen extends StdScreenAdapter {
             System.out.println("seed: "+world.seed+ " level: "+world.level);
         }
 
+
         viewport.setWorldSize(world.map.mapWidth, world.map.mapHeight);
         viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
 

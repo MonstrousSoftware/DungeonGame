@@ -361,6 +361,7 @@ public class GameObject {
 
             if(hasFocus || other.hasFocus )
                 Sounds.fight();
+
             if (other.stats.armourItem != null && other.stats.armourItem.protection > hp) {
                 MessageBox.addLine("The " + other.type.name + " blocks the attack");
                 if (hp > other.stats.armourItem.protection/2) {
@@ -372,15 +373,20 @@ public class GameObject {
                     stats.weaponItem.accuracy = Math.max(0, stats.weaponItem.accuracy-1);
                 }
             } else {
-                // not missed, not blocked
-                if(other.stats.hitPoints < 5)
-                    other.stats.hitPoints = Math.max(0, other.stats.hitPoints - hp);
-                else
-                    other.stats.hitPoints = Math.max(2, other.stats.hitPoints - hp);        // avoid one-hit kills
+                if (other.stats.armourItem != null)
+                    hp-= other.stats.armourItem.protection;     // armour reduces the attack force
 
-                // with increased awareness player is informed of all events
-                if (type.isPlayer || other.type.isPlayer || world.rogue.stats.increasedAwareness > 0) {
-                    MessageBox.addLine(type.name + " " + verb + " the " + other.type.name + "(HP: " + other.stats.hitPoints + ")");
+                if(hp > 0) {
+                    // not missed, not blocked
+                    if (other.stats.hitPoints < 5)
+                        other.stats.hitPoints = Math.max(0, other.stats.hitPoints - hp);
+                    else
+                        other.stats.hitPoints = Math.max(2, other.stats.hitPoints - hp);        // avoid one-hit kills
+
+                    // with increased awareness player is informed of all events
+                    if (type.isPlayer || other.type.isPlayer || world.rogue.stats.increasedAwareness > 0) {
+                        MessageBox.addLine(type.name + " " + verb + " the " + other.type.name + "(HP: " + other.stats.hitPoints + ")");
+                    }
                 }
             }
         }
@@ -447,7 +453,11 @@ public class GameObject {
             enemy.stats.inventory.removeGold();
             GameObject gold = new GameObject(GameObjectTypes.gold, enemy.x, enemy.y, Direction.NORTH);
             gold.quantity = goldAmount;
-            scenes.placeObject(world.levelData.gameObjects, gold, enemy.x, enemy.y);    // place in the world and on screen
+            gold.z = gold.type.z;
+            if(enemy.scene != null)
+                scenes.addScene(gold);
+            world.levelData.gameObjects.add(gold);
+            world.levelData.gameObjects.setOccupant(x, y, gold);
             if(type.isPlayer || enemy.type.isPlayer || world.rogue.stats.increasedAwareness > 0)
                 MessageBox.addLine(enemy.type.name+ " drops their gold. ("+gold.quantity+")");
         }
