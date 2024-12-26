@@ -38,7 +38,6 @@ public class GameScreen extends StdScreenAdapter {
     private Texture brdfLUT;
     private DungeonScenes dungeonScenes;
     private OrthoCamController camController;
-    //private KeyController keyController;
     private PointLightEx pointLight;
     private DirectionalShadowLight shadowCastingLight;
     private FrameBuffer fbo;

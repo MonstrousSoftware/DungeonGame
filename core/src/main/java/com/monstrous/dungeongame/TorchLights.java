@@ -20,7 +20,7 @@ public class TorchLights {
             PointLightEx pointLight = new PointLightEx();
             pointLight.position.set(0,1,0);
             pointLight.color.set(Color.ORANGE);
-            pointLight.range = 1f;
+            pointLight.range = 0.5f;
             pointLight.intensity = 0f;  // off by default
             lights.add( pointLight );
             environment.add( pointLight );

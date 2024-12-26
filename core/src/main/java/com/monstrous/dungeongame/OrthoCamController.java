@@ -39,11 +39,9 @@ public class OrthoCamController extends InputAdapter {
         }
 
         trackedObject.transform.getTranslation(position);
-        position.y = 0;             // follow only on XZ plane, don't bounce the camera up and down to follow player Y position
         if( ! position.epsilonEquals(prevPosition )) {
             cam.position.add(position).sub(prevPosition);
             prevPosition.set(position);
-            //Gdx.app.log("cam translate to",cam.position.toString());
             mustUpdate = true;
         }
 
