@@ -2,6 +2,7 @@ package com.monstrous.dungeongame;
 
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
 public class Room {
@@ -14,7 +15,7 @@ public class Room {
     public boolean isStairWell;
     public TileType stairType;           // STAIRS_UP or STAIRS_DOWN (only valid if isStairWell)
     public Direction stairsDirection;
-    //public boolean uncovered;
+    public Array<Vector3> torchPositions;
 
     public Room(int id, int x, int y, int w, int h) {
         this.id = id;
@@ -27,6 +28,7 @@ public class Room {
         distances = new Array<>();
         closeNeighbours = new Array<>();
         isStairWell = false;
+        torchPositions = new Array<>();
         //uncovered = false;
     }
 

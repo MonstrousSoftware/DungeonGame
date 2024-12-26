@@ -46,6 +46,7 @@ public class GameScreen extends StdScreenAdapter {
     private Color bgColor;
     private float stepTimer;
     private GameObject focalActor;    // who the camera is following, normally the Rogue
+    private TorchLights torchLights;
 
     public GameScreen(Main game) {
         this.game = game;
@@ -59,7 +60,7 @@ public class GameScreen extends StdScreenAdapter {
         PBRShaderConfig config = PBRShaderProvider.createDefaultConfig();
         config.numBones = 45;
         config.numDirectionalLights = 1;
-        config.numPointLights = 6;
+        config.numPointLights = 2+DungeonScenes.MAX_TORCHES;
 
         DepthShader.Config depthConfig = PBRShaderProvider.createDefaultDepthConfig();
         depthConfig.numBones = 45;
@@ -94,11 +95,13 @@ public class GameScreen extends StdScreenAdapter {
         shadowCastingLight = new DirectionalShadowLight(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
         shadowCastingLight.direction.set(-3, -2, -3).nor();
         shadowCastingLight.color.set(Color.YELLOW);
-        shadowCastingLight.intensity = .5f;
+        shadowCastingLight.intensity = .2f;
         shadowCastingLight.setViewport(64, 64, 0.1f, 50f);
 
         sceneManager.environment.add(shadowCastingLight);
         sceneManager.environment.set(new PBRFloatAttribute(PBRFloatAttribute.ShadowBias, 1f/256f));
+
+        torchLights = new TorchLights(sceneManager.environment);
 
         // setup quick IBL (image based lighting)
         IBLBuilder iblBuilder = IBLBuilder.createOutdoor(shadowCastingLight);
@@ -110,7 +113,7 @@ public class GameScreen extends StdScreenAdapter {
         // This texture is provided by the library, no need to have it in your assets.
         brdfLUT = new Texture(Gdx.files.classpath("net/mgsx/gltf/shaders/brdfLUT.png"));
 
-        sceneManager.setAmbientLight(0.0f);
+        sceneManager.setAmbientLight(0.01f); //2f);
         sceneManager.environment.set(new PBRTextureAttribute(PBRTextureAttribute.BRDFLUTTexture, brdfLUT));
         sceneManager.environment.set(PBRCubemapAttribute.createSpecularEnv(specularCubemap));
         sceneManager.environment.set(PBRCubemapAttribute.createDiffuseEnv(diffuseCubemap));
@@ -200,6 +203,10 @@ public class GameScreen extends StdScreenAdapter {
         assert focalActor != null;
         camController.update(deltaTime, focalActor.scene.modelInstance);
 
+        int roomId = world.map.roomCode[focalActor.y][focalActor.x];
+        torchLights.update(deltaTime, (roomId < 0 ? null :  world.map.rooms.get(roomId)));
+
+        // move point light with the focal actor and center the main shadow casting light on the same spot
         focalActor.scene.modelInstance.transform.getTranslation(pointLight.position);
         pointLight.position.y += 3;
         shadowCastingLight.setCenter(pointLight.position);

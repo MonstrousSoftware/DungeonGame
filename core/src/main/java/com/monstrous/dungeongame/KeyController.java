@@ -22,6 +22,7 @@ public class KeyController extends InputAdapter {
     private int digestionSpeed = 2;
     private int keyDown;
     private float downTime;
+    private int turboTimer;     // counts down for duration of speed potion
 
     public KeyController(World world, DungeonScenes scenes) {
         this.world = world;
@@ -33,6 +34,7 @@ public class KeyController extends InputAdapter {
         throwMode = false;
         throwDirectionMode = false;
         regenTimer = 10;
+        turboTimer = 0;
 
     }
 
@@ -161,7 +163,16 @@ public class KeyController extends InputAdapter {
                 world.rogue.stats.hitPoints++;
         }
         // move enemies
-        world.enemies.step(world, scenes);     // move enemies
+
+        if(turboTimer > 0) {
+            turboTimer--;
+            if(turboTimer == 0)
+                MessageBox.addLine("Your reflexes are back to normal.");
+        }
+
+        // if turbo timer is active, then only move enemies every other step
+        if(turboTimer % 2 == 0)
+            world.enemies.step(world, scenes);     // move enemies
 
         digestFood();
 
@@ -332,6 +343,8 @@ public class KeyController extends InputAdapter {
                 scenes.showRoom(world.map, world.levelData, room);
                 scenes.populateRoom(world, room);
             }
+            if(room.isStairWell)
+                scenes.visitCorridorSegment(world, x, y);
         } else if( world.map.getGrid(x,y) == TileType.CORRIDOR){
             scenes.visitCorridorSegment(world, x, y);
         }
@@ -564,6 +577,9 @@ public class KeyController extends InputAdapter {
         } else if(potion.type == GameObjectTypes.bottle_A_green) {
             digestionSpeed = 1;
             MessageBox.addLine("This aids your digestion.");
+        } else if(potion.type == GameObjectTypes.bottle_C_brown) {
+            turboTimer = 30;
+            MessageBox.addLine("Your reflexes become faster.");
         } else {
             MessageBox.addLine("It has no effect.");
         }

@@ -36,9 +36,6 @@ public class DungeonMap implements Disposable {
     private TileType [][] grid;             // map grid for fixed architecture, walls, etc.
     public Direction [][] tileOrientation;      // orientation of tile
     public int[][] roomCode;                // id of the room
-    //public boolean[][] tileSeen;         // has the corridor segment been seen?
-
-
 
     // levelNr : 0 for top level, increasing as we go down
     // stairPortals: in= staircases from level above, out= staircases to level below

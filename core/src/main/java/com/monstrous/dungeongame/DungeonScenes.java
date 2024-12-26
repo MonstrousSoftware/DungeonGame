@@ -17,6 +17,7 @@ import net.mgsx.gltf.scene3d.scene.SceneManager;
 
 public class DungeonScenes implements Disposable {
     private final static float SCALE = 4f;
+    public final static int MAX_TORCHES = 4;
 
     private SceneManager sceneManager;
 
@@ -35,6 +36,7 @@ public class DungeonScenes implements Disposable {
     private SceneAsset sceneAssetWallCrossing;
     private SceneAsset sceneAssetStairs;
     private SceneAsset sceneAssetPillar;
+    private SceneAsset sceneAssetTorch;
 
 
     public DungeonScenes(SceneManager sceneManager) {
@@ -54,6 +56,7 @@ public class DungeonScenes implements Disposable {
         sceneAssetWallCrossing = new GLTFLoader().load(Gdx.files.internal("models/wall_crossing.gltf"));
         sceneAssetStairs = new GLTFLoader().load(Gdx.files.internal("models/stairs.gltf"));
         sceneAssetPillar = new GLTFLoader().load(Gdx.files.internal("models/pillar.gltf"));
+        sceneAssetTorch = new GLTFLoader().load(Gdx.files.internal("models/torch_lit_mounted.gltf"));
 
         sceneAssetFloor  = sceneAssetFloorA;    // alias
     }
@@ -75,6 +78,8 @@ public class DungeonScenes implements Disposable {
     }
 
     public void showRoom(DungeonMap map, LevelData levelData, Room room){
+        int numTorches = 0;
+        room.torchPositions.clear();
         levelData.seenRooms.add(room.id);
         //room.uncovered = true;
 
@@ -101,8 +106,20 @@ public class DungeonScenes implements Disposable {
                         tile = new Scene(sceneAssetWall4.scene);
                     else if(MathUtils.random(1.0f) < 0.1f)
                         tile = new Scene(sceneAssetWall5.scene);
-                    else
+                    else {
+                        if(numTorches < MAX_TORCHES-1 && (MathUtils.random(1.0f) < 0.5f)) {
+                            // put a lit torch on the wall
+                            numTorches++;
+                            Scene torch = new Scene(sceneAssetTorch.scene);
+                            setTransform(torch.modelInstance.transform, x, y, z, Direction.opposite(map.tileOrientation[y][x]));
+                            sceneManager.addScene(torch);
+                            Vector3 pos = new Vector3();
+                            torch.modelInstance.transform.getTranslation(pos);
+                            pos.y += 3.14f;
+                            room.torchPositions.add( pos ); //x,y-0.58f, z+3.14f));
+                        }
                         tile = new Scene(sceneAssetWall.scene);
+                    }
                 }
                 else if(cell == TileType.DOORWAY){
                     tile = new Scene(sceneAssetDoorWay.scene);
@@ -258,7 +275,7 @@ public class DungeonScenes implements Disposable {
                 placeObject(gameObjects, item, tx, ty);
                 return;
             }
-            else if(occupant.type == item.type || occupant.type.isArrow && item.type.isArrow) {   // same type
+            else if(item.type.isCountable && (occupant.type == item.type || occupant.type.isArrow && item.type.isArrow)) {   // same type
                 occupant.quantity+= item.quantity;        // add to the pile
                 if(occupant.type.isArrow && occupant.quantity > 0){ // change single arrow to bundle
                     removeScene(occupant);
@@ -298,6 +315,8 @@ public class DungeonScenes implements Disposable {
         setTransform(item.modelInstance.transform, gameObject.x, gameObject.y, gameObject.z, gameObject.direction);
         sceneManager.addScene(item);
         gameObject.scene = item;
+        if(gameObject.type.isEnemy)
+            gameObject.scene.animationController.setAnimation("Idle", -1);
     }
 
 
@@ -382,7 +401,11 @@ public class DungeonScenes implements Disposable {
     private void setTransform(Matrix4 transform, int x, int y, float z, Direction dir){
         transform.setToRotation(Vector3.Y, 180-dir.ordinal() * 90);
         transform.setTranslation(SCALE*x, z, -SCALE*y);
+    }
 
+    private void setTransform(Matrix4 transform, float x, float y, float z, Direction dir){
+        transform.setToRotation(Vector3.Y, 180-dir.ordinal() * 90);
+        transform.setTranslation(SCALE*x, z, -SCALE*y);
     }
 
     // leave orientation as it is

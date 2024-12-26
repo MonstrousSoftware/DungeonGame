@@ -31,6 +31,7 @@ public class World {
 
     public World() {
         secondsElapsed = 0;
+        //seed = MathUtils.random(1,9999);
         gameOver = false;
         gameCompleted = false;
         GameObjectTypes gameObjectTypes = new GameObjectTypes();

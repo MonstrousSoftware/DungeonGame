@@ -153,14 +153,6 @@ public class Populator {
             } else
                 break;
 
-//            int enemyType = MathUtils.random(0, 3);
-//            GameObjectType type = null;
-//            switch(enemyType){
-//                case 0: type = GameObjectTypes.warrior; break;
-//                case 1: type = GameObjectTypes.mage; break;
-//                case 2: type = GameObjectTypes.minion; break;
-//                case 3: type = GameObjectTypes.imp; break;
-//            }
             GameObject enemy = new GameObject(type, room.x+rx, room.y+ry, Direction.SOUTH);
             gameObjects.setOccupant(room.x+rx, room.y+ry, enemy);
             enemy.stats = new CharacterStats();
@@ -200,8 +192,6 @@ public class Populator {
             rogue.stats.experience = rogue.type.initXP;
             gameObjects.add(rogue);
             rogue.direction = Direction.SOUTH;
-
-
 
             return rogue;
         }

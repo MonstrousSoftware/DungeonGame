@@ -457,7 +457,7 @@ public class GameObject {
             if(enemy.scene != null)
                 scenes.addScene(gold);
             world.levelData.gameObjects.add(gold);
-            world.levelData.gameObjects.setOccupant(x, y, gold);
+            world.levelData.gameObjects.setOccupant(gold.x, gold.y, gold);
             if(type.isPlayer || enemy.type.isPlayer || world.rogue.stats.increasedAwareness > 0)
                 MessageBox.addLine(enemy.type.name+ " drops their gold. ("+gold.quantity+")");
         }
