@@ -15,7 +15,7 @@ public class Main extends Game {
 
     @Override
     public void create() {
-        world = new World();
+        //world = new World();
 
         MessageBox.addLine("Welcome traveller!");
 
@@ -23,6 +23,6 @@ public class Main extends Game {
         music.setLooping(true);
         music.play();
 
-        setScreen(new GameScreen(this));
+        setScreen(new PreGameScreen(this));
     }
 }

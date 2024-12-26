@@ -72,7 +72,7 @@ public class CreditsScreen extends ScreenAdapter {
     @Override
     public void render(float deltaTime) {
         if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER)){
-            game.setScreen( new GameScreen(game) );
+            game.setScreen( new PreGameScreen(game) );
             return;
         }
 

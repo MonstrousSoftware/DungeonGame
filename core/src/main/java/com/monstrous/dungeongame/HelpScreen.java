@@ -125,7 +125,7 @@ public class HelpScreen  extends StdScreenAdapter {
             return;
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.H)){
-            game.setScreen( new GameScreen(game) );
+            game.setScreen( new PreGameScreen(game) );
             return;
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.T)){

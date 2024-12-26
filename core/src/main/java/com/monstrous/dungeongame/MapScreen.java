@@ -46,7 +46,7 @@ public class MapScreen extends StdScreenAdapter {
         super.render(deltaTime);
 
         if(Gdx.input.isKeyJustPressed(Input.Keys.M)){
-            game.setScreen( new GameScreen(game) );
+            game.setScreen( new PreGameScreen(game) );
             return;
         }
 
