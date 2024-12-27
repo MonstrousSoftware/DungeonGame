@@ -71,7 +71,7 @@ public class GameScreen extends StdScreenAdapter {
         camera = new OrthographicCamera();
         camera.near = -500f;
         camera.far = 500;
-        camera.position.set(5,5, 5);
+        camera.position.set(50,50, 50);
         camera.zoom = 0.03f;
         camera.up.set(Vector3.Y);
         camera.lookAt( new Vector3(0, 0, 0));
@@ -207,7 +207,7 @@ public class GameScreen extends StdScreenAdapter {
 
         // move point light with the focal actor and center the main shadow casting light on the same spot
         focalActor.scene.modelInstance.transform.getTranslation(pointLight.position);
-        pointLight.position.y += 3;
+        pointLight.position.y += 2;
         shadowCastingLight.setCenter(pointLight.position);
 
         // render
