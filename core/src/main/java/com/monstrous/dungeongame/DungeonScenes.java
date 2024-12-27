@@ -107,7 +107,12 @@ public class DungeonScenes implements Disposable {
                     else if(MathUtils.random(1.0f) < 0.1f)
                         tile = new Scene(sceneAssetWall5.scene);
                     else {
-                        if(numTorches < MAX_TORCHES-1 && (MathUtils.random(1.0f) < 0.5f)) {
+                        // randomly put some torches on north and west walls (the ones facing the viewer)
+                        //
+                        if(numTorches < MAX_TORCHES-1 && (MathUtils.random(1.0f) < 0.5f)
+                            && (map.tileOrientation[y][x] == Direction.NORTH || map.tileOrientation[y][x] == Direction.WEST)) {
+
+
                             // put a lit torch on the wall
                             numTorches++;
                             Scene torch = new Scene(sceneAssetTorch.scene);
@@ -116,7 +121,9 @@ public class DungeonScenes implements Disposable {
                             Vector3 pos = new Vector3();
                             torch.modelInstance.transform.getTranslation(pos);
                             pos.y += 3.14f;
-                            room.torchPositions.add( pos ); //x,y-0.58f, z+3.14f));
+                            pos.x += 0.5f;
+                            pos.z += 0.5f;
+                            room.torchPositions.add( pos );
                         }
                         tile = new Scene(sceneAssetWall.scene);
                     }
