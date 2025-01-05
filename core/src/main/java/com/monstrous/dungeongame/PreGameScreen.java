@@ -46,7 +46,7 @@ public class PreGameScreen extends ScreenAdapter {
         stage.act(deltaTime);
         stage.draw();
 
-        if(time > 0.01f){
+        if(time > 0.1f){
             if(game.world == null)
                 game.world = new World();
 

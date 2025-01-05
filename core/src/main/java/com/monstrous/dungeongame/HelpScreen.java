@@ -71,16 +71,16 @@ public class HelpScreen  extends StdScreenAdapter {
 
         Label title = new Label("Desperately Dangerous Dungeons", skin);
         title.setColor(Color.GOLD);
-        screenTable.add(title).pad(20).center();
+        screenTable.add(title).pad(10).center();
         screenTable.row();
         Label version = new Label(VERSION, skin, "smaller");
-        screenTable.add(version).pad(10).center();
+        screenTable.add(version).pad(5).center();
         screenTable.row();
 
         Label storyLabel = new Label("", skin, "small");
         storyLabel.setText("As the final task of your apprenticeship to become\na professional Rogue, you have been sent into "+
         "these\ndangerous dungeons to retrieve the Sword of Yobled.\nIt is rumoured to be at least five levels below ground level.\n");
-        screenTable.add(storyLabel).pad(20).center();
+        screenTable.add(storyLabel).pad(10).center();
         screenTable.row();
 
 
@@ -97,20 +97,20 @@ public class HelpScreen  extends StdScreenAdapter {
             "  SPACE : rest\n" +
             "  R : restart (confirm with Y)\n" +
             "  F11 : toggle full-screen\n");
-        screenTable.add(keyLabel).pad(20).center();
+        screenTable.add(keyLabel).pad(10).center();
         screenTable.row();
 
-        screenTable.add(new Label("Press T for a Game Tip", skin, "small")).pad(10).center();
+        screenTable.add(new Label("Press T for a Game Tip", skin, "small")).pad(8).center();
         screenTable.row();
-        screenTable.add(new Label("Press C for Credits", skin, "small")).pad(10).center();
+        screenTable.add(new Label("Press C for Credits", skin, "small")).pad(8).center();
         screenTable.row();
-        screenTable.add(new Label("Press H to return", skin, "small")).pad(10).center();
+        screenTable.add(new Label("Press H to return", skin, "small")).pad(8).center();
         screenTable.row();
 
 
         tipLabel = new Label("", skin, "small");
         tipLabel.setColor(Color.GOLD);
-        screenTable.add(tipLabel).pad(20).center();
+        screenTable.add(tipLabel).pad(10).center();
         screenTable.pack();
 
         stage.addActor(screenTable);
