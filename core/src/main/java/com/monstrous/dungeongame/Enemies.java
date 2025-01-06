@@ -1,8 +1,11 @@
 package com.monstrous.dungeongame;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.math.MathUtils;
+
 import com.badlogic.gdx.utils.Array;
+
+
+// Enemy characters
+
 
 public class Enemies {
     public Array<GameObject> enemies;

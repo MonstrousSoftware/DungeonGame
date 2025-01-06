@@ -4,6 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 
+
+// Superclass for the different screens to support full-size toggle
+
 public class StdScreenAdapter extends ScreenAdapter {
     private static int width;           // static so it is retained between different screens
     private static int height;

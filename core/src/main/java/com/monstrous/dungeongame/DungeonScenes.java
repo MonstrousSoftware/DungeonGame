@@ -35,7 +35,6 @@ public class DungeonScenes implements Disposable {
     private SceneAsset sceneAssetWallTsplit;
     private SceneAsset sceneAssetWallCrossing;
     private SceneAsset sceneAssetStairs;
-    private SceneAsset sceneAssetPillar;
     private SceneAsset sceneAssetTorch;
 
 
@@ -55,7 +54,6 @@ public class DungeonScenes implements Disposable {
         sceneAssetWallTsplit = new GLTFLoader().load(Gdx.files.internal("models/wall_Tsplit.gltf"));
         sceneAssetWallCrossing = new GLTFLoader().load(Gdx.files.internal("models/wall_crossing.gltf"));
         sceneAssetStairs = new GLTFLoader().load(Gdx.files.internal("models/stairs.gltf"));
-        sceneAssetPillar = new GLTFLoader().load(Gdx.files.internal("models/pillar.gltf"));
         sceneAssetTorch = new GLTFLoader().load(Gdx.files.internal("models/torch_lit_mounted.gltf"));
 
         sceneAssetFloor  = sceneAssetFloorA;    // alias

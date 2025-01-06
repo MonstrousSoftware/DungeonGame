@@ -33,7 +33,7 @@ public class Room {
     }
 
 
-    // for rooms we allow one cell overlap to make walls coincide.
+    // for rooms, we allow one cell overlap to make walls coincide. (which is why we don't use Rectangle#overlap())
     // for a stairwell we don't allow any overlap (assumes `this` could be a stairwell but `r` could not)
     //
     public boolean overlaps (Room r) {

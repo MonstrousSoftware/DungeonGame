@@ -15,8 +15,6 @@ public class Main extends Game {
 
     @Override
     public void create() {
-        //world = new World();
-
         MessageBox.addLine("Welcome traveller!");
 
         music = Gdx.audio.newMusic(Gdx.files.internal("music/the-cave-220274.mp3"));

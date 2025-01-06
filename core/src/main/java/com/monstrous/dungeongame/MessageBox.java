@@ -2,6 +2,9 @@ package com.monstrous.dungeongame;
 
 import com.badlogic.gdx.utils.Array;
 
+
+// Messages shown to the user in chronological order.
+
 public class MessageBox {
     public static Array<String> lines;
 

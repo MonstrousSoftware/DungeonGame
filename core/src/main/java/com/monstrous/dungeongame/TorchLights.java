@@ -7,6 +7,10 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import net.mgsx.gltf.scene3d.lights.PointLightEx;
 
+
+// Manage torches as a set of point lights.
+// They are enabled/disabled and positioned to match the torches of the current room.
+
 public class TorchLights {
 
     private int roomId;

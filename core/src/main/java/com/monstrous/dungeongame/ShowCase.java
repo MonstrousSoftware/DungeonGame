@@ -22,6 +22,8 @@ import net.mgsx.gltf.scene3d.shaders.PBRShaderConfig;
 import net.mgsx.gltf.scene3d.shaders.PBRShaderProvider;
 import net.mgsx.gltf.scene3d.utils.IBLBuilder;
 
+// Utility class to render a game object to generate an icon sprite.  These icons are used in the inventory.
+
 public class ShowCase implements Disposable {
     final static int SHADOW_MAP_SIZE = 2048;
 
