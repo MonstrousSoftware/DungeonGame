@@ -1,4 +1,4 @@
-# DungeonGame - Desparately Dangerous Dungeons
+# DungeonGame - Desperately Dangerous Dungeons
 
 An isometric 3d rogue like.
 
